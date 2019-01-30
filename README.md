@@ -4,7 +4,7 @@
 <br>
 <p>This code creates a Red Hat Instance on AWS platform and deploy an Apache Tomcat server on it. Tomcat GUI is accessible on 8080(HTTP) using public IP </p>
 <br>
-<h2>Following are the components of simple Red Hat architecture.</h2>
+<h2>Following are the architectural components for setting up simple instance on AWS.</h2>
 <ul>
   <li>VPC (Virtual Private Cloud)</li>
   <li>Subnet</li>
