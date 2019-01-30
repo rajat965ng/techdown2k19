@@ -2,7 +2,7 @@
 <br>
 <h2>Use Case</h2>
 <br>
-<h3>This code creates a Red Hat Instance on AWS platform and deploy a Apache Tomcat server on it. Tomcat GUI is accessible on 8080(HTTP) using public IP </h3>
+<p>This code creates a Red Hat Instance on AWS platform and deploy an Apache Tomcat server on it. Tomcat GUI is accessible on 8080(HTTP) using public IP </p>
 <br>
 <h2>Following are the components of simple Red Hat architecture.</h2>
 <ul>
