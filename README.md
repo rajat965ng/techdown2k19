@@ -12,5 +12,6 @@
   <li>Route Table</li>
   <li>Route Table Associations</li>
   <li>AWS Instance along with remote-exec provisioner</li>
+  <li>Elastic IP</li>
   <li>Provider</li>
 </ul>

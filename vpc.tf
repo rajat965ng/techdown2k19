@@ -60,6 +60,15 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
+resource "aws_eip" "lb" {
+  depends_on = ["aws_internet_gateway.igw"]
+  instance = "${aws_instance.myinstance.id}"
+  vpc      = true
+  tags {
+    Name = "${var.project_name}-elastic-ip"
+  }
+}
+
 resource "aws_route_table" "myroute" {
   vpc_id            = "${aws_vpc.myvpc.id}"
   route {
@@ -81,7 +90,7 @@ resource "aws_instance" "myinstance" {
   ami = "ami-011b3ccf1bd6db744"
   instance_type = "t2.micro"
   availability_zone = "${data.aws_availability_zones.available.names[0]}"
-  key_name = "name_of_the_private_key"
+  key_name = "name_of_private_key"
   subnet_id = "${aws_subnet.mysubnet.id}"
   security_groups = ["${aws_security_group.mydev.id}"]
   vpc_security_group_ids = ["${aws_security_group.mydev.id}"]
