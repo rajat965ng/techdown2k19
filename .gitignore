@@ -1,0 +1,4 @@
+/AWS-EKS-Udemy-master
+/.terraform
+*.tfstate
+*.tfstate.backup
