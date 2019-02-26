@@ -3,12 +3,12 @@
 
 
 <h3>Steps to Execute this App</h3>
-<li>
-<ul>docker run -d -p 3000:3000 rajat965ng/bookql</ul>
-<ul>Open Postman</ul>
-<ul>Compose POST request to <b>localhost:3000/library</b></ul>
-<ul>Paste following payload in the body</ul>
-</li>
+<ul>
+<li>docker run -d -p 3000:3000 rajat965ng/bookql</li>
+<li>Open Postman</li>
+<li>Compose POST request to <b>localhost:3000/library</b></li>
+<li>Paste following payload in the body</li>
+</ul>
 
 <p>
 
