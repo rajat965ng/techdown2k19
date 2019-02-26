@@ -53,4 +53,4 @@ Remember that a mutation payload must return at least one field even if no data 
 </p>
 
 
-<h3>UI Implementation for Executing GraphQL is available at <i>localhost:3000/library</i></h3>
+<h3>UI Implementation for GraphQL executor is available at <i>localhost:3000/library</i></h3>
