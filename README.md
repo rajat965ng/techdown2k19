@@ -1,6 +1,16 @@
 <h1>GraphQL Demo: BookSet App</h1>
 
-
+<h3>Tech Stack</h3>
+<ul>
+<li>NodeJs [Prefered Programming Language]</li>
+<li>Yarn [Package Manager -- 10x faster than NPM]</li>
+<li>Browserify [For creating production grade build]</li>
+<li>Express [Web framework for creating this Microservice]</li>
+<li>Express-Cassandra [ORM for Cassandra]</li>
+<li>Elasandra [Executing Cassandra in In-Memory]</li>
+<li>Express-GraphQL [Constructs an Express application based on a GraphQL schema]</li>
+<li>Docker [For Containerization / Create artifact as an Image]</li>
+</ul>
 
 <h3>Steps to Execute this App</h3>
 <ul>
@@ -11,6 +21,7 @@
 </ul>
 
 <p>
+<h3>Following are the sample CRUD operations</h3>
 
 <h3>Fetch</h3>
 <p>
