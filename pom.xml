@@ -7,6 +7,13 @@
   <version>1.0-SNAPSHOT</version>
   <name>test-project</name>
   <url>http://maven.apache.org</url>
+
+  <scm>
+    <connection>scm:git:ssh://git@github.com:rajat965ng/techdown2k19.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:rajat965ng/techdown2k19.git</developerConnection>
+    <url>https://github.com/rajat965ng/techdown2k19/tree/increamental-package</url>
+  </scm>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -19,4 +26,41 @@
     <module>test-subproject-A</module>
     <module>test-subproject-B</module>
   </modules>
+
+  <build>
+    <extensions xmlns="http://maven.apache.org/EXTENSIONS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://maven.apache.org/EXTENSIONS/1.0.0 http://maven.apache.org/xsd/core-extensions-1.0.0.xsd">
+      <extension>
+        <groupId>com.soebes.maven.extensions</groupId>
+        <artifactId>incremental-module-builder</artifactId>
+        <version>0.2.0</version>
+      </extension>
+    </extensions>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.scm</groupId>
+        <artifactId>maven-scm-provider-git-commons</artifactId>
+        <version>1.11.2</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <descriptors>
+            <descriptor>zip.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- append to the packaging phase. -->
+            <goals>
+              <goal>single</goal> <!-- goals == mojos -->
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
