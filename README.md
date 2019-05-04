@@ -7,3 +7,5 @@ Exploration of new tools, frameworks or programming languages in 2019. Eliminate
 <br>
 #3 GraphQl CRUD Microservice [execute <i><b>docker run -d -p 3000:3000 rajat965ng/bookql</b></i> to spin the App]
 <br>
+#4 Maven: Incremental Packaging
+<br>
