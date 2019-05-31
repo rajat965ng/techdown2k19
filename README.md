@@ -1,3 +1,5 @@
+OAuth 2.0
+
 OAuth 2.0 allow application to exchange information securely and reliably.
 
 Allowing user to login the application with another account.
@@ -155,7 +157,7 @@ may or may not get return. In this example we are using Facebook API which is no
 </p>
 <p>
 The above acquired access_token is used to access the resource. On receiving the access_token, service provider validate 2 things:
-1. Is the access token is expired or revoked.
+1. Is the access token is expired or revoked.<br>
 2. Is the associated scope covers the requested resource.
 
 </p>
