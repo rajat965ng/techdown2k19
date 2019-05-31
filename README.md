@@ -9,3 +9,5 @@ Exploration of new tools, frameworks or programming languages in 2019. Eliminate
 <br>
 #4 Maven: Incremental Packaging
 <br>
+#5 OAuth 2.0
+<br>
