@@ -11,3 +11,5 @@ Exploration of new tools, frameworks or programming languages in 2019. Eliminate
 <br>
 #5 OAuth 2.0
 <br>
+#6 Kubernetes In Action [Intake practicals from a book by Marko Luksa]
+<br>
