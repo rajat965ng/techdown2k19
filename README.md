@@ -220,4 +220,134 @@ A YAML definition of a Job: kubia-batch-job.yaml
 
 YAML for a CronJob resource: kubia-cron-job.yaml
 
-</p>   
+</p> 
+<p>
+<h3>Services: enabling clients to discover and talk to pods</h3>
+
+A definition of a service: kubia-svc.yaml
+
+REMOTELY EXECUTING COMMANDS IN RUNNING CONTAINERS
+
+```$xslt
+  kubectl exec kubia-7nog1 -- curl -s http://10.111.249.153
+```
+
+In kubia-svc.yaml:
+ Port 80 is mapped to the container’s port called http.
+ Port 443 is mapped to the container’s port, whose name is https.
+     
+
+Why the double dash?
+
+The double dash (--) in the command signals the end of command options for kubectl.
+Everything after the double dash is the command that should be executed inside the pod.
+
+
+A example of a service with ClientIP session affinity configured: kubia-svc-session-affinity.yaml
+
+
+a frontend pod can connect to the backend- database service by opening a connection to the following FQDN:
+backend-database.default.svc.cluster.local
+backend-database corresponds to the service name, default stands for the name- space the service is defined in, and svc.cluster.local is a configurable cluster domain suffix used in all cluster local service names.
+
+
+```$xslt
+kubectl exec -it kubia-3inly bash
+
+curl http://kubia.default.svc.cluster.local
+
+curl http://kubia.default
+
+curl http://kubia
+```
+
+Exposing services to external clients
+
+make a service accessible externally:
+
+Setting a service of type Node port - Every node on a cluster opens up a port on itself. 
+The service is not only accessible on cluster IP and port but also through dedicated port on each node.
+
+A NodePort service definition: kubia-svc-nodeport.yaml. The service accessible within the pod using cluster IP.
+
+```$xslt
+kubectl exec -it kubia-64v77 -- curl -s http://10.109.196.71
+```
+
+Tell kubectl to print out only the node IP instead of the whole service definition:
+
+```$xslt
+kubectl get nodes -o jsonpath='{.items[*].status.addresses[?(@.type=="ExternalIP")].address}'
+```
+
+Setting a service of type LoadBalancer - The service is accessible through load balancer of provisioned cloud provider of kubernetes. 
+The load balancer accept all traffic and redirect it to node ports of the cluster. The client can access the service through load balancer's IP.
+
+A LoadBalancer-type service: kubia-svc-loadbalancer.yaml
+
+
+
+
+Creating an Ingress resource - exposing multiple services through a static IP. It operates on HTTP (network layer 7).
+
+An Ingress resource definition: kubia-ingress.yaml
+
+CREATING A TLS CERTIFICATE FOR THE INGRESS
+
+<p>
+if the pod runs a web server, it can accept only HTTP traffic and let the Ingress controller take care of everything related to TLS. 
+To enable the controller to do that, you need to attach a certificate and a private key to the Ingress. 
+The two need to be stored in a Kubernetes resource called a Secret, which is then referenced in the Ingress manifest.
+</p>
+
+First, you need to create the private key and certificate:
+
+```
+$ openssl genrsa -out tls.key 2048
+$ openssl req -new -x509 -key tls.key -out tls.cert -days 360 -subj  /CN=kubia.example.com
+```
+
+Then you create the Secret from the two files like this:
+
+```$xslt
+$ kubectl create secret tls tls-secret --cert=tls.cert --key=tls.key
+```
+
+Ingress handling TLS traffic: kubia-ingress-tls.yaml
+
+Make an entry of <i>kubia.example.com</i> in /etc/hosts file.
+
+Use HTTPS to access TLS enabled ingress.
+
+```$xslt
+curl -k -v https://kubia.example.com
+```
+
+Introducing readiness probes.
+
+The readiness probe is invoked periodically and determines whether the specific pod should receive client requests or not. 
+When a container’s readiness probe returns success, it’s signaling that the container is ready to accept requests.
+
+Following is the syntax use to validate the readiness probe.
+
+```$xslt
+spec: 
+  containers: 
+    - image: luksa/kubia
+      name: kubia
+      readinessProbe: 
+        exec: 
+          command: 
+            - ls
+            - /var/ready
+```
+
+The readiness probe will periodically perform the command ls /var/ready inside the container.
+The ls command returns exit code zero if the file exists, or a non-zero exit code otherwise.
+If the file exists, the readiness probe will succeed; otherwise, it will fail.
+
+<h4>Using a headless service for discovering individual pods</h4>
+
+A headless service: kubia-svc-headless.yaml
+
+</p>  

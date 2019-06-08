@@ -15,4 +15,7 @@ spec:
         - name: kubia
           image: rajat965ng/kubia:v1
           ports:
-            - containerPort: 8080
+            - name: http
+              containerPort: 8080
+            - name: https
+              containerPort: 8443
