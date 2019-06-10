@@ -430,4 +430,225 @@ A StorageClass definition: storageclass-fast-gcepd.yaml
 <p>
 <h3>ConfigMaps and Secrets: configuring applications</h3>
 
+The Kubernetes resource for storing configuration data is called a ConfigMap.
+
+Any sensitive information includes credentials, private encryption keys, and similar data that needs to be kept secure. 
+This type of information needs to be handled with special care, which is why Kubernetes offers another type of first-class object called a Secret.
+
+Overriding the command and arguments in Kubernetes.
+To do that, you set the properties command and args in the container specification, as shown in the following listing.
+
+```$xslt
+kind: Pod
+spec:
+  containers:
+  - image: some/image
+    command: ["/bin/command"]
+    args: ["arg1", "arg2", "arg3"]
+```
+
+Setting environment variables for a container
+
+```$xslt
+kind: Pod
+spec:
+ containers:
+ - image: luksa/fortune:env
+   env:
+   - name: INTERVAL
+value: "30"
+   name: html-generator
+```
+
+Referring to other environment variables in a variable’s value. Referring to an environment variable inside another one.
+
+```$xslt
+env:
+- name: FIRST_VAR
+  value: "foo"
+- name: SECOND_VAR
+  value: "$(FIRST_VAR)bar"
+```
+
+
+Values effectively hardcoded in the pod definition means you need to have separate pod definitions for your production and your development pods. 
+To reuse the same pod definition in multiple environments, it makes sense to decouple the configuration from the pod descriptor.
+You can do that using a ConfigMap resource and using it as a source for environment variable values using the valueFrom instead of the value field.
+
+<h4>Introducing ConfigMaps</h4>
+
+The contents of the map are instead passed to containers as either environment variables or as files in a volume.
+
+Creating a ConfigMap
+
+```$xslt
+kubectl create configmap fortune-config --from-literal=sleep-interval=25
+
+kubectl create configmap myconfigmap --from-literal=foo=bar --from-literal=bar=baz --from-literal=one=two
+
+kubectl create configmap my-config
+ --from-file=foo.json
+ --from-file=bar=foobar.conf
+ --from-file=config-opts/
+ --from-literal=some=thing
+```
+Pod with env var from a config map: fortune-pod-env-configmap.yaml
+
+Passing all entries of a ConfigMap as environment variables at once
+
+```$xslt
+spec:
+  containers:
+  - image: some-image
+    envFrom:
+    - prefix: CONFIG_
+      configMapRef:
+        name: my-config-map
+```
+
+Using a configMap volume to expose ConfigMap entries as files
+
+An Nginx config with enabled gzip compression: my-nginx-config.conf
+
+A pod with ConfigMap entries mounted as files: fortune-pod-configmap-volume.yaml
+
+Seeing if nginx responses have compression enabled
+
+```$xslt
+kubectl port-forward fortune-configmap-volume 8080:80 &
+
+curl -H "Accept-Encoding: gzip" -I localhost:8080
+```
+
+EXAMINING THE MOUNTED CONFIGMAP VOLUME’S CONTENTS
+
+```$xslt
+kubectl exec fortune-configmap-volume -c web-server ls /etc/nginx/conf.d
+```
+
+EXPOSING CERTAIN CONFIGMAP ENTRIES IN THE VOLUME
+
+```$xslt
+volumes:
+- name: config
+  configMap:
+    name: fortune-config
+    items:
+    - key: my-nginx-config.conf
+      path: gzip.conf
+```
+
+The directory then only contains the files from the mounted filesystem, whereas the original files in that directory are inaccessible 
+for as long as the filesystem is mounted. This would most likely break the whole container, because all of the original files 
+that should be in the /etc directory would no longer be there.
+
+MOUNTING INDIVIDUAL CONFIGMAP ENTRIES AS FILES WITHOUT HIDING OTHER FILES IN THE DIRECTORY.
+
+use the 'subPath' property to mount it there without affecting any other files in that directory.
+
+```$xslt
+spec:
+  containers:
+  - image: some/image
+    volumeMounts:
+    - name: myvolume
+      mountPath: /etc/someconfig.conf  #You’re mounting into a file, not a directory.
+      subPath: myconfig.conf           #Instead of mounting the whole volume, you’re only mounting the myconfig.conf entry.
+```
+
+SETTING THE FILE PERMISSIONS FOR FILES IN A CONFIGMAP VOLUME
+
+```$xslt
+volumes:
+- name: config
+  configMap:
+    name: fortune-config
+    defaultMode: "6600"  #By default, the permissions on all files in a configMap volume are set to 644.
+```
+
+EDITING A CONFIGMAP
+
+```$xslt
+$ kubectl edit configmap fortune-config
+```
+
+SIGNALING NGINX TO RELOAD THE CONFIG
+
+```$xslt
+kubectl exec fortune-configmap-volume -c web-server -- nginx -s reload
+```
+
+<h4>Using Secrets to pass sensitive data to containers</h4>
+
+Creating a Secret
+
+```$xslt
+openssl genrsa -out https.key 2048
+openssl req -new -x509 -key https.key -out https.cert -days 3650 -subj /CN=www.kubia-example.com
+
+echo bar > foo
+
+```
+create an additional dummy file called foo and make it contain the string bar.
+
+Now you can use kubectl create secret to create a Secret from the three files:
+
+```$xslt
+kubectl create secret generic fortune-https --from-file=https.key --from-file=https.cert --from-file=foo
+
+kubectl get secret fortune-https -o yaml
+```
+contents of a Secret’s entries are shown as Base64-encoded strings
+
+
+Adding plain text entries to a Secret using the stringData field
+
+```$xslt
+kind: Secret
+apiVersion: v1
+stringData:
+  foo: plain text
+data:
+  https.cert: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCekNDQ...
+  https.key: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcE...
+  
+```
+
+YAML definition of the fortune-https pod: fortune-pod-https.yaml
+
+MODIFYING THE FORTUNE-CONFIG CONFIGMAP TO ENABLE HTTPS
+
+```$xslt
+kubectl edit configmap fortune-config
+
+
+data:
+  my-nginx-config.conf: |-
+    server {
+      listen        80;
+      listen        443 ssl;
+      server_name   www.kubia-example.com;
+
+
+
+      ssl_certificate     certs/https.cert;
+      ssl_certificate_key certs/https.key;
+      ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+      ssl_ciphers         HIGH:!aNULL:!MD5;
+
+
+      location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+      }
+    }
+
+```
+
+CREATING A SECRET FOR AUTHENTICATING WITH A DOCKER REGISTRY
+
+kubectl create secret docker-registry mydockerhubsecret \
+  --docker-username=myusername --docker-password=mypassword \
+  --docker-email=my.email@provider.com
+
 </p>

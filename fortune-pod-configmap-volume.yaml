@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fortune-configmap-volume
+spec:
+  volumes:
+    - name: config
+      configMap:
+        name: fortune-config
+  containers:
+    - image: nginx:alpine
+      name: web-server
+      volumeMounts:
+        - name: config
+          mountPath: /etc/nginx/conf.d
+          readOnly: true
