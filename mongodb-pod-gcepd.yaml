@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mongodb
+spec:
+  volumes:
+  - name: mongodb-data
+    # Use in case of persistent volumes. Below mentioned is the name of the claim attached to the persistent volume.
+    persistentVolumeClaim:
+      claimName: mongodb-pvc
+    # use hostpath in case of minikube or create nfs server like in nfs-server.yaml
+#    hostPath:
+#      path: /tmp/mongodb
+    # in case of GCP
+#    gcePersistentDisk:
+#      pdName: mongodb
+#      fsType: ext4
+  containers:
+  - image: mongo
+    name: mongodb
+    volumeMounts:
+    - name: mongodb-data
+      mountPath: /data/db
+    ports:
+    - containerPort: 27017
+      protocol: TCP

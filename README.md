@@ -351,3 +351,83 @@ If the file exists, the readiness probe will succeed; otherwise, it will fail.
 A headless service: kubia-svc-headless.yaml
 
 </p>  
+<p>
+<h3>Volumes: attaching disk storage to containers</h3>
+
+a list of several of the available volume types:
+
+emptyDir—A simple empty directory used for storing transient data.
+
+hostPath—Used for mounting directories from the worker node’s filesystem into the pod.
+
+gitRepo—A volume initialized by checking out the contents of a Git repository.
+
+nfs—An NFS share mounted into the pod.
+
+gcePersistentDisk (Google Compute Engine Persistent Disk), awsElastic-BlockStore (Amazon Web Services Elastic Block Store Volume), azureDisk (Microsoft Azure Disk Volume)—Used for mounting cloud provider-specific storage.
+
+cinder, cephfs, iscsi, flocker, glusterfs, quobyte, rbd, flexVolume, vsphereVolume, photonPersistentDisk, scaleIO—Used for mounting other types of network storage.
+
+configMap, secret, downwardAPI—Special types of volumes used to expose certain Kubernetes resources and cluster information to the pod.
+
+persistentVolumeClaim—A way to use a pre- or dynamically provisioned persistent storage. 
+
+
+A pod with two containers sharing the same volume: fortune-pod.yaml
+
+```$xslt
+kubectl port-forward fortune 8080:80
+```
+
+The emptyDir you used as the volume was created on the actual disk of the worker node hosting your pod, so its performance depends on the type of the node’s disks.
+
+But you can tell Kubernetes to create the emptyDir on a tmpfs filesystem (in memory instead of on disk). To do this, set the emptyDir’s medium to Memory like this:
+
+```$xslt
+volumes:
+  - name: html
+    emptyDir:
+      medium: Memory
+```
+
+A pod using a gitRepo volume: gitrepo-volume-pod.yaml
+
+
+<h4>Using persistent storage</h4>
+
+When an application running in a pod needs to persist data to disk and have that same data available even when the pod is rescheduled to another node, 
+you can’t use any of the volume types we’ve mentioned so far. 
+Because this data needs to be accessible from any cluster node, it must be stored on some type of network-attached storage (NAS).
+
+A pod using a gcePersistentDisk volume: mongodb-pod-gcepd.yaml
+
+If you’re using Minikube, you can’t use a GCE Persistent Disk, but you can deploy mongodb-pod-hostpath.yaml, which uses a hostPath volume instead of a GCE PD.
+
+This is against the basic idea of Kubernetes, which aims to hide the actual infrastructure from both the application and its developer,
+leaving them free from worrying about the specifics of the infrastructure and making apps portable across a wide array of cloud providers and on-premises 
+data centers.
+
+To enable apps to request storage in a Kubernetes cluster without having to deal with infrastructure specifics, two new resources were introduced. 
+They are PersistentVolumes and PersistentVolumeClaims.
+
+PersistentVolumes are provisioned by cluster admins and consumed by pods through PersistentVolumeClaims.
+
+A gcePersistentDisk PersistentVolume: mongodb-pv-gcepd.yaml
+
+CREATING A PERSISTENT VOLUME CLAIM
+
+A PersistentVolumeClaim: mongodb-pvc.yaml
+
+<h4>Dynamic provisioning of PersistentVolumes</h4>
+
+The cluster admin, instead of creating PersistentVolumes, can deploy a Persistent- Volume provisioner and define one or more StorageClass objects to 
+let users choose what type of PersistentVolume they want. The users can refer to the StorageClass in their PersistentVolumeClaims and the provisioner 
+will take that into account when provisioning the persistent storage.
+
+A StorageClass definition: storageclass-fast-gcepd.yaml
+
+</p>
+<p>
+<h3>ConfigMaps and Secrets: configuring applications</h3>
+
+</p>

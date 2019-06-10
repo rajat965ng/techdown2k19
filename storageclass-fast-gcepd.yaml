@@ -1,0 +1,12 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast
+  #In case of Minikube/ On-prem
+provisioner: k8s.io/minikube-hostpath
+  #In Case of CGP
+#provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-ssd
+  #In case of GCP
+#  zone: europe-west1-b

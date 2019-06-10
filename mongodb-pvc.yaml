@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+spec:
+  resources:
+    requests:
+      storage: 100Mi #1Gi
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: fast #fast is the name of storage class. Name must be present in case of storage class else it will be ""
