@@ -703,4 +703,85 @@ A pod with an ambassador container: curl-with-ambassador.yaml
 
 <p>
 <h3>Updating applications running in pods</h3>
+
+Updating applications running in pods
+- Deleting old pods and replacing them with new ones
+- Spinning up new pods and then deleting the old ones
+    change the Service’s label selector and have the Service switch over to the new pods. This is called a blue-green deployment.
+    After switching over, and once you’re sure the new version functions correctly, you’re free to delete the old pods by deleting the old ReplicationController.
+    You can change a Service’s pod selector with the <i>kubectl set selector</i> command.
+- PERFORMING A ROLLING UPDATE
+ 
+ ```  
+    #this is deprecated now. Use rollout instead of rolling-update.
+    kubectl rolling-update kubia-v1 kubia-v2 --image=luksa/kubia:v2 
+ ```
+
+Understanding why kubectl rolling-update is now obsolete
+
+ - it’s perfectly fine for the scheduler to assign a node to my pods after I create them, but Kubernetes modifying the labels of 
+    my pods and the label selectors of my ReplicationControllers is something that I don’t expect.
+ - what if you lost network connectivity while kubectl was performing the update? The update pro- cess would be interrupted mid-way.
+    Pods and ReplicationControllers would end up in an intermediate state.      
+
+
+CREATING A DEPLOYMENT MANIFEST
+
+A Deployment definition: kubia-deployment-v1.yaml
+
+```
+kubectl create -f kubia-deployment-v1.yaml --record
+```
+
+You’ll deploy the new version by changing the image in the Deployment specification again:
+
+```
+kubectl set image deployment kubia nodejs=luksa/kubia:v3
+
+kubectl rollout status deployment kubia
+```
+
+Luckily, Deployments make it easy to roll back to the previously deployed version by telling Kubernetes to undo the last rollout of a Deployment:
+
+```
+kubectl rollout undo deployment kubia
+```
+
+DISPLAYING A DEPLOYMENT’S ROLLOUT HISTORY
+
+```
+kubectl rollout history deployment kubia
+```
+
+Remember the --record command-line option you used when creating the Deploy- ment? Without it, the CHANGE-CAUSE column in the revision history would be empty,
+ making it much harder to figure out what’s behind each revision.
+
+
+ROLLING BACK TO A SPECIFIC DEPLOYMENT REVISION
+
+```
+kubectl rollout undo deployment kubia --to-revision=1
+```
+
+<h4>Controlling the rate of the rollout</h4>
+
+INTRODUCING THE MAXSURGE AND MAXUNAVAILABLE PROPERTIES OF THE ROLLING UPDATE STRATEGY
+
+```
+    spec:
+      minReadySeconds: 10
+      strategy:
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
+        type: RollingUpdate
+
+```    
+
+maxSurge : If the desired replica count is set to four, there will never be more than five pod instances running at the same time during an update.
+
+maxUnavailable : Determines how many pod instances can be unavailable relative to the desired replica count during the update.
+
+minReadySeconds: Use minReadySeconds and readiness probes to have the rollout of a faulty version blocked automatically.
+    
 </p>
