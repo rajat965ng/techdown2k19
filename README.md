@@ -652,3 +652,55 @@ kubectl create secret docker-registry mydockerhubsecret \
   --docker-email=my.email@provider.com
 
 </p>
+
+<p>
+<h3>Accessing pod metadata and other resources from applications</h3>
+
+<h4>Downward API used in environment variables: downward-api-env.yaml</h4>
+
+Passing metadata through files in a downwardAPI volume
+
+Pod with a downwardAPI volume: downward-api-volume.yaml
+
+Talking to the API server from within a pod
+
+how to talk to it from within a pod, where you (usually) don’t have kubectl. 
+Therefore, to talk to the API server from inside a pod, you need to take care of three things:
+
+ Find the location of the API server.
+ Make sure you’re talking to the API server and not something impersonating it. 
+ Authenticate with the server; otherwise it won’t let you see or do anything.
+
+First, load the token into an environment variable:
+
+```
+root@curl:/# TOKEN=$(cat /var/run/secrets/kubernetes.io/ serviceaccount/token)
+```
+
+Getting a proper response from the API server
+
+```
+root@curl:/# curl -H "Authorization: Bearer $TOKEN" https://kubernetes
+```
+
+Listing pods in the pod’s own namespace
+```
+root@curl:/# NS=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+root@curl:/# curl -H "Authorization: Bearer $TOKEN" https://kubernetes/api/v1/namespaces/$NS/pods
+```
+
+Simplifying API server communication with ambassador containers
+
+Instead of talking to the API server directly, the app in the main container can connect to the ambassador through HTTP (instead of HTTPS) 
+and let the ambassador proxy handle the HTTPS connection to the API server, taking care of security transparently.
+It does this by using the files from the default token’s secret volume.
+
+RUNNING THE CURL POD WITH AN ADDITIONAL AMBASSADOR CONTAINER
+
+A pod with an ambassador container: curl-with-ambassador.yaml
+
+</p>
+
+<p>
+<h3>Updating applications running in pods</h3>
+</p>
