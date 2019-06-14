@@ -785,3 +785,93 @@ maxUnavailable : Determines how many pod instances can be unavailable relative t
 minReadySeconds: Use minReadySeconds and readiness probes to have the rollout of a faulty version blocked automatically.
     
 </p>
+<p>
+<h3>StatefulSets: deploying replicated stateful applications</h3>
+
+Replicating stateful pods
+    If the pod template includes a volume, which refers to a specific PersistentVolumeClaim, all replicas of the ReplicaSet will 
+    use the exact same PersistentVolumeClaim and therefore the same PersistentVolume bound by the claim
+    Because the reference to the claim is in the pod template, which is used to stamp out multiple pod replicas, 
+    you can’t make each replica use its own separate Persistent- VolumeClaim.
+
+All pods from same ReplicaSet always use the same PersistentVolumeClaim and PersistentVolume.
+
+
+Running multiple replicas with separate storage for each
+    - you maybe use a single ReplicaSet and have each pod instance keep its own persistent state, even though they’re all using the same storage volume.
+    - A trick you can use is to have all pods use the same PersistentVolume, but then have a separate file directory inside that volume for each pod. 
+
+Providing a stable identity for each pod
+    provide a stable network address for cluster members by creating a dedicated Kubernetes Service for each individual member. 
+    Because service IPs are stable, you can then point to each member through its service IP (rather than the pod IP) in the configuration.
+    The solution is not only ugly, but it still doesn’t solve everything. 
+    The individual pods can’t know which Service they are exposed through (and thus can’t know their stable IP), 
+    so they can’t self-register in other pods using that IP. 
+    The proper clean and simple way of running these special types of applications in Kubernetes is through a StatefulSet.
+
+
+
+Understanding StatefulSets
+    A StatefulSet makes sure pods are rescheduled in such a way that they retain their identity and state.
+    It also allows you to easily scale the number of pets up and down.
+    pods created by the StatefulSet aren’t exact replicas of each other. Each can have its own set of volume.  
+    you can reach the pod through its fully qualified domain name, which is 
+    
+ ```
+  podname.svcname.namespacename.svc.cluster.local.
+ ```  
+  When a pod instance managed by a StatefulSet disappears. the replacement pod gets the same name and hostname as the pod that has disappeared. 
+
+SCALING A STATEFULSET
+    StatefulSets also never permit scale-down operations if any of the instances are unhealthy. 
+    If an instance is unhealthy, and you scale down by one at the same time.
+    
+    
+Providing stable dedicated storage to each stateful instance
+    Because PersistentVolumeClaims map to PersistentVolumes one-to-one, each pod of a StatefulSet needs to reference a different PersistentVolumeClaim to have 
+    its own separate PersistentVolume. 
+    Because all pod instances are stamped from the same pod template, how can they each refer to a different PersistentVolumeClaim?    
+    The StatefulSet has to create the PersistentVolumeClaims as well, the same way it’s creating the pods. The PersistentVolumes for the claims can
+    either be provisioned up-front by an administrator or just in time through dynamic provisioning of PersistentVolumes
+    
+    
+    Scaling up a StatefulSet by one creates two or more API objects (the pod and one or more PersistentVolumeClaims referenced by the pod). Scaling down, however, deletes only the pod, leaving the claims alone. The reason for this is obvious, if you consider what happens when a claim is deleted. After a claim is deleted, the PersistentVolume it was bound to gets recycled or deleted and its contents are lost.
+    Because stateful pods are meant to run stateful applications, which implies that the data they store in the volume is important, deleting the claim on scale-down of a Stateful- Set could be catastrophic—especially since triggering a scale-down is as simple as decreasing the replicas field of the StatefulSet. For this reason, you’re required to delete PersistentVolumeClaims manually to release the underlying PersistentVolume.
+
+Deploying the app through a StatefulSet
+    To deploy your app, you’ll need to create two (or three) different types of objects:
+     PersistentVolumes for storing your data files (you’ll need to create these only if the cluster doesn’t support dynamic provisioning of PersistentVolumes).
+     A governing Service required by the StatefulSet. 
+     The StatefulSet itself.    
+
+CREATING THE PERSISTENT VOLUMES
+    If you’re using Google Kubernetes Engine, you’ll first need to create the actual GCE Persistent Disks like this:
+            $ gcloud compute disks create --size=1GiB --zone us-central1-a pv-a
+            $ gcloud compute disks create --size=1GiB --zone us-central1-a pv-b
+            $ gcloud compute disks create --size=1GiB --zone us-central1-a pv-c
+
+create the PersistentVolumes from the persistent-volumes-gcepd.yaml file,
+CREATING THE GOVERNING SERVICE, Headless service to be used in the StatefulSet: kubia-service-headless.yaml
+CREATING THE STATEFULSET MANIFEST, StatefulSet manifest: kubia-statefulset.yaml
+
+
+<h4>Discovering peers in a StatefulSet</h4>
+  
+  SRV records are used to point to hostnames and ports of servers providing a specific service. Kubernetes creates SRV records to point to the hostnames of the pods
+   backing a headless service.
+  
+  You’re going to list the SRV records for your stateful pods by running the dig DNS lookup tool inside a new temporary pod.
+  
+  ```
+  kubectl run -it srvlookup --image=tutum/dnsutils --rm --restart=Never -- dig SRV kubia.default.svc.cluster.local
+  ```
+  
+  The pod runs a single container from the tutum/dnsutils image and runs the following command:
+  
+  ```
+  dig SRV kubia.default.svc.cluster.local
+  ```  
+  
+  
+    
+</p>
