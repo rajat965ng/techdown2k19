@@ -872,6 +872,172 @@ CREATING THE STATEFULSET MANIFEST, StatefulSet manifest: kubia-statefulset.yaml
   dig SRV kubia.default.svc.cluster.local
   ```  
   
-  
+</p>
+<p>
+<h3>Understanding Kubernetes internals</h3>
+
+Checking the status of the Control Plane components
+
+```
+kubectl get componentstatuses
+```
+
+Kubernetes components running as pods
+
+```
+kubectl get po -o custom-columns=POD:metadata.name,NODE:spec.nodeName  --sort-by spec.nodeName -n kube-system
+```
+
+How Kubernetes uses etcd
+
+```
+Kubernetes uses etcd, which is a fast, distributed, and consistent key-value store. Because it’s distributed, you can run more than
+one etcd instance to provide both high availability and better performance.
+Component that talks to etcd directly is the Kubernetes API server. Other components read and write data to etcd indirectly through the API server.
+
+Few benefits:
+Robust optimistic locking system as well as validation.
+Abstracting away the actual storage mechanism from all the other components, it’s much simpler to replace it in the future.
+```
+HOW RESOURCES ARE STORED IN ETCD
+
+```
+Kubernetes stores all its data in etcd under /registry.
+```
+
+ENSURING CONSISTENCY WHEN ETCD IS CLUSTERED
+
+```
+For ensuring high availability, you’ll usually run more than a single instance of etcd. Multiple etcd instances will need to remain consistent. 
+Such a distributed system needs to reach a consensus on what the actual state is. etcd uses the RAFT consensus algorithm to achieve this, 
+which ensures that at any given moment, each node’s state is either what the majority of the nodes agrees is the current state or is one of 
+the previously agreed upon states.
+
+Clients connecting to different nodes of an etcd cluster will either see the actual current state or one of the states from the past.
+```
+
+WHY THE NUMBER OF ETCD INSTANCES SHOULD BE AN ODD NUMBER
+
+```
+Having two instances requires both instances to be present to have a majority. If either of them fails, the etcd cluster can’t transition to 
+a new state because no majority exists. Having two instances is worse than having only a single instance. By having two, the chance of the whole 
+cluster fail- ing has increased by 100%, compared to that of a single-node cluster failing.
+```
+
+What the API server does
+
+```
+When creating a resource from a JSON file, for example, kubectl posts the file’s contents to the API server through an HTTP POST request.
+
+First, the API server needs to authenticate the client sending the request.
+Depending on the authentication method, the user can be extracted from the client’s certificate or an HTTP header, such as Authorization.
+The plugin extracts the client’s username, user ID, and groups the user belongs to. This data is then used in the next stage, which is authorization.
+
+VALIDATING AND/OR MODIFYING THE RESOURCE IN THE REQUEST WITH ADMISSION CONTROL PLUGINS.
+
+VALIDATING THE RESOURCE AND STORING IT PERSISTENTLY.
+
+```
+
+Understanding the Scheduler
+
+```
+All the Scheduler does is update the pod definition through the API server. The API server then notifies the Kubelet that the pod has been scheduled.
+ As soon as the Kubelet on the target node sees the pod has been scheduled to its node, it creates and runs the pod’s containers.
+ 
+ he actual task of selecting the best node for the pod.
+ 
+ UNDERSTANDING THE DEFAULT SCHEDULING ALGORITHM
+ 
+ Filtering the list of all nodes to obtain a list of acceptable nodes the pod can be scheduled to.
+ 
+    1. FINDING ACCEPTABLE NODES
+        Can the node fulfill the pod’s requests for hardware resources?
+        Is the node running out of resources (is it reporting a memory or a disk pres- sure condition)?
+        If the pod requests to be scheduled to a specific node (by name), is this the node?
+        Does the node have a label that matches the node selector in the pod specification (if one is defined)?
+        If the pod requests to be bound to a specific host port is that port already taken on this node or not?
+        If the pod requests a certain type of volume, can this volume be mounted for this pod on this node, or is another pod on the node already using
+          the same volume?
+        Does the pod tolerate the taints of the node? 
+        Does the pod specify node and/or pod affinity or anti-affinity rules? If yes, would scheduling the pod to this node break those rules?   
     
+    2. SELECTING THE BEST NODE FOR THE POD
+        a.) Suppose you have a two-node cluster. Both nodes are eli- gible, but one is already running 10 pods, while the other, for whatever reason,
+         isn’t running any pods right now. It’s obvious the Scheduler should favor the second node in this case.
+        
+        b.) If these two nodes are provided by the cloud infrastructure, it may be bet- ter to schedule the pod to the first node and relinquish the 
+          second node back to the cloud provider to save money.         
+```
+
+Introducing the controllers running in the Controller Manager
+
+```
+    you need other active components to make sure the actual state of the system converges toward the desired state, as specified in the resources deployed through the API server.
+     This work is done by controllers running inside the Controller Manager.
+```
+
+What the Kubelet does
+
+```
+Its initial job is to register the node it’s running on by creating a Node resource in the API server.
+Then it needs to continuously monitor the API server for Pods that have been scheduled to the node, and start the pod’s containers.
+It does this by telling the configured container runtime (which is Docker, CoreOS’ rkt, or some- thing else) to run a container from a specific container image. 
+The Kubelet then con- stantly monitors running containers and reports their status, events, and resource consumption to the API server.
+
+The Kubelet is also the component that runs the container liveness probes, restart- ing containers when the probes fail.
+Lastly, it terminates containers when their Pod is deleted from the API server and notifies the server that the pod has terminated.
+```
+
+The role of the Kubernetes Service Proxy
+
+```
+The kube-proxy makes sure connections to the service IP and port end up at one of the pods backing that service. 
+When a service is backed by more than one pod, the proxy performs load balancing across those pods.
+
+The initial implementation of the kube-proxy was the userspace proxy. It used an actual server process to accept connections and proxy them to the pods. 
+To intercept connections destined to the service IPs, the proxy configured iptables rules (iptables is the tool for managing the Linux kernel’s packet 
+filtering features) to redirect the connections to the proxy server. This mode is called the userspace proxy mode. 
+Balanced connections across pods in a true round-robin fashion.
+
+The kube-proxy implementation only uses iptables rules to redirect packets to a randomly selected backend pod without passing them through an actual 
+proxy server. This mode is called the iptables proxy mode. It selects pods randomly.
+```
+
+The chain of events
+
+```
+Imagine you prepared the YAML file containing the Deployment manifest and you’re about to submit it to Kubernetes through kubectl.
+kubectl sends the manifest to the Kubernetes API server in an HTTP POST request. 
+The API server validates the Deployment specification, stores it in etcd, and returns a response to kubectl.
+
+All API server clients watching the list of Deployments through the API server’s watch mechanism are notified of the newly created 
+Deployment resource immediately after it’s created.
+
+As a new Deployment object is detected by the Deployment controller, it creates a ReplicaSet for the current specification of the Deployment.
+
+The newly created ReplicaSet is then picked up by the ReplicaSet controller. The controller takes into consideration the replica count and pod selector 
+defined in the ReplicaSet and verifies whether enough existing Pods match the selector. The controller then creates the Pod resources based on the pod 
+template in the ReplicaSet.
+
+These newly created Pods are now stored in etcd, but they each still lack one important thing—they don’t have an associated node yet.
+The Scheduler watches for Pods like this, and when it encounters one, chooses the best node for the Pod and assigns the Pod to the node.
+
+The Kubelet, watching for changes to Pods on the API server, sees a new Pod scheduled to its node, so it inspects the Pod definition and instructs Docker, 
+or whatever container runtime it’s using, to start the pod’s containers. The container runtime then runs the containers.
+```
+
+Running highly available clusters
+
+```
+ - RUNNING MULTIPLE INSTANCES TO REDUCE THE LIKELIHOOD OF DOWNTIME
+ - USING LEADER-ELECTION FOR NON-HORIZONTALLY SCALABLE APPS
+    it’s a way for multiple app instances running in a distributed environment to come to an agreement on which is the leader. 
+     leader is either the only one performing tasks, while all others are waiting for the leader to fail and then becoming leaders themselves.
+     the leader being the only instance performing writes, while all the others are providing read-only access to their data.
+     This ensures two instances are never doing the same job.
+     
+     
+```
+
 </p>
