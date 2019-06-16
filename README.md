@@ -1035,9 +1035,175 @@ Running highly available clusters
     it’s a way for multiple app instances running in a distributed environment to come to an agreement on which is the leader. 
      leader is either the only one performing tasks, while all others are waiting for the leader to fail and then becoming leaders themselves.
      the leader being the only instance performing writes, while all the others are providing read-only access to their data.
-     This ensures two instances are never doing the same job.
-     
-     
+     This ensures two instances are never doing the same job.     
 ```
+</p>
+<p>
+<h3>Understanding authentication</h3>
+
+Creating ServiceAccounts
+
+```
+kubectl create serviceaccount foo
+```
+
+pods can authenticate by sending the contents of the file /var/run/secrets/kubernetes.io/serviceaccount/token, 
+which is mounted into each container’s filesystem through a secret volume.
+
+Every pod is associated with a ServiceAccount, which represents the identity of the app running in the pod. 
+The token file holds the ServiceAccount’s authentication token. When an app uses this token to connect to the API server, 
+the authentication plugin authenticates the ServiceAccount and passes the ServiceAccount’s username back to the API server core. 
+ServiceAccount usernames are formatted like this:
+
+```
+system:serviceaccount:<namespace>:<service account name>
+```
+
+The API server passes this username to the configured authorization plugins, which determine whether the action the app is trying 
+to perform is allowed to be performed by the ServiceAccount.
+
+
+ServiceAccount with an image pull Secret: sa-image-pull-secrets.yaml
+
+```yaml
+        apiVersion: v1
+        kind: ServiceAccount
+        metadata:
+          name: my-service-account
+        imagePullSecrets:
+        - name: my-dockerhub-secret
+```
+
+Assigning a ServiceAccount to a pod
+
+by setting the name of the ServiceAccount in the spec.serviceAccountName field in the pod definition.
+
+Pod using a non-default ServiceAccount: curl-custom-sa.yaml
+
+
+<h4>Securing the cluster with role-based access control</h4>
+
+ RBAC prevents unau- thorized users from viewing or modifying the cluster state. 
+ The default Service- Account isn’t allowed to view cluster state, let alone modify it in any way, unless you grant it additional privileges.
+
+The RBAC authorization rules are configured through four resources, which can be grouped into two groups:
+ Roles and ClusterRoles, which specify which verbs can be performed on which resources.
+ RoleBindings and ClusterRoleBindings, which bind the above roles to specific users, groups, or ServiceAccounts.
+
+Role and RoleBinding are namespaced resources
+ClusterRole and ClusterRoleBinding are cluster-level resources 
+
+```
+If you’re using Minikube, you also may need to enable RBAC by starting Minikube with --extra-config=apiserver.Authorization.Mode=RBAC
+```
+
+CREATING THE NAMESPACES AND RUNNING THE PODS
+
+```
+$ kubectl create ns foo
+
+$ kubectl run test --image=luksa/kubectl-proxy -n foo
+
+$ kubectl create ns bar
+
+$ kubectl run test --image=luksa/kubectl-proxy -n bar
+
+$ kubectl get po -n bar
+
+$ kubectl exec -it test-5cd6f69956-fsg7h -n bar sh
+
+# curl localhost:8001/api/v1/namespaces/bar/services
+
+response: 
+ "status": "Failure",
+  "message": "services is forbidden: User \"system:serviceaccount:bar:default\" cannot list resource \"services\" in API group \"\" in the namespace \"bar\"",
+
+```
+The default permissions for a ServiceAccount don’t allow it to list or modify any resources.
+
+First, you’ll need to create a Role resource.
+
+A definition of a Role: service-reader.yaml
+
+To grant the rights, run the following command:
+
+```
+kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=your.email@address.com
+```
+
+BINDING A ROLE TO A SERVICEACCOUNT
+
+```
+kubectl create rolebinding test --role=service-reader --serviceaccount=bar:default -n bar
+``` 
+
+To bind a Role to a user instead of a ServiceAccount, use the --user argument to specify the username. To bind it to a group, use --group.
+
+Now execute the following and see the response.
+
+```
+$ kubectl exec -it test-5cd6f69956-fsg7h -n bar sh
+
+# curl localhost:8001/api/v1/namespaces/bar/services
+```
+
+
+Using ClusterRoles and ClusterRoleBindings.
+
+certain resources aren’t namespaced at all (this includes Nodes, PersistentVolumes, Namespaces, and so on). 
+We’ve also mentioned the API server exposes some URL paths that don’t represent resources (/healthz for example). 
+Regular Roles can’t grant access to those resources or non- resource URLs, but ClusterRoles can.
+
+Let’s look at how to allow your pod to list PersistentVolumes in your cluster. First, you’ll create a ClusterRole called pv-reader:
+
+```
+kubectl create clusterrole pv-reader --verb=get,list --resource=persistentvolumes
+
+kubectl create clusterrolebinding pv-test --clusterrole=pv-reader  --serviceaccount=bar:default
+
+curl localhost:8001/api/v1/persistentvolumes
+
+```
+
+ALLOWING ACCESS TO NON-RESOURCE URLS
+
+The default system:discovery ClusterRole
+
+```
+kubectl get clusterrole system:discovery -o yaml
+
+kubectl get clusterrolebinding system:discovery -o yaml
+```
+
+
+USING CLUSTERROLES TO GRANT ACCESS TO RESOURCES IN SPECIFIC NAMESPACES
+
+With the first command, you’re trying to list pods across all namespaces. With the sec- ond, you’re trying to list pods in the foo namespace.
+ The server doesn’t allow you to do either. Now, let’s see what happens when you create a ClusterRoleBinding and bind it to the pod’s ServiceAccount:
+
+```
+kubectl create clusterrolebinding view-test --clusterrole=view  --serviceaccount=foo:default
+```
+
+Granting authorization permissions wisely
+
+giving all your ServiceAccounts the cluster-admin ClusterRole is a bad idea. As is always the case with security, it’s best to give everyone only t
+he permissions they need to do their job and not a single permission more (principle of least privilege).
+
+CREATING SPECIFIC SERVICEACCOUNTS FOR EACH POD
+
+It’s a good idea to create a specific ServiceAccount for each pod (or a set of pod replicas) and then associate it with a tailor-made Role 
+(or a ClusterRole) through a RoleBinding (not a ClusterRoleBinding, because that would give the pod access to resources in other namespaces, 
+which is probably not what you want).
+
+EXPECTING YOUR APPS TO BE COMPROMISED
+
+You should expect unwanted persons to eventually get their hands on the ServiceAccount’s authentication token, so you should always constrain
+ the ServiceAccount to prevent them from doing any real damage.
+
+
+
+
+
 
 </p>
