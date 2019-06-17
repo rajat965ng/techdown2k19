@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: guest-user
+spec:
+  containers:
+    - name: main
+      image: alpine
+      command: ["sleep","999999"]
+      securityContext:
+        runAsUser: 405

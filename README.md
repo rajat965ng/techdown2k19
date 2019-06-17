@@ -1201,9 +1201,231 @@ EXPECTING YOUR APPS TO BE COMPROMISED
 You should expect unwanted persons to eventually get their hands on the ServiceAccount’s authentication token, so you should always constrain
  the ServiceAccount to prevent them from doing any real damage.
 
+</p>
+<p>
+<h3>Securing cluster nodes and the network</h3>
+
+Using the node’s network namespace in a pod
+
+A pod may need to use the node’s network adapters instead of its own virtual network adapters. 
+ This can be achieved by setting the <i>hostNetwork</i> property in the pod spec to <i>true</i>.
+
+A pod using the node’s network namespace: pod-with-host-network.yaml
+
+Binding to a host port without using the host’s network namespace
+
+- when a pod is using a hostPort, a connection to the node’s port is forwarded directly to the pod running on that node, whereas with a NodePort service, 
+a connection to the node’s port is forwarded to a randomly selected pod (possibly on another node).
+
+- pods using a hostPort, the node’s port is only bound on nodes that run such pods, whereas NodePort services bind the port on all nodes, 
+even on those that don’t run such a pod 
+
+- If a host port is used, only a single pod instance can be scheduled to a node.
+
+Binding a pod to a port in the node’s port space: kubia-hostport.yaml
+
+Using the node’s PID and IPC namespaces
+
+When you set them to true, the pod’s containers will use the node’s PID and IPC namespaces, allowing processes running in the containers to see all the other
+ processes on the node or communicate with them through IPC.
+
+Using the host’s PID and IPC namespaces: pod-with-host-pid-and-ipc.yaml
+
+<h4>Configuring the container’s security context.</h4>
+
+Running a container as a specific user
+
+Running containers as a specific user: pod-as-user-guest.yaml
+
+Preventing a container from running as root
+
+```yaml
+spec:
+  containers:
+  - name: main
+    image: alpine
+    command: ["/bin/sleep", "999999"]
+    securityContext:
+      runAsNonRoot: true
+```
+
+To get full access to the node’s kernel, the pod’s container runs in privileged mode. This is achieved by setting the privileged property in the 
+container’s securityContext property to true. 
 
 
+Adding individual kernel capabilities to a container
+
+Eg. a container usually isn’t allowed to change the system time. If you want to allow the container to change the system time, you can add a 
+capability called CAP_SYS_TIME to the container’s capabilities list.
+
+```yaml
+securityContext:
+  capabilities:
+    add:
+    - SYS_TIME
+```
+Run the command in this new pod’s container, the system time is changed successfully:
+```
+kubectl exec -it pod-add-settime-capability -- date +%T -s "12:00:00"
+```
+
+Dropping capabilities from a container
+
+```
+ecurityContext:
+  capabilities:
+    drop:
+    - CHOWN
+```
+
+Preventing processes from writing to the container’s filesystem
+
+You may want to prevent the processes running in the container from writing to the container’s filesystem, and only allow them to write to mounted volumes.
+This is done by set- ting the container’s securityContext.readOnlyRootFilesystem property to true.
+
+```
+spec:
+  containers:
+  - name: main
+    image: alpine
+    command: ["/bin/sleep", "999999"]
+    securityContext:
+      readOnlyRootFilesystem: true
+    volumeMounts:
+    - name: my-volume
+      mountPath: /volume
+      readOnly: false
+  volumes:
+  - name: my-volume
+emptyDir:
+```
+
+Sharing volumes when containers run as different users.
+
+You may need to run the two containers as two different users. If those two containers use a volume to share files, they may not necessarily be able to 
+read or write files of one another.
+
+Kubernetes allows you to specify supplemental groups for all the pods running in the container, allowing them to share files, 
+regardless of the user IDs they’re running as.
+
+This is done using the following two properties:
+ fsGroup
+ supplementalGroups
+
+```
+spec:
+  securityContext:
+    fsGroup: 555
+    supplementalGroups: [666, 777]
+```
+
+<h4>Restricting the use of security-related features in pods</h4>
+
+The cluster admin can restrict the use of the previously described security-related features by creating one or more PodSecurityPolicy resources.
+PodSecurityPolicy is a cluster-level (non-namespaced) resource, which defines what security-related features users can or can’t use in their pods.
+
+A PodSecurityPolicy resource defines things like the following:
+ Whether a pod can use the host’s IPC, PID, or Network namespaces 
+ Which host ports a pod can bind to
+ What user IDs a container can run as
+ Whether a pod with privileged containers can be created
+ Which kernel capabilities are allowed, which are added by default and which are always dropped
+ What SELinux labels a container can use
+ Whether a container can use a writable root filesystem or not
+ Which filesystem groups the container can run as
+ Which volume types a pod can use
+
+An example PodSecurityPolicy: pod-security-policy.yaml
+
+USING THE MUSTRUNAS RULE
+
+To only allow containers to run as user ID 2 and constrain the default filesystem group and supplemental group IDs to be anything 
+from 2–10 or 20– 30 (all inclusive)
+
+```yaml
+runAsUser:
+  rule: MustRunAs
+  ranges:
+  - min: 2
+    max: 2
+fsGroup:
+  rule: MustRunAs
+  ranges:
+  - min: 2
+    max: 10
+  - min: 20
+    max: 30
+supplementalGroups:
+  rule: MustRunAs
+  ranges:
+  - min: 2
+    max: 10
+  - min: 20
+    max: 30
+```
+
+If the pod spec tries to set either of those fields to a value outside of these ranges, the pod will not be accepted by the API server.
+
+Dockerfile with a USER directive: kubia-run-as-user-5/Dockerfile
+
+```
+FROM node:7
+ADD app.js /app.js
+USER 5
+ENTRYPOINT ["node", "app.js"]
+```
+
+Specifying capabilities in a PodSecurityPolicy
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: PodSecurityPolicy
+spec:
+  allowedCapabilities:
+  - SYS_TIME
+  defaultAddCapabilities:
+  - CHOWN
+  requiredDropCapabilities:
+  - SYS_ADMIN
+- SYS_MODULE
+```
+<h4>Isolating the pod network</h4>
+
+Enabling network isolation in a namespace
+
+By default, pods in a given namespace can be accessed by anyone. First, you’ll need to change that. You’ll create a default-deny NetworkPolicy, 
+which will prevent all clients from connecting to any pod in your namespace.
+
+A default-deny NetworkPolicy: network-policy-default-deny.yaml
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+   name: default-deny
+spec:
+  podSelector:      
+```
+Empty pod selector matches all pods in the same namespace
 
 
+Allowing only some pods in the namespace to connect to a server pod
 
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgres-netpolicy
+spec:
+  podSelector:
+    matchLabels:
+      app: database
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: webserver
+    ports:
+    - port: 5432
+```
 </p>
