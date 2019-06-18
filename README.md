@@ -1491,3 +1491,88 @@ but also the default resource requests for containers that don’t specify reque
 A LimitRange resource: limits.yaml
 
 </p>
+<p>
+<h3>Automatic scaling of pods and cluster nodes</h3>
+
+<h4>Horizontal pod autoscaling</h4>
+
+It’s performed by the Horizontal controller, which is enabled and configured by creating a HorizontalPodAutoscaler (HPA) resource.
+
+The autoscaling process can be split into three steps:
+ Obtain metrics of all the pods managed by the scaled resource object.
+    - pod and node met- rics are collected by an agent called cAdvisor, which runs in the Kubelet on each node, and then aggregated by the 
+    cluster-wide component called Heapster. The horizontal pod autoscaler controller gets the metrics of all the pods by querying Heapster 
+    through REST calls. 
+
+ Calculate the number of pods required to bring the metrics to (or close to) the specified target value.
+    - calculating the required replica count is simple. All it takes is summing up the metrics values of all the pods, dividing that by the 
+    target value set on the HorizontalPodAutoscaler resource, and then rounding it up to the next-larger integer. 
+
+
+ Update the replicas field of the scaled resource.
+    - Autoscaler controller modifies the replicas field of the scaled resource through the Scale sub-resource (Deployment, ReplicaSet, StatefulSet, 
+    or ReplicationController). It enables the Autoscaler to do its work without knowing any details of the resource it’s scaling, except for what’s 
+    exposed through the Scale sub-resource
+
+
+CREATING A HORIZONTALPODAUTOSCALER BASED ON CPU USAGE
+
+1. create a Deployment, each instance requesting 100 millicores of CPU.
+2. After creating the Deployment, to enable horizontal autoscaling of its pods, you need to create a HorizontalPodAutoscaler (HPA) object and point
+    it to the Deployment. 
+    You could prepare and post the YAML manifest for the HPA.
+    An easier way exists—using the kubectl autoscale command:
+
+```
+  $ kubectl autoscale deployment kubia --cpu-percent=30 --min=1 --max=5 
+   
+  $ kubectl get hpa
+```
+Watching multiple resources in parallel
+
+```
+$ watch -n 1 kubectl get hpa,deployment
+```
+
+MODIFYING THE TARGET METRIC VALUE ON AN EXISTING HPA OBJECT
+
+```yaml
+spec:
+  maxReplicas: 5
+  metrics:
+  - resource:
+      name: cpu
+      targetAverageUtilization: 60
+    type: Resource
+
+```
+
+<h4>Horizontal scaling of cluster nodes</h4>
+
+Cluster autoscaling is currently available on
+ Google Kubernetes Engine (GKE)
+ Google Compute Engine (GCE)
+ Amazon Web Services (AWS)
+ Microsoft Azure
+
+enable the Cluster Autoscaler like this:
+
+```
+$ gcloud container clusters update kubia --enable-autoscaling  --min-nodes=3 --max-nodes=5
+```
+
+Limiting service disruption during cluster scale-down
+
+Certain services require that a minimum number of pods always keeps running; this is especially true for quorum-based clustered applications. 
+For this reason, Kubernetes provides a way of specifying the minimum number of pods that need to keep running while performing these types of operations.
+This is done by creating a Pod- DisruptionBudget resource.
+
+If you want to ensure three instances of your kubia pod are always running (they have the label app=kubia), create the PodDisruptionBudget resource like this:
+
+```
+$ kubectl create pdb kubia-pdb --selector=app=kubia --min-available=3
+```
+
+
+
+</p>
