@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-toleration
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: kubia
+  template:
+    metadata:
+      labels:
+        app: kubia
+    spec:
+      containers:
+        - name: main
+          image: rajat965ng/rbs-app-one
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      tolerations:
+        - key: node-type
+          operator: Equal
+          value: production
+          effect: NoSchedule

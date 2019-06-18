@@ -1572,6 +1572,100 @@ If you want to ensure three instances of your kubia pod are always running (they
 ```
 $ kubectl create pdb kubia-pdb --selector=app=kubia --min-available=3
 ```
+</p>
+<p>
+<h3>Advanced scheduling</h3>
+
+Taints have a key, value, and an effect, and are repre- sented as <key>=<value>:<effect>.
+
+Taint prevents pods from being scheduled to the master node, unless those pods tolerate this taint.
+
+System pod may be scheduled to master node because its toleration matches the node’s taint.
+
+Each taint has an effect associated with it. Three possible effects exist:
+
+NoSchedule, which means pods won’t be scheduled to the node if they don’t tolerate the taint.
+
+PreferNoSchedule is a soft version of NoSchedule, meaning the scheduler will try to avoid scheduling the pod to the node, but will schedule it to the node if
+it can’t schedule it somewhere else.
+
+If you add a NoExecute taint to a node, pods that are already running on that node and don’t tolerate the NoExecute taint will be evicted from the node.
+
+
+<h4>Adding custom taints to a node</h4>
+
+```
+kubectl taint node node1.k8s node-type=production:NoSchedule
+```
+
+
+<h4>Adding tolerations to pods</h4>
+
+A production Deployment with a toleration: production-deployment.yaml
+
+As you can see in the listing, production pods were also deployed to non-production nodes, which isn’t a production node. 
+To prevent that from happening, you’d also need to taint the non-production nodes with a taint such as node-type=non-production:NoSchedule.
+
+
+CONFIGURING HOW LONG AFTER A NODE FAILURE A POD IS RESCHEDULED
+
+You can also use a toleration to specify how long Kubernetes should wait before rescheduling a pod to another node if the node the pod is running on becomes
+unready or unreachable. 
+
+<h4>Using node affinity to attract pods to certain nodes</h4>
+
+Node affinity, which allows you to tell Kubernetes to schedule pods only to specific subsets of nodes.
+
+when it comes to node affinity and pod affinity, three are the most important labels:
+
+ failure-domain.beta.kubernetes.io/region specifies the geographical region the node is located in.
+
+ failure-domain.beta.kubernetes.io/zone specifies the availability zone the node is in.
+
+ kubernetes.io/hostname is obviously the node’s hostname.
+
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubia-gpu
+spec:
+  containers:
+    - name: example
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: gpu
+            operator: In
+            values:
+            - "true"
+```
+
+Affinity currently only affects pod scheduling and never causes a pod to be evicted from a node.
+
+SPECIFYING PREFERENTIAL NODE AFFINITY RULES
+
+With the node labels set up, you can now create a Deployment that prefers dedicated nodes in zone1. 
+
+
+Deploying pods in the same rack, availability zone, or geographic region
+
+To run the frontend pods in the same zone as the backend pod would be to change the topologyKey property to failure-domain.beta.kubernetes.io/zone.
+
+To allow the pods to be deployed in the same region instead of the same zone (cloud providers usually have datacenters located in different 
+geographical regions and split into multiple availability zones in each region), the topologyKey would be set to failure-domain.beta.kubernetes.io/region.
+
+
+UNDERSTANDING HOW TOPOLOGYKEY WORKS
+
+When the Scheduler is deciding where to deploy a pod, it checks the pod’s pod- Affinity config, finds the pods that match the label selector, and looks
+ up the nodes they’re running on. Specifically, it looks up the nodes’ label whose key matches the topologyKey field specified in podAffinity.
+Then it selects all the nodes whose label matches the values of the pods it found earlier.
+
+By default, the label selector only matches pods in the same namespace as the pod that’s being scheduled.
 
 
 
