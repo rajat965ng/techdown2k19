@@ -1666,7 +1666,68 @@ When the Scheduler is deciding where to deploy a pod, it checks the pod’s pod-
 Then it selects all the nodes whose label matches the values of the pods it found earlier.
 
 By default, the label selector only matches pods in the same namespace as the pod that’s being scheduled.
+</p>
+<p>
+<h3>Best practices for developing apps</h3>
+
+A typical application manifest contains one or more:
+
+- Deployment and/or StatefulSet objects
+
+- pod template containing one or more containers
+
+- liveness probe for pod
+
+- readiness probe for the service
+
+- to be reachable from outside the cluster, the Services are either configured to be LoadBalancer or NodePort-type Services, or exposed 
+    through an Ingress resource.
+    
+- two types of Secrets—those for pulling container images from private image registries and those used directly by the process running inside the pods.
+  The Secrets themselves are usually not part of the application manifest, because they aren’t configured by the application developers but by the 
+  operations team    
+
+- ConfigMaps, which are either used to initialize environment variables
+
+- additional volumes, such as an emptyDir or a gitRepo volume. 
+
+- pods requiring persistent storage use persistentVolumeClaim volumes.
+
+- the use of Jobs or CronJob
+
+- HorizontalPodAutoscalers
+
+- LimitRange and ResourceQuota objects to keep compute resource usage of individual pods and all the pods (as a whole) under control.
+ 
+- Resources are often labeled with one or more labels to keep them organized.
+
+- In addition to labels, most resources also contain annotations that describe each resource, list the contact information of the person or 
+    team responsible for it, or provide additional metadata for management and other tools.  
+    
+- At the center of all this is the Pod, how to develop apps that make the most out of their environment 
 
 
+Adding lifecycle hooks
 
+but pods also allow you to define two lifecycle hooks:
+ Post-start hooks
+
+Post-start hooks allow you to run additional commands without having to touch the app. 
+These may signal to an external listener that the app is starting, or they may initialize the application so it can start doing its job.
+ 
+```yaml
+spec:
+containers:
+- image: luksa/kubia
+  name: kubia
+  lifecycle:
+    postStart:
+      exec:
+        command:
+        - sh
+        - -c
+        - "echo 'hook will fail with exit code 15'; sleep 5; exit 15"
+``` 
+ 
+ Pre-stop hooks
 </p>
