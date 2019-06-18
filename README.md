@@ -1429,3 +1429,65 @@ spec:
     - port: 5432
 ```
 </p>
+<p>
+<h3>Requesting resources for a pod’s containers</h3>
+
+Creating pods with resource requests
+
+A pod with resource requests: requests-pod.yaml
+
+
+<h4>Understanding pod QoS classes<h4>
+
+```
+Imagine having two pods, where pod A is using, let’s say, 90% of the node’s memory and then pod B suddenly requires 
+more memory than what it had been using up to that point and the node can’t provide the required amount of memory. 
+Which container should be killed? Should it be pod B, because its request for memory can’t be satisfied, or should
+pod A be killed to free up memory, so it can be provided to pod B?
+```
+
+Kubernetes does this by categorizing pods into three Quality of Service (QoS) classes:
+ BestEffort (the lowest priority) : It’s assigned to pods that don’t have any requests or limits set at all. 
+They may get almost no CPU time at all and will be the first ones killed when memory needs to be freed for other pods
+A BestEffort pod has no memory limits set, its containers may use as much memory as they want, if enough memory is available.
+
+
+ Burstable: This includes single-container pods where the container’s limits don’t match its requests and all pods where at 
+least one container has a resource request specified, but not the limit. Burstable pods get the amount of resources they request,
+but are allowed to use addi- tional resources (up to the limit) if needed.
+
+
+ Guaranteed (the highest): This class is given to pods whose containers’ requests are equal to the limits for all resources. 
+Requests and limits need to be set for both CPU and memory.
+They need to be set for each container.
+They need to be equal.
+
+Understanding which process gets killed when memory is low
+
+First in line to get killed are pods in the BestEffort class, followed by Burstable pods, and finally Guaranteed pods, 
+which only get killed if system processes need memory.
+
+
+UNDERSTANDING HOW CONTAINERS WITH THE SAME QOS CLASS ARE HANDLED
+
+Each running process has an OutOfMemory (OOM) score. The system selects the process to kill by comparing OOM scores of all the running processes.
+When memory needs to be freed, the process with the highest score gets killed.
+
+OOM scores are calculated from two things: the percentage of the available memory the process is consuming and a fixed OOM score adjustment,
+ which is based on the pod’s QoS class and the container’s requested memory.
+
+
+<h4>Setting default requests and limits for pods per namespace</h4>
+
+If you don’t set them, the container is at the mercy of all other containers that do specify resource requests and limits. 
+It’s a good idea to set requests and limits on every container.
+
+
+Introducing the LimitRange resource
+
+It allows you to specify (for each namespace) not only the minimum and maximum limit you can set on a container for each resource, 
+but also the default resource requests for containers that don’t specify requests explicitly
+
+A LimitRange resource: limits.yaml
+
+</p>
