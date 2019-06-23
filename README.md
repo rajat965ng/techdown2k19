@@ -86,3 +86,68 @@ Implementing a Sharded Redis
  ``` 
  
  
+ <h3>Adapter Pattern</h3>
+ 
+ - In the adapter pattern, the adapter container is used to modify the interface of the application container so that it conforms to some predefined interface that is expected of all applications. For exam‐ ple, an adapter might ensure that an application implements a consistent monitoring interface. Or it might ensure that log files are always written to stdout or any number of other conventions.
+ 
+ 
+ ![generic adapter](singleNodePatterns/adapter/generic-adapter.png)
+ 
+ 
+ Monitoring
+ 
+ - Applying the adapter pattern to monitoring, we see that the application container is simply the application that we want to monitor. The adapter container contains the tools for transforming the monitoring interface exposed by the application container into the interface expected by the general purpose monitoring system.
+ 
+ 
+ Using Prometheus for Monitoring
+ 
+ - Prometheus is a monitoring aggregator, which collects metrics and aggregates them into a single time-series database. 
+ - On top of this database, Prometheus provides visualization and query language for introspecting the collected metrics. 
+ - To collect metrics from a variety of different systems, Prometheus expects every container to expose a specific metrics API. 
+ - This enables Prometheus to monitor a wide variety of different programs through a single interface.
+ 
+ - Redis key-value store, do not export metrics in a format that is compatible with Prometheus.
+ - The adapter pattern is quite useful for taking an existing service like Redis and adapting it to the Prometheus metrics-collection interface.
+ - Provide an adapter that implements the Prometheus interface. The following image is an adapter for Redis metrics to Prometheus conversion.
+        
+  ```
+  - image: oliver006/redis_exporter
+  ```       
+  
+  
+  Logging
+  
+  - In the world of containerized applications where there is a general expectation that your containers will log to stdout, because that is what is available via commands like docker logs or kubectl logs.
+  - Different application containers can log information in different formats, but the adapter container can transform that data into a single structured representation that can be consumed by your log aggregator.
+  
+  Normalizing Different Logging Formats with Fluentd
+  
+  - fluentd is one of the more popular open source logging agents available. One of its major features is a rich set of community-supported plugins that enable a great deal of flexibility in monitoring a variety of applications.
+  - Redis is a popular key-value store; one of the commands it offers is the SLOWLOG command. This command lists recent queries that exceeded a particular time interval. Such information is quite useful in debugging your application’s performance. 
+  - Unfortunately, SLOWLOG is only available as a command on the Redis server, which means that it is difficult to use retrospectively if a problem happens when someone isn’t available to debug the server.
+  - To fix this limitation, we can use fluentd and the adapter pattern to add slow-query logging to Redis.
+  - Use the adapter pattern with a redis container as the main application container, and the fluentd container as our adapter container. 
+  - In this case, we will also use the fluent-plugin-redis-slowlog fluentd plugin to listen to the slow queries. 
+  - We can configure this plugin using the following snippet:
+
+   ```
+   <source>
+         type redis_slowlog
+         host localhost
+         port 6379
+         tag redis.slowlog
+   </source>
+   ```
+   
+   - A similar exercise can be done to monitor logs from the Apache Storm system.
+   - we deploy a fluentd adapter with the fluent-plugin-storm plugin enabled.
+   
+   ```
+   <source>
+         type storm
+         tag storm
+         url http://localhost:8080
+         window 600
+         sys 0
+   </source>
+   ```
