@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-shard
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  serviceName: "redis"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: redis
+          image: redis
+          ports:
+            - containerPort: 6379
+              name: redis
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+spec:
+  ports:
+    - port: 6379
+      name: redis
+  clusterIP: None
+  selector:
+    app: redis
+
+
+# You should now have DNS entries for sharded- redis-0.redis, sharded-redis-1.redis, etc.
+# twemproxy is a lightweight, highly performant proxy for memcached and Redis, which was originally developed by Twitter and is open source
+# twemproxy configuration is in nutcracker.yaml
+# kubectl create configmap redis-config --from-file=nutcracker.yaml
+
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+    name: ambassador-example
+spec:
+  containers:
+# This is where the application container would go, for example
+# - name: nginx
+#   image: nginx
+# This is the ambassador container
+  - name: twemproxy
+    image: ganomede/twemproxy
+    command:
+     - nutcracker
+     - -c
+     - /etc/config/nutcracker.yaml
+     - -v
+     - "7"
+     - -s
+     - "6222"
+    volumeMounts:
+      - name: config-volume
+        mountPath: /etc/config
+  volumes:
+    - name: config-volume
+      configMap:
+        name: redis-config

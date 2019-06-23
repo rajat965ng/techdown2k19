@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-one
+spec:
+  selector:
+    matchLabels:
+      app: app-one
+  template:
+    metadata:
+      labels:
+        app: app-one
+    spec:
+      volumes:
+        - name: config
+          configMap:
+            name: app-one
+            items:
+              - key: my-nginx-config.conf
+                path: https.conf
+        - name: certs
+          secret:
+            secretName: app-one
+      containers:
+        - name: app
+          image: rajat965ng/rbs-app-one
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ENV_MSG
+              valueFrom:
+                configMapKeyRef:
+                  key: env_msg
+                  name: app-one
+        - name: web-server
+          image: nginx:alpine
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d
+              name: config
+              readOnly: true
+            - mountPath: /etc/nginx/certs/
+              name: certs
+              readOnly: true
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-one
+spec:
+  selector:
+    app: app-one
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-one-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: app-one
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-one
+data:
+  env_msg: |
+    This is app one
+  my-nginx-config.conf: |
+    server {
+      listen        80;
+      listen        443 ssl;
+      server_name   localhost;
+
+
+
+      ssl_certificate     certs/https.cert;
+      ssl_certificate_key certs/https.key;
+      ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+      ssl_ciphers         HIGH:!aNULL:!MD5;
+
+
+      location / {
+           proxy_pass  http://app-one;
+      }
+    }
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-one
+data:
+  https.cert: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNzRENDQVpnQ0NRQ2NsMFdUUEE2bHZUQU5CZ2txaGtpRzl3MEJBUXNGQURBYU1SZ3dGZ1lEVlFRRERBOTMKZDNjdVlYQndMVzl1WlM1amIyMHdIaGNOTVRrd05qSXdNakV5T0RNeldoY05Namt3TmpFM01qRXlPRE16V2pBYQpNUmd3RmdZRFZRUUREQTkzZDNjdVlYQndMVzl1WlM1amIyMHdnZ0VpTUEwR0NTcUdTSWIzRFFFQkFRVUFBNElCCkR3QXdnZ0VLQW9JQkFRRFRIcktNT1NvcXhTeGFPb1lPcnRBSjBWaHNuY0c0TjBFTUpHMmtkc1hEK1pQMERuQ1AKOC95U1RHdHZSZ2NKMHlyam92YS9HQVVoMitRSUNFRjdlOGxET2lwUm5DdnQxZnhnOFIveE1Va2R5NHFERVhTQgp0OXg4MDJPK0VsVkRuZjRMN2NVQkpWTzNXeXhCR2hSVktpeHJMdnQyM1lob1Q5NGZBckZubUcwTnhERzVPcjQ0Cjh5Y0o3Y0wxdmxNZWNpN2NRK2RVOHF3MlVvWks3UEVGSjZTakxNcnZlTUg3SzlPOVJkbGt4VW81RU5xZ3kvUGkKRHE0TndEQU5oWVhrc2xtU0tqZEJRWW5ZZDJoaUtYYWFpOE1qQmMxYm1SOUp6SmNKelZVS3pPaDcwN25MelJsVgpLNS9VMG1vZDNncFppMThrV0RJSzR4OXA4d0REV1ZTeEo2OXhBZ01CQUFFd0RRWUpLb1pJaHZjTkFRRUxCUUFECmdnRUJBTTdkSjhhOE00ME1SRHlPQWNmelExQU5mTnR3endaQ3phdzQ3RlB0YTdWcXlSMHA2Wmw4L2lyRWJjQzUKYUdZV3NDdE4yT0pTa1ZHbGM1YTU2T2k3ZGFTTTMzS1pOVVZOamdWMzNkSVNENUNTNVpFZUpKSm1JMU03NXZCOApUSmNZNXlpU3ZLenlVYWpLbUNOaTdZR0lsamF5Z0IvNnIxYWMxc1JNb2hqS3lrYkdna3A2eWtuUmQwUVlQVUxICnpWTFprcHpKUk9OSFZjb3NvQ0pxNVNYVjJVNDM5MmJSd3FrYXEzNWV4ZGVSQ21WenBQQmJNL3RwanJnMFNsQzMKYUQyZ1ZJSzFTb0QwNzl2eVQwQXBwWG40ZUpkc3R0ZkU5dmVHMVR4VENNWmcyUzF5dkNMME05R25ZTEYxKzhYawpaQllteXdCMXMrSm9ES1M5UUlSUjB5RldoazA9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+  https.key: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBMHg2eWpEa3FLc1VzV2pxR0RxN1FDZEZZYkozQnVEZEJEQ1J0cEhiRncvbVQ5QTV3CmovUDhra3hyYjBZSENkTXE0NkwydnhnRklkdmtDQWhCZTN2SlF6b3FVWndyN2RYOFlQRWY4VEZKSGN1S2d4RjAKZ2JmY2ZOTmp2aEpWUTUzK0MrM0ZBU1ZUdDFzc1FSb1VWU29zYXk3N2R0MklhRS9lSHdLeFo1aHREY1F4dVRxKwpPUE1uQ2UzQzliNVRIbkl1M0VQblZQS3NObEtHU3V6eEJTZWtveXpLNzNqQit5dlR2VVhaWk1WS09SRGFvTXZ6CjRnNnVEY0F3RFlXRjVMSlpraW8zUVVHSjJIZG9ZaWwybW92REl3WE5XNWtmU2N5WENjMVZDc3pvZTlPNXk4MFoKVlN1ZjFOSnFIZDRLV1l0ZkpGZ3lDdU1mYWZNQXcxbFVzU2V2Y1FJREFRQUJBb0lCQUFOTlNwdVkxVWovOW5hZQp6YlB6RmZ2aFUxRzNrZTBRcUNySmN4R01iZ0ZucU9HN1RCVmtTb0g3UWY3bWlIdWwydGplbHA5Y2Y5QU13VjlDCnljdGxuenMyOEt5QUZjdk5lZm9HSzJxNVM1eDByNERuUi93elpQWnEwL2VJRDk5VDNFSlJnTEJJNWl0SytNRTMKNkRPQXlsc096QTRLM3ZSS3MzMm1yQ0dqcDZqOGJrRyswek1VSktyZVNWdzVTdTZtNG1tWGpVSjJKVUpOSTB5NAo5THRNb1Rubm5jaWJOTWMzelVPR3NDMGpUdDFWcGs5bmdrb2w5R3UvRkFiOXh5SUROTTI5cnRuZVdXbGpoM3pWCnh3YXNkelRscGJpWmNPYXFib2s1NFl2Q2xwVUkzQ0ExR0VieHNtbGZEN2o1S25vdDBwRlh6Uzh0ZGFUYW00WUIKc29ZZkRhVUNnWUVBL2ZBc0xHcllMckdoRWRCcVV5NHhrbFJ2SWRwSElZaEdIY09VYXFjSVQ3TlJNelN2Mjk5QwpMQ1hGWEdBVkxmUkhkMFBWdXhCUXhjL2xPVWFaby9LOXhZNDVkaXczYkJ1Mmc5aVU0bXhPNXZFK0ZadWlRUHlwCno1empjMGtzTkM1d0hYb3NwWldWMVUvam80Y1JZS1g5YmNxWUVSd1Fjakc2Z0NISkQzZ2JWMWNDZ1lFQTFOV0cKTjJyZDE5K3R5ajVqOGZkS2xlcitSSm9KeFFMZHpiYjhRRjlINlNpWGZMTkxiTjhUdmp6YU9hQ3FIWnRTMTd4cAo3M29FTWo1NjNValgzd0FiVmhiTTVDajRVRURqbzhKMVpOMHhwcWZ6aFR6TlNLdTExYjg2bkNuK0J4RFdkVmNRCitKdmdZUnJyQVlYWUNnVm1TM2lneHdhamhHNWEzK0p4NnRzKzJuY0NnWUVBc3BZWDJ0MEJVRVZuNjJsUmZWSTkKVnBXKzJtWHlKR2o4TnE1M1VGSk1EQkVtQ0FjRHJuUGl5NzE4Z1N5cGVIb1ZVSkVLWE5acWw5TlBkK3BvM3Q0MgpEQnVyMmFuYkNGS3RGeWhYL0swRENIT2NvQUdtS0dJSTRwT0plbWg1aC9Fb3MvSmFOOUZ0WUdrZ3hMNld3QXU4Cm9Wd2JlZHpzekFLaEVMK3g4UWtjNFYwQ2dZQjFyek90eE91eUNEN0NpOGtiN0U5VG9rTENrQ0pDeTVqMXZPNnkKY1gwRDBhd2lDY24xQTB5WmJuQ0VXUEIzdW9FT1JXS1dSbk8zakpESGR4WFdldXFpcWF6VnBFblpwbWU1RHpkMgpkRkNXQkZ4RkdoK3d4VEdnWlVMMVFzcnlBVDkwVnBaTndYTktmbVhmeTdCdnFoaXNOcUZBSzgyUzFxcHREWHRNCkQ3c3JkUUtCZ1FEbDNIWUlLZmtjN05SNGEvcWdTTGdtdTlndlQzNzBzZUtsUFNXRVBsSUZmY09wVC94TXoxVlYKZWY3YVIxbGdpU056eGxhVGlpeHoydjNRa1o3U0R1UmFFbDVHUFlxVlFMZm9IYm80TGZUWFdURjhTTVQ4c2RzMApiWGpqT1FmVlJ2UDluY2xKdGNCT0kzN2JySWFER3c5Tzg1RzJDVHFTOHN0RkRNOW92TjZFUFE9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
