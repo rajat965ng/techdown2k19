@@ -268,4 +268,110 @@ Implementing a Sharded Redis
          }
        }
    ```
+
    
+   <h3>Sharded Services</h3>
+   
+   
+   ![replica vs shard](servingPatterns/shardedServices/replica-vs-shard.png)
+   
+   - Replicated services are generally used for building stateless services, whereas sharded services are generally used for building stateful services.
+   - The primary reason for sharding the data is because the size of the state is too large to be served by a single machine.
+   
+   Sharded Caching
+   
+   - A sharded cache is a cache that sits between the user requests and the actually frontend implementation.
+   
+   ![sharded cache](servingPatterns/shardedServices/sharded-cache.png)
+   
+   
+   Why You Might Need a Sharded Cache ?
+   
+   - To understand how this helps a caching system, imagine the following system:
+     - Each cache has 10 GB of RAM available to store results, and can serve 100 requests per second (RPS).
+     - Suppose then that our service has a total of 200 GB possible results that could be returned, and an expected 1,000 RPS.
+     - We need 10 replicas of the cache in order to satisfy 1,000 RPS (10 replicas × 100 requests per second per replica).
+     - But deployed this way, the distributed cache can only hold a maximum of 5% (10 GB/200 GB) of the total data set that we are serving. This is because each cache replica is independent, and thus each cache replica stores roughly the exact same data in the cache. This is great for redundancy, but pretty terrible for maximizing memory utilization.
+     - If instead, we deploy a 10-way sharded cache, we can still serve the appropriate number of RPS (10 × 100 is still 1,000), but because each cache serves a completely unique set of data, we are able to store 50% (10 × 10 GB/200 GB) of the total data set. This tenfold increase in cache storage means that the memory for the cache is much better utilized, since each key exists only in a single cache.
+     
+   The Role of the Cache in System Performance
+   
+   - If the cache were to fail, what would the impact be for your users and your service?
+   - In case of the replicated cache, the cache itself was horizontally scalable, and failures of specific replicas would only lead to transient failures. Likewise, the cache could be horizontally scaled in response to increased load without impacting the end user.  
+   - When you consider sharded caches. Because a specific user or request is always mapped to the same shard, if that shard fails, that user or request will always miss the cache until the shard is restored.
+   - The performance of your cache is defined in terms of its hit rate. The hit rate is the percentage of the time that your cache contains the data for a user request.
+   
+   Replicated, Sharded Caches
+   
+   - A sharded, replicated service combines the replicated service pattern described in the previous chapter with the sharded pattern described in previous sections.
+   - Rather than having a single server implement each shard in the cache, a replicated service is used to implement each cache shard.
+   - By replacing a single server with a replicated service, each cache shard is resilient to failures and is always present during failures.
+   - Because each replicated cache shard is an independent replicated service, you can scale each cache shard in response to its load; this sort of “hot sharding”.
+   - An alternative is to deploy a replicated shard router service. The downside of a shared service is twofold.
+     - because it is a shared service, you will have to scale it larger as demand load increases.
+     - using the shared service introduces an extra network hop that will add some latency to requests and contribute network bandwidth to the overall distributed system.
+     
+   ```
+       memcache:
+         listen: 0.0.0.0:11211 # To deploy a shared routing service, change the twemproxy configuration so that it listens on all interfaces, not just localhost:
+         hash: fnv1a_64
+         distribution: ketama
+         auto_eject_hosts: true
+         timeout: 400
+         server_retry_timeout: 2000
+         server_failure_limit: 1
+         servers:
+          - memcache-0.memcache:11211:1
+          - memcache-1.memcache:11211:1
+          - memcache-2.memcache:11211:1
+   ```  
+   
+   
+   Sharding Functions
+   
+   - Shard = ShardingFunction(Req)
+   - The sharding function is defined using a hashing function and the modulo (%) operator.
+   - Hashing functions are functions that transform an arbitrary object into an integer hash. The hash function has two important characteristics for our sharding:
+     - Determinism:  it ensures that a particular request R always goes to the same shard in the service.  
+     - Uniformity: it ensures that load is evenly spread between the different shards.
+     
+   
+   Consistent Hashing Functions
+   
+   - scaling the cache from 10 to 11 replicas is straightforward to do with a container orchestrator, but consider the effect of changing the scaling function from hash(Req) % 10 to hash(Req) % 11.
+   - In a sharded cache, this is going to dramatically increase your miss rate until the cache is repopulated with responses for the new requests that have been mapped to that cache shard by the new sharding function. In the worst case, rolling out a new sharding function for your sharded cache will be equivalent to a complete cache failure. 
+   - Consistent hashing functions are special hash functions that are guaranteed to only remap # keys / # shards, when being resized to # shards.
+   - if we use a consistent hashing function for our sharded cache, moving from 10 to 11 shards will only result in remapping < 10% (K / 11) keys. This is dramatically better than losing the entire sharded service.
+   
+   
+   Building a Consistent HTTP Sharding Proxy
+   
+   ```yaml
+    worker_processes  5;
+        error_log  error.log;
+        pid        nginx.pid;
+        worker_rlimit_nofile 8192;
+        events {
+          worker_connections  1024;
+    }
+        http {
+            # define a named 'backend' that we can use in the proxy directive
+            # below.
+            upstream backend {
+                # Has the full URI of the request and use a consistent hash
+                hash $request_uri consistent
+                server web-shard-1.web;
+                server web-shard-2.web;
+                server web-shard-3.web;
+            }
+        server {
+                listen localhost:80;
+                location / {
+                    proxy_pass http://backend;
+                }
+            } 
+    }
+   ```
+   - A good general-purpose key is the request path as well as the fragment and query parameters (i.e., everything that makes the request unique).
+   - This does not include cookies from the user or the language/location (e.g., EN_US). 
+      
