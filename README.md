@@ -374,4 +374,27 @@ Implementing a Sharded Redis
    ```
    - A good general-purpose key is the request path as well as the fragment and query parameters (i.e., everything that makes the request unique).
    - This does not include cookies from the user or the language/location (e.g., EN_US). 
-      
+   
+   
+   <h3>Scatter/Gather</h3>
+   
+   - The scatter/gather pattern allows you to achieve parallelism in servicing requests, enabling you to service them significantly faster than you could if you had to service them sequentially. 
+   - The scatter/gather pattern is a tree pattern with a root that distributes requests and leaves that process those requests.  
+   - Each replica does a small amount of processing and then returns a fraction of the result to the root.
+   - The root server then combines the various partial results together to form a single complete response to the request and then sends this request back out to the client.
+   
+   - Scatter/gather can be seen as sharding the computation necessary to service the request, rather than sharding the data (although data sharding may be part of it as well).
+   
+   ![generic scatter gather](servingPatterns/scatterGather/generic-scatter-gather.png)
+   
+   - Each leaf is entirely homogenous but the work is distributed to a number of different leaves in order to improve the performance of the request.
+   
+   Sharded Document Search
+   
+   - We were looking for all documents that contained “cat” and “dog.”
+   - When a user makes a request for all documents that match the words “cat” and “dog,” the request is actually sent out to every leaf in the scatter/gather system. Each leaf node returns the set of documents that it knows about that matches “cat” and “dog.”
+   - The first leaf serves documents 1 through 10 and returns {doc1, doc5}. The second leaf serves documents 11 through 20 and returns {doc15}. The third leaf serves documents 21 through 30 and returns {doc22, doc28}. The root combines all of these responses together into a single response and returns {doc1, doc5, doc15, doc22, doc28}.
+   
+   ![scatter gather search system](servingPatterns/scatterGather/scatter-gather-search-system.png)
+ 
+    
