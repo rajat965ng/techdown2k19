@@ -398,3 +398,34 @@ Implementing a Sharded Redis
    ![scatter gather search system](servingPatterns/scatterGather/scatter-gather-search-system.png)
  
     
+   <h3>Functions and Event-Driven Processing</h3>
+   
+   - the benefits, limitations, and optimal situations for employing event-driven computing.
+     - The Benefits of FaaS
+       - Because there is no artifact to create or push beyond the source code itself, FaaS makes it simple to go from code on a laptop or web browser to running code in the cloud.
+       - the code that is deployed is managed and scaled automatically
+       - Functions are stateless and thus any system you build on top of functions is inherently more modular and decoupled than a similar system built into a single binary.
+     - The Challenges of FaaS
+       - FaaS forces you to strongly decouple each piece of your service. Each function is entirely independent. The only communication is across the network, and each function instance cannot have local memory, requiring all states to be stored in a storage service. This forced decoupling can improve the agility and speed with which you can develop services, but it can also significantly complicate the operations of the same service. 
+       - It is often quite difficult to obtain a comprehensive view of your service, determine how the various functions integrate with one another, and understand when things go wrong, and why they go wrong.
+   
+   - Functions are executed in response to discrete events that occur and trigger the execution of the functions. Additionally, because of the serverless nature of the implementation of theses serv‐ ices, the runtime of any particular function instance is generally time bounded. This means that FaaS is usually a poor fit for situations that require processing. Examples of such background processing might be transcoding a video, compressing log files, or other sorts of low-priority, long-running computations.
+   - To achieve that, you need to launch your code in an environment that supports long-running processes. And this generally means switching to a pay-per-consumption rather than pay-per-request model for the parts of your application that do background processing.
+   
+       
+   <h4>Patterns for FaaS</h4>
+   
+   The Decorator Pattern: Request or Response Transformation
+   
+   - FaaS is ideal for deploying simple functions that can take an input, transform it into an output, and then pass it on to a different service. This general pattern can be used to augment or decorate HTTP requests to or from a different service.
+   - Because decoration transformations are generally stateless, and also because they are often added after the fact to existing code as the service evolves, they are ideal services to implement via FaaS.
+   - Use the kubeless FaaS framework. Kubeless is deployed on top of the Kubernetes container orchestration service. Assuming that you have provisioned a Kubernetes cluster. Kubeless installs itself as a native Kubernetes third-party API. You can see deployed functions using kubectl get functions.
+   
+   Handling Events
+   
+   - Examples of events include a user signing up for a new service (which might trigger a welcome email, someone uploading a file to a shared folder (which might send notifications to everyone who has access to the folder), or even a machine being about to reboot (which might notify an operator or automated system to take appropriate action).
+   
+   - Implementing Two-Factor Authentication
+     - Two-factor authentication is significantly more secure than pass‐ words alone since it requires two different security compromises (a thief learning your password and a thief stealing your phone) to enable a true security problem.
+     - A better option is to register a FaaS to asynchronously generate the random number, register it with the login service, and send the number to the user’s phone. In this way, the login server can simply fire an asynchronous web-hook request to a FaaS, and that FaaS can handle the somewhat slow and asynchronous task of registering the two-factor code and sending the text message.
+           
