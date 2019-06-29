@@ -428,4 +428,36 @@ Implementing a Sharded Redis
    - Implementing Two-Factor Authentication
      - Two-factor authentication is significantly more secure than pass‐ words alone since it requires two different security compromises (a thief learning your password and a thief stealing your phone) to enable a true security problem.
      - A better option is to register a FaaS to asynchronously generate the random number, register it with the login service, and send the number to the user’s phone. In this way, the login server can simply fire an asynchronous web-hook request to a FaaS, and that FaaS can handle the somewhat slow and asynchronous task of registering the two-factor code and sending the text message.
-           
+   
+   
+   <h3>Ownership Election</h3>
+   
+   - There are three replicas that could be the owner or master. Initially, the first replica is the master. Then that replica fails, and replica number three then becomes the master. Finally, replica number one recovers and returns to the group, but replica three remains as the master/owner.
+   
+   ![Generic Election](servingPatterns/ownershipElection/generic-election.png)       
+   
+   - There are two ways to implement this master election. 
+     - This first is to implement a distributed consensus algorithm like Paxos or RAFT. Implementing one of these algorithms is akin to implementing locks on top of assembly code compare-and-swap instructions.
+     - Compare-and-swap atomically writes a new value if the existing value matches the expected value. If the value doesn’t match, it returns false. If the value doesn’t exist and currentValue is not null, it returns an error.
+   
+   - Fortunately, there are a large number of distributed key-value stores that have implemented such consensus algorithms for you.
+   - Examples of these distributed stores include etcd, ZooKeeper, and consul. The basic primitives that these systems provide is the ability to perform a compare-and-swap operation for a particular key.
+   
+   
+   Implementing Locks
+   
+   - When using distributed locks, it is critical to ensure that any processing you do doesn’t last longer than the TTL of the lock. One good practice is to set a watchdog timer when you acquire the lock. The watchdog contains an assertion that will crash your program if the TTL of the lock expires before you have called unlock.
+   
+   Implementing Ownership
+   
+   - For example, in a highly available deployment of Kubernetes, there are multiple replicas of the scheduler but only one replica is actively making scheduling decisions. Further, once it becomes the active scheduler, it remains the active scheduler until that process fails for some reason.
+   - one way to do this would be to extend the TTL for the lock to a very long period (say a week or longer), but this has the significant downside that if the current lock owner fails, a new lock owner wouldn’t be chosen until the TTL expired a week later.
+   - Instead, we need to create a renewable lock, which can be periodically renewed by the owner so that the lock can be retained for an arbitrary period of time.
+   - the lock is renewed every ttl/2 seconds; that way there is significantly less risk that the lock will accidentally expire due to timing subtleties.
+   
+   Implementing Leases in etcd
+   
+   - The ttl flag defines a time after which the lock that we create is deleted. Because the lock disappears after the ttl expires, instead of creating with the value of unlocked, we will assume that the absence of the lock means that it is unlocked.
+   - Creates a leased lock with a duration of 10 seconds.
+   
+   
