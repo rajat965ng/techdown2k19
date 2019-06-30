@@ -590,3 +590,29 @@ Implementing a Sharded Redis
    - One or more publishers publishes messages to these queues.
    - one or more subscribers is listening to these queues for new messages. 
    
+   
+   <hr>
+   
+   <h3>Coordinated Batch Processing</h3>
+   
+   - Sometimes it is equally important to pull multiple outputs back together in order to generate some sort of aggregate output.
+   
+   ![distribute and aggregate](batchComputationPatterns/coordinatedBatchProcessing/work-distribution-output-aggregation.png)
+   
+   - The most canonical example of this aggregation is the reduce part of the MapReduce pattern. It’s easy to see that the map step is an example of sharding a work queue, and the reduce step is an example of coordinated processing that eventu‐ ally reduces a large number of outputs down to a single aggregate response.
+   
+   <h4>Join (or Barrier Synchronization)</h4>
+   
+   - While the merge pattern is sufficient in some cases, it does not ensure that a complete dataset is present prior to the beginning of processing. This means that there can be no guarantees about the completeness of the processing being performed, as well as no opportunity to compute aggregate statistics for all of the elements that have been processed.
+   - Join is similar to joining a thread. The basic idea is that all of the work is happening in parallel, but work items aren’t released out of the join until all of the work items that are processed in parallel are completed. This is also generally known as barrier synchronization in concurrent programming.
+   - The downside of the join pattern is that it requires that all data be processed by a previous stage before subsequent computation can begin. This reduces the parallelism that is possible in the batch workflow, and thus increases the overall latency of running the workflow.
+   
+   
+   Reduce
+   
+   - The goal of reduce is not to wait until all data has been processed, but rather to optimistically merge together all of the parallel data items into a single comprehensive representation of the full set.
+   - This stage is called “reduce” because it reduces the total number of outputs.
+   
+   
+   
+   
