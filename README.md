@@ -465,4 +465,128 @@ Implementing a Sharded Redis
    
    <h3>Work Queue Systems</h3>
    
+   ![generic work queue](batchComputationPatterns/workQueueSystem/generic-work-queue.png))
+   
+   
+   The Source Container Interface
+   
+   - In the containerized work queue, there are two interfaces: 
+        - the source container interface, which provides a stream of work items that need processing  
+        - the worker container interface, which knows how to actually process a work item.
+   
+   ![work queue container group](batchComputationPatterns/workQueueSystem/work-queue-container-group.png)
+   
+   - The ambassador container is clearly application-specific.
+   - The generic work queue container is the primary application container  
+   - The application-specific source container is the ambassador that proxies the generic work queue’s requests out to the concrete definition of the work queue out in the real world.
+   
+   - The master work queue expects the ambassador to implement the following URLs:
+     - GEThttp://localhost/api/v1/items
+     - GEThttp://localhost/api/v1/items/<item-name>
+     
+   - It is a best practice to always add versions to your APIs even if you’re not sure they will ever change. Better safe than sorry.
+  
+   
+   The Worker Container Interface
+   
+   - This container and interface are slightly different than the previous work queue source interface for a few reasons.
+     - The first is that it is a one-off API: a single call is made to begin the work, and no other API calls are made throughout the life of the worker container.
+     - Secondly, the worker container is not inside a container group with the work queue manager. Instead, it is launched via a container orchestration API and scheduled to its own container group. This means that the work queue man‐ ager has to make a remote call to the worker container in order to start work. It also means that we may need to be more careful about security to prevent a malicious user in our cluster from injecting extra work into the system. 
+     
+   ![Worker queue worker API](batchComputationPatterns/workQueueSystem/worker-queue-worker-api.png)  
+   
+   - This API can be implemented via a Kubernetes ConfigMap object that can be mounted into a container group as a file.
+   - Consider the example of a work queue worker that downloads a file from cloud stor‐ age and runs a shell script with that file as input, and then copies its output back up to cloud storage.
+   
+   
+   The Shared Work Queue Infrastructure
+   
+   - The basic algorithm for the work queue is fairly straightforward:
+     - Load the available work by calling into source container interface.
+     - Consult with work queue state to determine which work items have been processed or are being processed currently.
+     - For these items, spawn jobs that use the worker container interface to process the work item.
+     - When one of these worker containers finishes successfully, record that the work item has been completed.
+     
+   - the expanded operation of our work queue container looks like this:
+     - Repeat forever
+     - Get the list of work items from the work source container interface.
+     - Get the list of all jobs that have been created to service this work queue.
+     - Difference these lists to find the set of work items that haven’t been processed.
+     - For these unprocessed items, create new Job objects that spawn the appropriate worker container.
+     
+   <h4>Dynamic Scaling of the Workers</h4>
+   
+   - Problem
+     - Work queue is great for processing work items as quickly as they arrive in the work queue, but this can lead to bursty resource loads being placed onto a container orchestrator cluster.  
+     - This is good if you have a lot of different work‐ loads that will burst at different times and thus keep your infrastructure evenly uti‐ lized. But if you don’t have a sufficient number of different workloads, this feast or famine approach to scaling your work queue might require that you over-provision resources to support the bursts that will lay idle (and cost too much money) while you don’t have work to perform.
+   
+   - Address this problem
+     - you can limit the overall number of Job objects that your work queue is willing to create
+     - However, doing this will increase the time to completion (latency) for each work item being completed when under heavy load.
+     
+   - If each item takes one minute to process but we process four items in parallel, the effective time to process one item is 15 seconds, and thus we can sustain an interarrival period of 16 or more seconds.
+   - This approach makes it fairly straightforward to build an autoscaler to dynamically size up our work queue. Sizing down the work queue is somewhat trickier, but you can use the same math as well as a heuristic for the amount of spare capacity for the safety margin you want to maintain. For example, you can reduce the parallelism until the processing time for an item is 90% of the interarrival time for new items.
+      
+     
+   <h4>The Multi-Worker Pattern</h4>
+   
+   ![multi worker pattern](batchComputationPatterns/workQueueSystem/muti-worker-pattern.png)
+   
+   - The multi-worker pattern is something of a specialization of the adapter pattern.  
+   - the multi- worker pattern transforms a collection of different worker containers into a single unified container that implements the worker interface, yet delegates the actual work to a collection of different, reusable containers.
+   
+   
+   <hr>
+   
+   <h3>Event-Driven Batch Processing</h3>
+   
+   
+   ![event driven processing system](batchComputationPatterns/eventDrivenBatchProcessing/event-driven-processing-system.png)
+   
+   - These sort of event-driven processing systems are often called workflow systems, since there is a flow of work through a directed, acyclic graph that describes the vari‐ ous stages and their coordination.
+   - The most straightforward application of this type of system simply chains the output of one queue to the input of the next queue.
+   
+   Copier
+   
+   - The job of a copier is to take a single stream of work items and duplicate it out into two or more identical streams.
+   - This pattern is useful when there are multiple different pieces of work to be done on the same work item.
+   
+   Filter
+   
+   - The role of a filter is to reduce a stream of work items to a smaller stream of work items by filtering out work items that don’t meet particular criteria.
+   - Ideally you would compose a filter work queue source as an ambassador that wraps up an existing work queue source. The original source container provides the com‐ plete list of items to be worked on, and the filter container then adjusts that list based on the filter criteria and only returns those filtered results to the work queue infrastructure. 
+   
+   Splitter
+   
+   - The role of a splitter is to evaluate some criteria—just like a filter—but instead of eliminating input, the splitter sends different inputs to different queues based on that criteria.
+   - A splitter can also be a copier if it sends the same output to multiple queues.
+   
+   Sharder
+   
+   - The role of a sharder in a workflow is to divide up a single queue into an evenly divided collection of work items based upon some sort of shard‐ ing function.
+   - If you shard your work queue, then the failure of a single workflow due to a bad update, infrastructure failure, or other problem only affects a fraction of your service.
+   - An additional reason to shard your work queue is to more evenly distribute work across different resources. If you don’t really care which region or datacenter is used to process a particular set of work items, you can use a sharder to evenly spread work across multiple datacenters to even out utilization of all datacenters/regions.
+   - When the number of healthy shards is reduced due to failures, the sharding algo‐ rithm dynamically adjusts to send work to the remaining healthy work queues, even if only a single queue remains.
+   
+   Merger
+   
+   - A merger is the opposite of a copier; the job of a merger is to take two different work queues and turn them into a single work queue.
+   - The merger is another great example of the adapter pattern, though in this case, the adapter is actually adapting multiple running source containers into a single merged source.
+   
+   ![Merger](batchComputationPatterns/eventDrivenBatchProcessing/merger.png)
+   
+   
+   Building an Event-Driven Flow for New User Sign-Up
+   
+   - The first step in the event-driven workflow is the generation of the verification email.
+   - After a new user signs up, the user then has to receive an email notification to validate their email. Once the user validates their email, they are sent a confirmation email.
+   
+   ![first stage user sign up](batchComputationPatterns/eventDrivenBatchProcessing/first-stage-user-sign-up.png)
+   
+   
+   <h4>Publisher/Subscriber Infrastructure</h4>
+    
+   - A pub/sub API allows a user to define a collection of queues (sometimes called topics).
+   - One or more publishers publishes messages to these queues.
+   - one or more subscribers is listening to these queues for new messages. 
    
