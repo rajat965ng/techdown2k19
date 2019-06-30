@@ -460,4 +460,9 @@ Implementing a Sharded Redis
    - The ttl flag defines a time after which the lock that we create is deleted. Because the lock disappears after the ttl expires, instead of creating with the value of unlocked, we will assume that the absence of the lock means that it is unlocked.
    - Creates a leased lock with a duration of 10 seconds.
    
+   <hr>
+   <h2>Batch Computational Patterns</h2>
+   
+   <h3>Work Queue Systems</h3>
+   
    
