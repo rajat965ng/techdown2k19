@@ -1,0 +1,297 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elastic-master
+  namespace: jets-dev
+spec:
+  replicas: 1
+  volumeClaimTemplates:
+  - metadata:
+      name: elastic-data
+    spec:
+      resources:
+        requests:
+          storage: 5Gi
+      accessModes:
+      - ReadWriteOnce
+  selector:
+    matchLabels:
+      app: elastic-master
+  serviceName: elastic-master
+  template:
+    metadata:
+      labels:
+        app: elastic-master
+    spec:
+      initContainers:
+      - name: fix-the-volume-permission
+        image: busybox
+        command:
+        - sh
+        - -c
+        - chown -R 1000:1000 /usr/share/elasticsearch/data
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: elastic-data
+          mountPath: /usr/share/elasticsearch/data
+      - name: increase-the-vm-max-map-count
+        image: busybox
+        command:
+        - sysctl
+        - -w
+        - vm.max_map_count=262144
+        securityContext:
+          privileged: true
+      - name: increase-the-ulimit
+        image: busybox
+        command:
+        - sh
+        - -c
+        - ulimit -n 65536
+        securityContext:
+          privileged: true
+      containers:
+      - name: elastic
+        image: elasticsearch:6.8.1
+        env:
+        - name: cluster.name
+          value: jets-es-cluster
+        - name: ES_JAVA_OPTS
+          value: -Xms512m -Xmx512m
+        - name: node.name
+          value: es-master
+        - name: path.data
+          value: /usr/share/elasticsearch/data
+        - name: network.host
+          value: 0.0.0.0
+        - name: node.master
+          value: "true"
+        - name: discovery.zen.minimum_master_nodes
+          value: "2"
+        - name: discovery.zen.ping.unicast.hosts
+          value: "elastic-master.jets-dev.svc.cluster.local, elastic-node-1.jets-dev.svc.cluster.local, elastic-node-2.jets-dev.svc.cluster.local"
+        ports:
+        - containerPort: 9200
+          name: http
+        - containerPort: 9300
+          name: discovery
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: elastic-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastic-master
+  namespace: jets-dev
+spec:
+  clusterIP: None
+  selector:
+    app: elastic-master
+  ports:
+  - port: 9200
+    name: http
+    targetPort: http
+  - port: 9300
+    name: discovery
+    targetPort: discovery
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elastic-node-1
+  namespace: jets-dev
+spec:
+  replicas: 1
+  volumeClaimTemplates:
+  - metadata:
+      name: elastic-data
+    spec:
+      resources:
+        requests:
+          storage: 5Gi
+      accessModes:
+      - ReadWriteOnce
+  selector:
+    matchLabels:
+      app: elastic-node-1
+  serviceName: elastic-node-1
+  template:
+    metadata:
+      labels:
+        app: elastic-node-1
+    spec:
+      initContainers:
+      - name: fix-the-volume-permission
+        image: busybox
+        command:
+        - sh
+        - -c
+        - chown -R 1000:1000 /usr/share/elasticsearch/data
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: elastic-data
+          mountPath: /usr/share/elasticsearch/data
+      - name: increase-the-vm-max-map-count
+        image: busybox
+        command:
+        - sysctl
+        - -w
+        - vm.max_map_count=262144
+        securityContext:
+          privileged: true
+      - name: increase-the-ulimit
+        image: busybox
+        command:
+        - sh
+        - -c
+        - ulimit -n 65536
+        securityContext:
+          privileged: true
+      containers:
+      - name: elastic
+        image: elasticsearch:6.8.1
+        env:
+        - name: cluster.name
+          value: jets-es-cluster
+        - name: ES_JAVA_OPTS
+          value: -Xms512m -Xmx512m
+        - name: node.name
+          value: elastic-node-1
+        - name: path.data
+          value: /usr/share/elasticsearch/data
+        - name: network.host
+          value: 0.0.0.0
+        - name: node.data
+          value: "true"
+        - name: discovery.zen.minimum_master_nodes
+          value: "2"
+        - name: discovery.zen.ping.unicast.hosts
+          value: "elastic-master.jets-dev.svc.cluster.local, elastic-node-1.jets-dev.svc.cluster.local, elastic-node-2.jets-dev.svc.cluster.local"
+        ports:
+        - containerPort: 9200
+          name: http
+        - containerPort: 9300
+          name: discovery
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: elastic-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastic-node-1
+  namespace: jets-dev
+spec:
+  clusterIP: None
+  selector:
+    app: elastic-node-1
+  ports:
+  - port: 9200
+    name: http
+    targetPort: http
+  - port: 9300
+    name: discovery
+    targetPort: discovery
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elastic-node-2
+  namespace: jets-dev
+spec:
+  replicas: 1
+  volumeClaimTemplates:
+  - metadata:
+      name: elastic-data
+    spec:
+      resources:
+        requests:
+          storage: 5Gi
+      accessModes:
+      - ReadWriteOnce
+  selector:
+    matchLabels:
+      app: elastic-node-2
+  serviceName: elastic-node-2
+  template:
+    metadata:
+      labels:
+        app: elastic-node-2
+    spec:
+      initContainers:
+      - name: fix-the-volume-permission
+        image: busybox
+        command:
+        - sh
+        - -c
+        - chown -R 1000:1000 /usr/share/elasticsearch/data
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: elastic-data
+          mountPath: /usr/share/elasticsearch/data
+      - name: increase-the-vm-max-map-count
+        image: busybox
+        command:
+        - sysctl
+        - -w
+        - vm.max_map_count=262144
+        securityContext:
+          privileged: true
+      - name: increase-the-ulimit
+        image: busybox
+        command:
+        - sh
+        - -c
+        - ulimit -n 65536
+        securityContext:
+          privileged: true
+      containers:
+      - name: elastic
+        image: elasticsearch:6.8.1
+        env:
+        - name: cluster.name
+          value: jets-es-cluster
+        - name: ES_JAVA_OPTS
+          value: -Xms512m -Xmx512m
+        - name: node.name
+          value: 0.0.0.0
+        - name: path.data
+          value: /usr/share/elasticsearch/data
+        - name: network.host
+          value: elastic-node-2
+        - name: node.data
+          value: "true"
+        - name: discovery.zen.minimum_master_nodes
+          value: "2"
+        - name: discovery.zen.ping.unicast.hosts
+          value: "elastic-master.jets-dev.svc.cluster.local, elastic-node-1.jets-dev.svc.cluster.local, elastic-node-2.jets-dev.svc.cluster.local"
+        ports:
+        - containerPort: 9200
+          name: http
+        - containerPort: 9300
+          name: discovery
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: elastic-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastic-node-2
+  namespace: jets-dev
+spec:
+  clusterIP: None
+  selector:
+    app: elastic-node-2
+  ports:
+  - port: 9200
+    name: http
+    targetPort: http
+  - port: 9300
+    name: discovery
+    targetPort: discovery

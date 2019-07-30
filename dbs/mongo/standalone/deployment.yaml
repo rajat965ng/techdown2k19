@@ -1,0 +1,136 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-user-json
+  namespace: jets-dev
+data:
+  start.sh: |
+    mongod --port 27017 --bind_ip 0.0.0.0  &
+  user.sh: |
+    db = db.getSiblingDB("admin"); db.createUser({ user: "admin_usr", pwd: "admin_pwd", roles: ["root"]}); db.createUser({ "user" : "username", "pwd"  : "password", "roles" : [{ "role" : "readWrite", "db" : "admin"}, { "role" : "readWrite", "db" : "jets-appointment"}, { "role" : "readWrite", "db" : "jets-user-management"}]});
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongodb-user-json
+  namespace: jets-dev
+data:
+  admin_usr: cm9vdA==
+  admin_pwd: cm9vdA==
+  username: amV0c3VzZXI=
+  password: VGVzdDEyMyQk
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  namespace: jets-dev
+spec:
+  clusterIP: None
+  ports:
+  - port: 27017
+    targetPort: 27017
+  selector:
+    app: mongo
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+  namespace: jets-dev
+spec:
+  replicas: 1
+  serviceName: mongo
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-data
+    spec:
+      resources:
+        requests:
+          storage: 5Gi
+      accessModes:
+      - ReadWriteOnce
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      volumes:
+      - name: user-data
+        configMap:
+          defaultMode: 0777
+          name: mongodb-user-json
+          items:
+          - key: start.sh
+            path: start.sh
+          - key: user.sh
+            path: user.sh
+      initContainers:
+      - name: mongo-start-server
+        image: mongo
+        env:
+        - name: username
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: mongodb-user-json
+        - name: password
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mongodb-user-json
+        - name: admin_usr
+          valueFrom:
+            secretKeyRef:
+              key: admin_usr
+              name: mongodb-user-json
+        - name: admin_pwd
+          valueFrom:
+            secretKeyRef:
+              key: admin_pwd
+              name: mongodb-user-json
+        command:
+        - /bin/bash
+        args:
+        - -c
+        - cd /usr/jets; chmod +x start.sh; ./start.sh ; echo starting mongo; sleep 10; echo creating user; cat user.sh | sed 's/username/'$username'/; s/password/'$password'/; s/admin_usr/'$admin_usr'/; s/admin_pwd/'$admin_pwd'/'| mongo ;  echo shtting down; mongod --shutdown; echo finished;
+        volumeMounts:
+        - mountPath: /usr/jets/
+          name: user-data
+          readOnly: false
+        - mountPath: /data/db
+          name: mongo-data
+          readOnly: false
+      containers:
+      - name: mongo
+        image: mongo
+        env:
+        - name: username
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: mongodb-user-json
+        - name: password
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mongodb-user-json
+        command:
+        - "mongod"
+        - "--port"
+        - "27017"
+        - "--bind_ip"
+        - "0.0.0.0"
+        - "--auth"
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - mountPath: /usr/jets/
+          name: user-data
+          readOnly: false
+        - mountPath: /data/db
+          name: mongo-data

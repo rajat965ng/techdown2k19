@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql
+  namespace: jets-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  serviceName: postgresql
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      resources:
+        requests:
+          storage: 10Gi
+      accessModes:
+      - ReadWriteOnce
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+      - name: postgresql
+        image: postgres
+        env:
+        - name: POSTGRES_USER
+          value: "usradmin"
+        - name: POSTGRES_PASSWORD
+          value: "usrpassword"
+        - name: POSTGRES_DB
+          value: "employee"
+        - name: PGDATA
+          value: "/var/lib/postgresql/data/pgdata"
+        - name: POSTGRES_INITDB_ARGS
+          value: "--data-checksums"
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 5432
+          name: dataport
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql
+  namespace: jets-dev
+spec:
+  clusterIP: None
+  selector:
+    app: postgresql
+  ports:
+  - port: 8080
+    name: http
+    targetPort: http
+  - port: 5432
+    name: dataport
+    targetPort: dataport

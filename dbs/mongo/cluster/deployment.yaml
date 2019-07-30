@@ -1,0 +1,194 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongo-cluster-config
+  namespace: jets-dev
+data:
+  user.sh: c2guYWRkU2hhcmQoIm1vbmdvcnMvbW9uZ28tc2hhcmQtMC5tb25nby1zaGFyZC5qZXRzLWRldi5zdmMuY2x1c3Rlci5sb2NhbCIpOyBzaC5hZGRTaGFyZCgibW9uZ29ycy9tb25nby1zaGFyZC0xLm1vbmdvLXNoYXJkLmpldHMtZGV2LnN2Yy5jbHVzdGVyLmxvY2FsIik7IHNoLmVuYWJsZVNoYXJkaW5nKCJqZXRzLWFwcG9pbnRtZW50Iik7IHNoLmVuYWJsZVNoYXJkaW5nKCJqZXRzLXVzZXItbWFuYWdlbWVudCIpOyBkYiA9IGRiLmdldFNpYmxpbmdEQigiYWRtaW4iKTsgZGIuY3JlYXRlVXNlcih7IHVzZXI6InJvb3QiLCBwd2Q6InJvb3QiLCByb2xlczpbeyByb2xlOiJyb290IiwgZGI6ImFkbWluIiB9XX0pOyBkYi5jcmVhdGVVc2VyKHsgInVzZXIiOiJqZXRzdXNlciIsICJwd2QiOiJUZXN0MTIzJCQiLCAicm9sZXMiOlt7ICJyb2xlIjoicmVhZFdyaXRlIiwgImRiIjoiamV0cy1hcHBvaW50bWVudCJ9LCB7ICJyb2xlIjoicmVhZFdyaXRlIiwgImRiIjoiamV0cy11c2VyLW1hbmFnZW1lbnQifSAgXX0pOyBkYi5hZG1pbi5ydW5Db21tYW5kKCJnZXRTaGFyZE1hcCIpOwo=
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-config
+  namespace: jets-dev
+spec:
+  clusterIP: None
+  ports:
+  - port: 27017
+    targetPort: 27017
+    name: mongo-config
+  selector:
+    app: mongo-config
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-config
+  namespace: jets-dev
+spec:
+  replicas: 2
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-data
+    spec:
+      resources:
+        requests:
+          storage: 1Gi
+      accessModes:
+      - ReadWriteOnce
+  selector:
+    matchLabels:
+      app: mongo-config
+  serviceName: "mongo-config"
+  template:
+    spec:
+      containers:
+      - name: mongo
+        image: mongo
+        command:
+        - "mongod"
+        - "--configsvr"
+        - "--replSet"
+        - "mongocfg"
+        - "--port"
+        - "27017"
+        - "--bind_ip"
+        - "0.0.0.0"
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - mountPath: /data/db
+          name: mongo-data
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - >
+                sleep 10;
+                mongo --port 27017 --eval 'rs.initiate({_id: "mongocfg", configsvr: true, members: [ {_id: 0, host: "mongo-config-0.mongo-config.jets-dev.svc.cluster.local"}, {_id: 1, host: "mongo-config-1.mongo-config.jets-dev.svc.cluster.local"} ] });'
+    metadata:
+      labels:
+        app: mongo-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-shard
+  namespace: jets-dev
+spec:
+  clusterIP: None
+  ports:
+  - port: 27017
+    targetPort: 27017
+  selector:
+    app: mongo-shard
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-shard
+  namespace: jets-dev
+spec:
+  replicas: 2
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-data
+    spec:
+      resources:
+        requests:
+          storage: 1Gi
+      accessModes:
+      - ReadWriteOnce
+  selector:
+    matchLabels:
+      app: mongo-shard
+  serviceName: "mongo-shard"
+  template:
+    spec:
+      containers:
+      - name: mongo
+        image: mongo
+        command:
+        - "mongod"
+        - "--shardsvr"
+        - "--replSet"
+        - "mongors"
+        - "--bind_ip"
+        - "0.0.0.0"
+        - "--port"
+        - "27017"
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - mountPath: /data/db
+          name: mongo-data
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - >
+                sleep 10;
+                mongo --port 27017 --eval 'rs.initiate({_id: "mongors", members: [ {_id: 0, host: "mongo-shard-0.mongo-shard.jets-dev.svc.cluster.local"}, {_id: 1, host: "mongo-shard-1.mongo-shard.jets-dev.svc.cluster.local"} ] });'
+    metadata:
+      labels:
+        app: mongo-shard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-router
+  namespace: jets-dev
+spec:
+  ports:
+  - port: 27017
+    targetPort: 27017
+    protocol: TCP
+  selector:
+    app: mongo-router
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-router
+  namespace: jets-dev
+spec:
+  selector:
+    matchLabels:
+      app: mongo-router
+  template:
+    metadata:
+      labels:
+        app: mongo-router
+    spec:
+      volumes:
+      - name: mongo-user
+        secret:
+          secretName: mongo-cluster-config
+          defaultMode: 0777
+      containers:
+      - name: mongo
+        image: mongo
+        command:
+        - "mongos"
+        - "--bind_ip"
+        - "0.0.0.0"
+        - "--port"
+        - "27017"
+        - "--configdb"
+        - "mongocfg/mongo-config-0.mongo-config.jets-dev.svc.cluster.local:27017,mongo-config-1.mongo-config.jets-dev.svc.cluster.local:27017"
+        volumeMounts:
+        - mountPath: /usr/jets/
+          name: mongo-user
+        ports:
+        - containerPort: 27017
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - cd /usr/jets; mongo < user.sh;

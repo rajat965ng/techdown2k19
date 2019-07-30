@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elastic
+  namespace: jets-dev
+spec:
+  replicas: 1
+  volumeClaimTemplates:
+  - metadata:
+      name: elastic-data
+    spec:
+      resources:
+        requests:
+          storage: 5Gi
+      accessModes:
+      - ReadWriteOnce
+  selector:
+    matchLabels:
+      app: elastic
+  serviceName: elastic
+  template:
+    metadata:
+      labels:
+        app: elastic
+    spec:
+      initContainers:
+      - name: fix-the-volume-permission
+        image: busybox
+        command:
+        - sh
+        - -c
+        - chown -R 1000:1000 /usr/share/elasticsearch/data
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: elastic-data
+          mountPath: /usr/share/elasticsearch/data
+      containers:
+      - name: elastic
+        image: elasticsearch:7.2.0
+        env:
+        - name: discovery.type
+          value: "single-node"
+        - name: xpack.security.enabled
+          value: "true"
+        - name: ELASTIC_PASSWORD
+          value: usrpassword
+        ports:
+        - containerPort: 9200
+          name: http
+        - containerPort: 9300
+          name: discovery
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: elastic-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastic
+  namespace: jets-dev
+spec:
+  clusterIP: None
+  selector:
+    app: elastic
+  ports:
+  - port: 9200
+    name: http
+    targetPort: http
+  - port: 9300
+    name: discovery
+    targetPort: discovery
