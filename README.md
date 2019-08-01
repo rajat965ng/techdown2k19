@@ -15,3 +15,5 @@ Exploration of new tools, frameworks or programming languages in 2019. Eliminate
 <br>
 #7 Designing Distributed Systems [Intake from the book by Bendan Burns]
 <br>
+#8 Hashicorp Vault with Nginx sample microservice
+<br>
