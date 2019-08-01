@@ -1,0 +1,67 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-config
+data:
+  index.html: |
+    <html>
+    <body>
+    <p>Some secrets:</p>
+    <ul>
+    <li><pre>username: .Data.username </pre></li>
+    <li><pre>password: .Data.password </pre></li>
+    </ul>
+    </body>
+    </html>
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: vault-agent-config
+data:
+  vault-agent-config.hcl: |
+    exit_after_auth = true
+    pid_file = "/home/vault/pidfile"
+
+    auto_auth {
+        method "kubernetes" {
+            mount_path = "auth/kubernetes"
+            config = {
+                role = "example"
+            }
+        }
+
+        sink "file" {
+            config = {
+                path = "/home/vault/.vault-token"
+            }
+        }
+    }
+
+  consul-template-config.hcl: |
+    vault {
+      address = "http://vault:8200"
+      renew_token = false
+      vault_agent_token_file = "/home/vault/.vault-token"
+      retry {
+        backoff = "1s"
+      }
+    }
+
+    template {
+      destination = "/etc/secrets/index.html"
+      contents = <<EOH
+      <html>
+      <body>
+      <p>Some secrets:</p>
+      {{- with secret "secret/myapp/config" }}
+      <ul>
+      <li><pre>username: {{ .Data.username }}</pre></li>
+      <li><pre>password: {{ .Data.password }}</pre></li>
+      </ul>
+      {{ end }}
+      </body>
+      </html>
+      EOH
+    }
+

@@ -1,0 +1,43 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: vault
+spec:
+  selector:
+    matchLabels:
+      app: vault
+  template:
+    metadata:
+      labels:
+        app: vault
+    spec:
+      containers:
+        - name: vault
+          image: vault
+          env:
+            - name: VAULT_DEV_ROOT_TOKEN_ID
+              value: myroot
+            - name: VAULT_DEV_LISTEN_ADDRESS
+              value: 0.0.0.0:8200
+            - name: VAULT_ADDR
+              value: http://127.0.0.1:8200
+            - name: VAULT_TOKEN
+              value: myroot
+          ports:
+            - containerPort: 8200
+              name: http
+            - containerPort: 1234
+              name: discovery
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: vault
+spec:
+  selector:
+    app: vault
+  ports:
+    - port: 8200
+      name: http
+    - port: 1234
+      name: discovery

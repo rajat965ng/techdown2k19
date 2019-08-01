@@ -1,0 +1,67 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: vault-agent-example
+spec:
+  serviceAccountName: vault-auth
+  restartPolicy: Never
+  volumes:
+  - name: temp
+    emptyDir: {}
+  - name: vault-token
+    emptyDir:
+      medium: Memory
+  - name: nginx-config
+    configMap:
+      name: nginx-config
+      defaultMode: 0777
+      items:
+        - key: index.html
+          path: index.html
+  - name: config
+    configMap:
+      name: vault-agent-config
+      items:
+      - key: vault-agent-config.hcl
+        path: vault-agent-config.hcl
+      - key: consul-template-config.hcl
+        path: consul-template-config.hcl
+  initContainers:
+  - name: vault-agent-auth
+    image: vault
+    env:
+    - name: VAULT_ADDR
+      value: http://vault:8200
+    args: [ "agent", "-config=/etc/vault/vault-agent-config.hcl", "-log-level=debug" ]
+    volumeMounts:
+    - mountPath: /etc/vault
+      name: config
+    - mountPath: /home/vault
+      name: vault-token
+  - name: inject-secrets
+    image: gempesaw/curl-jq
+    volumeMounts:
+    - mountPath: /home/vault
+      name: vault-token
+    - mountPath: /etc/secrets
+      name: nginx-config
+      readOnly: false
+    - mountPath: /usr/secret
+      name: temp
+      readOnly: false
+    command:
+    - /bin/sh
+    - -c
+    args:
+    - >
+      curl --header "X-VAULT-TOKEN: `cat /home/vault/.vault-token`" http://vault:8200/v1/secret/data/myapp/config > /usr/secret/data.json;
+      export username=$(cat /usr/secret/data.json | jq -r .data.data.username) && cat /etc/secrets/index.html | sed "s/.Data.username/$username/g" > /usr/secret/index.html;
+      export password=$(cat /usr/secret/data.json | jq -r .data.data.password) &&  sed -i "s/.Data.password/$password/g" /usr/secret/index.html;
+  containers:
+  - name: nginx
+    image: nginx
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - mountPath: /usr/share/nginx/html
+      name: temp
