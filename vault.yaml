@@ -1,3 +1,4 @@
+## Deploy a vault in kubernetes cluster. Currently it is deployed in DEV mode.
 kind: Deployment
 apiVersion: apps/v1
 metadata:

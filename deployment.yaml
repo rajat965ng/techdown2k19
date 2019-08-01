@@ -1,3 +1,4 @@
+## Nginx as a microservice deployment. It queries vault for retrieving secrets.
 kind: Pod
 apiVersion: v1
 metadata:
