@@ -91,9 +91,44 @@
     curl --request POST \
             --data '{"jwt": "'"$KUBE_TOKEN"'", "role": "example"}' \
             $VAULT_ADDR/v1/auth/kubernetes/login | jq
+            
+
     ```
 - Deploy Nginx microservice
   - All vault auth agent config and nginx config are placed in config.yaml
   - Deploy microservice using deployment.yaml  
     
     
+<h2>Enable database secrets in Vault</h2>
+
+- Enable database secret engine.   
+   ```
+   vault secrets enable database
+   ```
+
+- Configure Vault with the proper plugin and connection information.   
+   ```
+   vault write database/config/my-mongodb-database plugin_name=mongodb-database-plugin allowed_roles="mongo-role" connection_url="mongodb://{{username}}:{{password}}@mongo:27017/admin?ssl=false" username="root" password="root"
+   ```
+   
+- Configure a role that maps a name in Vault to a MongoDB command that executes and creates the database credential   
+   
+   ```
+   vault write database/roles/mongo-role \
+       db_name=my-mongodb-database \
+       creation_statements='{ "db": "admin", "roles": [{ "role": "readWrite" }, {"role": "readWrite", "db": "foo"}] }' \
+       default_ttl="1h" \
+       max_ttl="24h"
+   ```
+   
+- Usage   
+   ```    
+   vault read database/creds/mongo-role
+
+
+   use username and password obtained from output.     
+   
+   password           A1a-wvMeQM2cjM7tZtbD
+   username           v-token-mongo-role-xfmuyE4wWEJZYSonyOtR-1564740843
+   
+   ```
