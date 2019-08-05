@@ -119,6 +119,16 @@
        creation_statements='{ "db": "admin", "roles": [{ "role": "readWrite" }, {"role": "readWrite", "db": "foo"}] }' \
        default_ttl="1h" \
        max_ttl="24h"
+
+   cat <<EOF | vault policy write myapp-kv-ro -
+   path "database/*" { capabilities = [ "create", "read", "update", "delete", "list" ] }
+   EOF 
+
+   vault write auth/kubernetes/role/mongo-role \
+               bound_service_account_names=vault-auth \
+               bound_service_account_namespaces=default \
+               policies=myapp-kv-ro \
+               ttl=24h
    ```
    
 - Usage   
@@ -130,5 +140,16 @@
    
    password           A1a-wvMeQM2cjM7tZtbD
    username           v-token-mongo-role-xfmuyE4wWEJZYSonyOtR-1564740843
-   
+ 
    ```
+  
+  - CURL Usage
+    ```
+     KUBE_TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+     echo $KUBE_TOKEN
+        
+     curl --request POST --data '{"jwt": "'"$KUBE_TOKEN"'", "role": "mongo-role"}' $VAULT_ADDR/v1/auth/kubernetes/login | jq
+    
+     
+     curl -v --header "X-Vault-Token: s.fCzfPLbncnw1v4U35lic0Yse" http://vault:8200/v1/database/creds/mongo-role
+    ```
