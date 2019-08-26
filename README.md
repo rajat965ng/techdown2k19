@@ -8,6 +8,7 @@
 
 - Blog/tutorials for Go Programming
   - https://ewanvalentine.io/tag/go/
+  - https://callistaenterprise.se/blogg/teknik/2017/02/17/go-blog-series-part1/
 
 - Books on Go Programming
   - Go in practice
