@@ -1,0 +1,134 @@
+#!/bin/bash
+
+set -e
+
+CMD="$@"
+
+# check if docker installed and running
+docker info &>/dev/null || (echo "WARNING: Xray requires Docker daemon UP and running" && exit 1)
+
+XRAY_VERSION="2.9.0"
+DOCKER_SERVER_CURRENT_VER=$(docker version --format '{{.Server.Version}}' 2>/dev/null) || DOCKER_SERVER_CURRENT_VER=""
+DOCKER_SERVER_HOSTNAME=$(hostname -s)
+DOCKER_SERVER_FQDN=$(hostname -A | awk '{print $1;}')
+
+# Xray installer workdir
+XRAY_INSTALLER_DIR="${HOME}/.jfrog/xray/xray-installer"
+DATE=$(date +"%Y%m%d%H%M")
+INSTALLATION_LOG_FILE="${INSTALLER_DIR}/install-docker.${DATE}.log"
+
+if [ "${USE_DEFAULTS}" == true ]; then
+    echo "Running in 'use defaults' mode"
+else
+    USE_DEFAULTS=false
+fi
+
+# Xray installer conf file, should be created in the first run
+XRAY_CONF="${XRAY_INSTALLER_DIR}/xray-env.conf"
+
+XRAY_MOUNT_ROOT_DEFAULT="${HOME}/.jfrog/xray"
+
+[ ! -d "$XRAY_INSTALLER_DIR" ] && mkdir -p "$XRAY_INSTALLER_DIR"
+
+# Create the installer configuration file
+if [ ! -f "$XRAY_CONF" ]; then
+    # TODO: add to log output only
+    #logPrinter "Provide desired XRAY data location"
+
+    if [ ! "${USE_DEFAULTS}" ]; then
+        read -p "Provide Xray data folder [${XRAY_MOUNT_ROOT_DEFAULT}]: " XRAY_MOUNT_ROOT
+    fi
+
+    XRAY_MOUNT_ROOT=${XRAY_MOUNT_ROOT:-${XRAY_MOUNT_ROOT_DEFAULT}}
+
+    # Write to conf file
+    echo "export XRAY_MOUNT_ROOT=${XRAY_MOUNT_ROOT}" >> ${XRAY_CONF}
+    echo "XRAY_MOUNT_ROOT is now specified in ${XRAY_CONF}, as ${XRAY_MOUNT_ROOT}"
+fi
+
+# Load the installer configuration file
+if [ -f "$XRAY_CONF" ]; then
+    source "${XRAY_CONF}"
+else
+    echo "ERROR: configuration file does not exist [${XRAY_CONF}]"
+    exit 1
+fi
+
+if [ -z ${XRAY_MOUNT_ROOT} ]
+then
+    echo "ERROR: XRAY_MOUNT_ROOT is not set, please update the conf file [${XRAY_CONF}]"
+    exit 1
+fi
+echo "INFO: Using XRAY_MOUNT_ROOT=${XRAY_MOUNT_ROOT}"
+
+# Setup options for connecting to docker host
+if [ -z "$DOCKER_HOST" ]; then
+    DOCKER_HOST="/var/run/docker.sock"
+fi
+if [ -S "$DOCKER_HOST" ]; then
+    DOCKER_ADDR="-v $DOCKER_HOST:$DOCKER_HOST -e DOCKER_HOST"
+else
+    DOCKER_ADDR="-e DOCKER_HOST -e DOCKER_TLS_VERIFY -e DOCKER_CERT_PATH"
+fi
+
+# Only allocate tty if we detect one
+if [ -t 1 ]; then
+    DOCKER_RUN_OPTIONS="-t"
+fi
+if [ -t 0 ]; then
+    DOCKER_RUN_OPTIONS="$DOCKER_RUN_OPTIONS -i"
+fi
+
+if [ ! -z ${XRAY_MASTER_KEY} ]; then
+    XRAY_HA_PROPS="-e XRAY_MASTER_KEY=${XRAY_MASTER_KEY}"
+fi
+
+XRAY_HA_NODE_ID=${XRAY_HA_NODE_ID:-${DOCKER_SERVER_HOSTNAME}}
+XRAY_HA_PROPS="${XRAY_HA_PROPS} -e XRAY_HA_NODE_ID=${XRAY_HA_NODE_ID}"
+
+XRAY_VOLUMES="-v ${XRAY_MOUNT_ROOT}/xray-installer:/data -v ${XRAY_MOUNT_ROOT}:/xray_global_mount_root"
+
+## Special configuration ##
+## Set XRAY_LOCAL_DOCKER_REPO in XRAY_CONF to use local docker repo
+## Can be followed by XRAY_LOCAL_DOCKER_USERNAME and XRAY_LOCAL_DOCKER_PASSWORD in XRAY_CONF for dockerlogin
+XRAY_DOCKER_REPO=${XRAY_LOCAL_DOCKER_REPO:-"docker.bintray.io/jfrog"}
+if [ ! -z ${XRAY_LOCAL_DOCKER_USERNAME} ] && [ ! -z ${XRAY_LOCAL_DOCKER_PASSWORD} ]; then
+    DOCKER_RUN_OPTIONS_ENV="-e XRAY_DOCKER_USERNAME=${XRAY_LOCAL_DOCKER_USERNAME} -e XRAY_DOCKER_PASSWORD=${XRAY_LOCAL_DOCKER_PASSWORD}"
+fi
+XRAYDB_DOCKER_REPO=${XRAY_LOCAL_DOCKER_REPO:-"docker.bintray.io/jfrog"}
+## Set DOCKER_INSTALLER_OFFLINE=true, to use local docker registry, then you do not need to pull
+DOCKER_INSTALLER_OFFLINE=${DOCKER_INSTALLER_OFFLINE:-"false"}
+## Set DOCKER_CONFIG_PATH, docker json-conf file location, e.g.
+DOCKER_CONFIG_PATH=${DOCKER_CONFIG_PATH:-"false"}
+
+if [ ! -z "${DOCKER_CONFIG_PATH}" ] && [ ! "${DOCKER_CONFIG_PATH}" == "false" ] && [ -f "$(ls ${DOCKER_CONFIG_PATH})" ]; then
+    echo "Using host docker authentication ..."
+    DOCKER_CONFIG_PATH="$(ls ${DOCKER_CONFIG_PATH})"
+    if [ -f "${DOCKER_CONFIG_PATH}" ]; then
+        XRAY_VOLUMES="${XRAY_VOLUMES} -v ${DOCKER_CONFIG_PATH}:/root/.docker/config.json"
+    else
+        echo "ERROR: File not found [${DOCKER_CONFIG_PATH}], skipping local docker config file"
+    fi
+fi
+IMAGE="${XRAY_DOCKER_REPO}/xray-installer:$XRAY_VERSION"
+
+# check if docker images exists locally in order to hide "Unable to find image locally" message
+docker inspect ${IMAGE} &>/dev/null || docker pull ${IMAGE}
+
+
+exec docker run --rm $DOCKER_RUN_OPTIONS $DOCKER_ADDR $XRAY_VOLUMES $XRAY_HA_PROPS \
+                -e USE_DEFAULTS=$USE_DEFAULTS \
+                -e XRAY_DOCKER_REPO=$XRAY_DOCKER_REPO \
+                -e DOCKER_INSTALLER_OFFLINE=${DOCKER_INSTALLER_OFFLINE} \
+                -e XRAYDB_DOCKER_REPO=$XRAYDB_DOCKER_REPO \
+                -e XRAY_VERSION=$XRAY_VERSION \
+                -e SERVER_FLAG=$SERVER_FLAG \
+                -e XRAY_MOUNT_ROOT=$XRAY_MOUNT_ROOT \
+                -e DOCKER_SERVER_CURRENT_VER=$DOCKER_SERVER_CURRENT_VER \
+                -e DOCKER_SERVER_HOSTNAME=$DOCKER_SERVER_HOSTNAME \
+                -e DOCKER_SERVER_FQDN=$DOCKER_SERVER_FQDN \
+                -e INSTALLATION_LOG_FILE=$INSTALLATION_LOG_FILE \
+                ${DOCKER_RUN_OPTIONS_ENV} \
+                 $IMAGE "$CMD"
+
+exit $?
