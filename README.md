@@ -19,3 +19,5 @@ Exploration of new tools, frameworks or programming languages in 2019. Eliminate
 <br>
 #9 Go Programming tutorials
 <br>
+#10 jfrog/xray: Terraform setup for Jfrog Server in GCP on one instance and X-Ray on another instance.
+<br>
