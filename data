@@ -1,0 +1,25 @@
+{
+  "name": "securityPolicy",
+  "type": "security",
+  "description": "some description",
+  "rules": [
+    {
+      "name": "securityRule",
+      "priority": 1,
+      "criteria": {
+        "min_severity": "High"
+      },
+      "actions": {
+        "mails": [
+          "mail1@example.com",
+          "mail2@example.com"
+        ],
+        "fail_build": true,
+        "block_download": {
+          "unscanned": true,
+          "active": true
+        }
+      }
+    }
+  ]
+}

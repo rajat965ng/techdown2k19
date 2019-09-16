@@ -3,7 +3,7 @@
     - sudo useradd artifactory
     - sudo usermod -aG docker artifactory
     - sudo chmod -R 777 /var/opt/jfrog/artifactory
-    - docker run -d -v /var/opt/jfrog/artifactory:/var/opt/jfrog/artifactory -p 8081:8081 docker.bintray.io/jfrog/artifactory-pro:latest
+    - docker run -d -v /var/opt/jfrog/artifactory:/var/opt/jfrog/artifactory -p 80:8081 docker.bintray.io/jfrog/artifactory-pro:latest
 
 - [Jfrog Server: Http Settings (http://104.198.239.157)]
     - Docker Access Method: Repository Path
@@ -21,3 +21,11 @@
     - ./xray install
     - ./xray start
 
+- [To build the provider GO code]
+    - go build -o terraform-provider-xray_v0.1.0
+
+
+- [To Enable Logging]
+    - export TF_LOG=DEBUG
+    - export TF_TF_LOG_PATH=/Users/rajnigam/workspace/tf_jfrog/provisioner
+    - terraform apply

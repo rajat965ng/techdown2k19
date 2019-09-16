@@ -1,0 +1,1028 @@
+2019/09/15 19:38:18 [INFO] Terraform version: 0.11.11  ac4fff416318bf0915a0ab80e062a99ef3724334
+2019/09/15 19:38:18 [INFO] Go runtime version: go1.11.1
+2019/09/15 19:38:18 [INFO] CLI args: []string{"/usr/local/bin/terraform", "apply"}
+2019/09/15 19:38:18 [DEBUG] Attempting to open CLI config file: /Users/rajnigam/.terraformrc
+2019/09/15 19:38:18 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2019/09/15 19:38:18 [INFO] CLI command args: []string{"apply"}
+2019/09/15 19:38:18 [INFO] command: empty terraform config, returning nil
+2019/09/15 19:38:18 [DEBUG] command: no data state file found for backend config
+2019/09/15 19:38:18 [DEBUG] New state was assigned lineage "8e6df409-2c3e-5feb-f2db-3eaa324ac99b"
+2019/09/15 19:38:18 [INFO] command: backend initialized: <nil>
+2019/09/15 19:38:18 [DEBUG] checking for provider in "."
+2019/09/15 19:38:18 [DEBUG] found provider "terraform-provider-xray_v0.1.0"
+2019/09/15 19:38:18 [DEBUG] checking for provider in "/usr/local/bin"
+2019/09/15 19:38:18 [DEBUG] checking for provider in ".terraform/plugins/darwin_amd64"
+2019/09/15 19:38:18 [DEBUG] found valid plugin: "xray", "0.1.0", "/Users/rajnigam/workspace/tf_jfrog/provisioner/terraform-provider-xray_v0.1.0"
+2019/09/15 19:38:18 [DEBUG] checking for provisioner in "."
+2019/09/15 19:38:18 [DEBUG] checking for provisioner in "/usr/local/bin"
+2019/09/15 19:38:18 [DEBUG] checking for provisioner in ".terraform/plugins/darwin_amd64"
+2019/09/15 19:38:18 [INFO] command: backend <nil> is not enhanced, wrapping in local
+2019/09/15 19:38:18 [INFO] backend/local: starting Apply operation
+2019/09/15 19:38:18 [DEBUG] New state was assigned lineage "a53c663e-d755-874a-0856-7a6c49c2e7ef"
+2019/09/15 19:38:18 [INFO] terraform: building graph: GraphTypeInput
+2019/09/15 19:38:18 [TRACE] ConfigTransformer: Starting for path: []
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ConfigTransformer:
+
+xray_policy.policy_one - *terraform.NodeAbstractResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.LocalTransformer:
+
+xray_policy.policy_one - *terraform.NodeAbstractResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.OutputTransformer:
+
+xray_policy.policy_one - *terraform.NodeAbstractResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.OrphanResourceTransformer:
+
+xray_policy.policy_one - *terraform.NodeAbstractResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.OrphanOutputTransformer:
+
+xray_policy.policy_one - *terraform.NodeAbstractResource
+2019/09/15 19:38:18 [TRACE] AttachResourceConfigTransformer: Beginning...
+2019/09/15 19:38:18 [TRACE] AttachResourceConfigTransformer: Attach resource config request: xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] Attaching resource config: &config.Resource{Mode:0, Name:"policy_one", Type:"xray_policy", RawCount:(*config.RawConfig)(0xc0003f2850), RawConfig:(*config.RawConfig)(0xc0003f27e0), Provisioners:[]*config.Provisioner(nil), Provider:"", DependsOn:[]string(nil), Lifecycle:config.ResourceLifecycle{CreateBeforeDestroy:false, PreventDestroy:false, IgnoreChanges:[]string(nil)}}
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.AttachResourceConfigTransformer:
+
+xray_policy.policy_one - *terraform.NodeAbstractResource
+2019/09/15 19:38:18 [DEBUG] Resource state not found for "xray_policy.policy_one": xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.AttachStateTransformer:
+
+xray_policy.policy_one - *terraform.NodeAbstractResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.RootVariableTransformer:
+
+xray_policy.policy_one - *terraform.NodeAbstractResource
+2019/09/15 19:38:18 [TRACE] ProviderConfigTransformer: Starting for path: []
+2019/09/15 19:38:18 [TRACE] Attach provider request: []string{} xray
+2019/09/15 19:38:18 [TRACE] Attaching provider config: *config.ProviderConfig{Name:"xray", Alias:"", Version:"", RawConfig:(*config.RawConfig)(0xc0003f2770)}
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ProviderConfigTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeAbstractResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.MissingProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeAbstractResource
+2019/09/15 19:38:18 [DEBUG] resource xray_policy.policy_one using provider provider.xray
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeAbstractResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.PruneProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeAbstractResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ParentProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeAbstractResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.graphTransformerMulti:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeAbstractResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ModuleVariableTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeAbstractResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.RemovedModuleTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeAbstractResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [DEBUG] ReferenceTransformer: "xray_policy.policy_one" references: []
+2019/09/15 19:38:18 [DEBUG] ReferenceTransformer: "provider.xray" references: []
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ReferenceTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeAbstractResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.CountBoundaryTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeAbstractResource
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeAbstractResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.TargetsTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeAbstractResource
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeAbstractResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.CloseProviderTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeAbstractResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeAbstractResource
+xray_policy.policy_one - *terraform.NodeAbstractResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.CloseProvisionerTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeAbstractResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeAbstractResource
+xray_policy.policy_one - *terraform.NodeAbstractResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.RootTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeAbstractResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeAbstractResource
+root - terraform.graphNodeRoot
+  meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray (close) - *terraform.graphNodeCloseProvider
+xray_policy.policy_one - *terraform.NodeAbstractResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.TransitiveReductionTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  xray_policy.policy_one - *terraform.NodeAbstractResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  xray_policy.policy_one - *terraform.NodeAbstractResource
+root - terraform.graphNodeRoot
+  meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray (close) - *terraform.graphNodeCloseProvider
+xray_policy.policy_one - *terraform.NodeAbstractResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [DEBUG] Starting graph walk: walkInput
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "provider.xray"
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "meta.count-boundary (count boundary fixup)"
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "provider.xray (close)"
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "root"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "root" waiting on "meta.count-boundary (count boundary fixup)"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "root" waiting on "provider.xray (close)"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "xray_policy.policy_one" waiting on "provider.xray"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "meta.count-boundary (count boundary fixup)" waiting on "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "provider.xray (close)" waiting on "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] dag/walk: dependencies changed for "provider.xray (close)", sending new deps
+2019/09/15 19:38:18 [TRACE] dag/walk: dependencies changed for "root", sending new deps
+2019/09/15 19:38:18 [TRACE] dag/walk: dependencies changed for "xray_policy.policy_one", sending new deps
+2019/09/15 19:38:18 [TRACE] dag/walk: dependencies changed for "meta.count-boundary (count boundary fixup)", sending new deps
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "provider.xray"
+2019/09/15 19:38:18 [TRACE] vertex 'root.provider.xray': walking
+2019/09/15 19:38:18 [TRACE] vertex 'root.provider.xray': evaluating
+2019/09/15 19:38:18 [TRACE] [walkInput] Entering eval tree: provider.xray
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalInitProvider
+2019-09-15T19:38:18.678+0530 [DEBUG] plugin: starting plugin: path=/Users/rajnigam/workspace/tf_jfrog/provisioner/terraform-provider-xray_v0.1.0 args=[/Users/rajnigam/workspace/tf_jfrog/provisioner/terraform-provider-xray_v0.1.0]
+2019-09-15T19:38:18.681+0530 [DEBUG] plugin: waiting for RPC address: path=/Users/rajnigam/workspace/tf_jfrog/provisioner/terraform-provider-xray_v0.1.0
+2019-09-15T19:38:18.700+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 2019/09/15 19:38:18 Invoking provider
+2019-09-15T19:38:18.701+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: plugin address: timestamp=2019-09-15T19:38:18.700+0530 address=/var/folders/2w/vw_cgf0j7h922xb42py2v5h4blgj9j/T/plugin284227196 network=unix
+2019-09-15T19:38:18.702+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 2019/09/15 19:38:18 Invoking provider
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalOpFilter
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalGetProvider
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalInterpolateProvider
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalBuildProviderConfig
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalInputProvider
+2019/09/15 19:38:18 [TRACE] root: eval: terraform.EvalNoop
+2019/09/15 19:38:18 [TRACE] root: eval: terraform.EvalNoop
+2019/09/15 19:38:18 [TRACE] root: eval: terraform.EvalNoop
+2019/09/15 19:38:18 [TRACE] [walkInput] Exiting eval tree: provider.xray
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] vertex 'root.xray_policy.policy_one': walking
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "provider.xray (close)"
+2019/09/15 19:38:18 [TRACE] vertex 'root.provider.xray (close)': walking
+2019/09/15 19:38:18 [TRACE] vertex 'root.provider.xray (close)': evaluating
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "meta.count-boundary (count boundary fixup)"
+2019/09/15 19:38:18 [TRACE] [walkInput] Entering eval tree: provider.xray (close)
+2019/09/15 19:38:18 [TRACE] vertex 'root.meta.count-boundary (count boundary fixup)': walking
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalCloseProvider
+2019/09/15 19:38:18 [TRACE] [walkInput] Exiting eval tree: provider.xray (close)
+2019/09/15 19:38:18 [TRACE] vertex 'root.meta.count-boundary (count boundary fixup)': evaluating
+2019/09/15 19:38:18 [TRACE] [walkInput] Entering eval tree: meta.count-boundary (count boundary fixup)
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalCountFixZeroOneBoundaryGlobal
+2019/09/15 19:38:18 [TRACE] [walkInput] Exiting eval tree: meta.count-boundary (count boundary fixup)
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "root"
+2019/09/15 19:38:18 [TRACE] vertex 'root.root': walking
+2019/09/15 19:38:18 [INFO] terraform: building graph: GraphTypeValidate
+2019/09/15 19:38:18 [TRACE] ConfigTransformer: Starting for path: []
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ConfigTransformer:
+
+xray_policy.policy_one - *terraform.NodeValidatableResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.LocalTransformer:
+
+xray_policy.policy_one - *terraform.NodeValidatableResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.OutputTransformer:
+
+xray_policy.policy_one - *terraform.NodeValidatableResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.OrphanResourceTransformer:
+
+xray_policy.policy_one - *terraform.NodeValidatableResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.OrphanOutputTransformer:
+
+xray_policy.policy_one - *terraform.NodeValidatableResource
+2019/09/15 19:38:18 [TRACE] AttachResourceConfigTransformer: Beginning...
+2019/09/15 19:38:18 [TRACE] AttachResourceConfigTransformer: Attach resource config request: xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] Attaching resource config: &config.Resource{Mode:0, Name:"policy_one", Type:"xray_policy", RawCount:(*config.RawConfig)(0xc0003f2850), RawConfig:(*config.RawConfig)(0xc0003f27e0), Provisioners:[]*config.Provisioner(nil), Provider:"", DependsOn:[]string(nil), Lifecycle:config.ResourceLifecycle{CreateBeforeDestroy:false, PreventDestroy:false, IgnoreChanges:[]string(nil)}}
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.AttachResourceConfigTransformer:
+
+xray_policy.policy_one - *terraform.NodeValidatableResource
+2019/09/15 19:38:18 [DEBUG] Resource state not found for "xray_policy.policy_one": xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.AttachStateTransformer:
+
+xray_policy.policy_one - *terraform.NodeValidatableResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.RootVariableTransformer:
+
+xray_policy.policy_one - *terraform.NodeValidatableResource
+2019/09/15 19:38:18 [TRACE] ProviderConfigTransformer: Starting for path: []
+2019/09/15 19:38:18 [TRACE] Attach provider request: []string{} xray
+2019/09/15 19:38:18 [TRACE] Attaching provider config: *config.ProviderConfig{Name:"xray", Alias:"", Version:"", RawConfig:(*config.RawConfig)(0xc0003f2770)}
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ProviderConfigTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.MissingProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+2019/09/15 19:38:18 [DEBUG] resource xray_policy.policy_one using provider provider.xray
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.PruneProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ParentProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.graphTransformerMulti:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.MissingProvisionerTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ProvisionerTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.graphTransformerMulti:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ModuleVariableTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.RemovedModuleTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [DEBUG] ReferenceTransformer: "xray_policy.policy_one" references: []
+2019/09/15 19:38:18 [DEBUG] ReferenceTransformer: "provider.xray" references: []
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ReferenceTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.CountBoundaryTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeValidatableResource
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.TargetsTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeValidatableResource
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.CloseProviderTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeValidatableResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeValidatableResource
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.CloseProvisionerTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeValidatableResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeValidatableResource
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.RootTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeValidatableResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeValidatableResource
+root - terraform.graphNodeRoot
+  meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray (close) - *terraform.graphNodeCloseProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.TransitiveReductionTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  xray_policy.policy_one - *terraform.NodeValidatableResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  xray_policy.policy_one - *terraform.NodeValidatableResource
+root - terraform.graphNodeRoot
+  meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray (close) - *terraform.graphNodeCloseProvider
+xray_policy.policy_one - *terraform.NodeValidatableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [DEBUG] Starting graph walk: walkValidate
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "provider.xray"
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "meta.count-boundary (count boundary fixup)"
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "provider.xray (close)"
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "root"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "provider.xray (close)" waiting on "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "root" waiting on "meta.count-boundary (count boundary fixup)"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "root" waiting on "provider.xray (close)"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "xray_policy.policy_one" waiting on "provider.xray"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "meta.count-boundary (count boundary fixup)" waiting on "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] dag/walk: dependencies changed for "provider.xray (close)", sending new deps
+2019/09/15 19:38:18 [TRACE] dag/walk: dependencies changed for "root", sending new deps
+2019/09/15 19:38:18 [TRACE] dag/walk: dependencies changed for "xray_policy.policy_one", sending new deps
+2019/09/15 19:38:18 [TRACE] dag/walk: dependencies changed for "meta.count-boundary (count boundary fixup)", sending new deps
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "provider.xray"
+2019/09/15 19:38:18 [TRACE] vertex 'root.provider.xray': walking
+2019/09/15 19:38:18 [TRACE] vertex 'root.provider.xray': evaluating
+2019/09/15 19:38:18 [TRACE] [walkValidate] Entering eval tree: provider.xray
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalInitProvider
+2019-09-15T19:38:18.705+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 2019/09/15 19:38:18 Invoking provider
+2019/09/15 19:38:18 [TRACE] root: eval: terraform.EvalNoop
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalOpFilter
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalGetProvider
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalInterpolateProvider
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalBuildProviderConfig
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalValidateProvider
+2019/09/15 19:38:18 [TRACE] root: eval: terraform.EvalNoop
+2019/09/15 19:38:18 [TRACE] root: eval: terraform.EvalNoop
+2019/09/15 19:38:18 [TRACE] [walkValidate] Exiting eval tree: provider.xray
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] vertex 'root.xray_policy.policy_one': walking
+2019/09/15 19:38:18 [TRACE] vertex 'root.xray_policy.policy_one': evaluating
+2019/09/15 19:38:18 [TRACE] [walkValidate] Entering eval tree: xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalInterpolate
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalIf
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalValidateCount
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalCountFixZeroOneBoundary
+2019/09/15 19:38:18 [TRACE] [walkValidate] Exiting eval tree: xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] vertex 'root.xray_policy.policy_one': expanding/walking dynamic subgraph
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ResourceCountTransformer:
+
+xray_policy.policy_one - *terraform.NodeValidatableResourceInstance
+2019/09/15 19:38:18 [DEBUG] Resource state not found for "xray_policy.policy_one": xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.AttachStateTransformer:
+
+xray_policy.policy_one - *terraform.NodeValidatableResourceInstance
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.TargetsTransformer:
+
+xray_policy.policy_one - *terraform.NodeValidatableResourceInstance
+2019/09/15 19:38:18 [DEBUG] ReferenceTransformer: "xray_policy.policy_one" references: []
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ReferenceTransformer:
+
+xray_policy.policy_one - *terraform.NodeValidatableResourceInstance
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.RootTransformer:
+
+xray_policy.policy_one - *terraform.NodeValidatableResourceInstance
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] vertex 'root.xray_policy.policy_one': walking
+2019/09/15 19:38:18 [TRACE] vertex 'root.xray_policy.policy_one': evaluating
+2019/09/15 19:38:18 [TRACE] [walkValidate] Entering eval tree: xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalValidateResourceSelfRef
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalGetProvider
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalInterpolate
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalValidateResource
+2019/09/15 19:38:18 [TRACE] [walkValidate] Exiting eval tree: xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "provider.xray (close)"
+2019/09/15 19:38:18 [TRACE] vertex 'root.provider.xray (close)': walking
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "meta.count-boundary (count boundary fixup)"
+2019/09/15 19:38:18 [TRACE] vertex 'root.meta.count-boundary (count boundary fixup)': walking
+2019/09/15 19:38:18 [TRACE] vertex 'root.provider.xray (close)': evaluating
+2019/09/15 19:38:18 [TRACE] vertex 'root.meta.count-boundary (count boundary fixup)': evaluating
+2019/09/15 19:38:18 [TRACE] [walkValidate] Entering eval tree: meta.count-boundary (count boundary fixup)
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalCountFixZeroOneBoundaryGlobal
+2019/09/15 19:38:18 [TRACE] [walkValidate] Exiting eval tree: meta.count-boundary (count boundary fixup)
+2019/09/15 19:38:18 [TRACE] [walkValidate] Entering eval tree: provider.xray (close)
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalCloseProvider
+2019/09/15 19:38:18 [TRACE] [walkValidate] Exiting eval tree: provider.xray (close)
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "root"
+2019/09/15 19:38:18 [TRACE] vertex 'root.root': walking
+2019/09/15 19:38:18 [INFO] backend/local: apply calling Refresh
+2019/09/15 19:38:18 [INFO] terraform: building graph: GraphTypeRefresh
+2019/09/15 19:38:18 [TRACE] No managed resources in state during refresh, skipping managed resource transformer
+2019/09/15 19:38:18 [TRACE] ConfigTransformer: Starting for path: []
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ConfigTransformer:
+
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.OrphanResourceTransformer:
+
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.AttachStateTransformer:
+
+2019/09/15 19:38:18 [TRACE] AttachResourceConfigTransformer: Beginning...
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.AttachResourceConfigTransformer:
+
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.RootVariableTransformer:
+
+2019/09/15 19:38:18 [TRACE] ProviderConfigTransformer: Starting for path: []
+2019/09/15 19:38:18 [TRACE] Attach provider request: []string{} xray
+2019/09/15 19:38:18 [TRACE] Attaching provider config: *config.ProviderConfig{Name:"xray", Alias:"", Version:"", RawConfig:(*config.RawConfig)(0xc0003f2770)}
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ProviderConfigTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.MissingProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [DEBUG] pruning unused provider provider.xray
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.PruneProviderTransformer:
+
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ParentProviderTransformer:
+
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.graphTransformerMulti:
+
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.LocalTransformer:
+
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.OutputTransformer:
+
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ModuleVariableTransformer:
+
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ReferenceTransformer:
+
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.TargetsTransformer:
+
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.CloseProviderTransformer:
+
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.RootTransformer:
+
+root - terraform.graphNodeRoot
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.TransitiveReductionTransformer:
+
+root - terraform.graphNodeRoot
+2019/09/15 19:38:18 [DEBUG] Starting graph walk: walkRefresh
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "root"
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "root"
+2019/09/15 19:38:18 [TRACE] vertex 'root.root': walking
+2019/09/15 19:38:18 [INFO] backend/local: apply calling Plan
+2019/09/15 19:38:18 [INFO] terraform: building graph: GraphTypePlan
+2019/09/15 19:38:18 [TRACE] ConfigTransformer: Starting for path: []
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ConfigTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.LocalTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.OutputTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.OrphanResourceTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.OrphanOutputTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResource
+2019/09/15 19:38:18 [TRACE] AttachResourceConfigTransformer: Beginning...
+2019/09/15 19:38:18 [TRACE] AttachResourceConfigTransformer: Attach resource config request: xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] Attaching resource config: &config.Resource{Mode:0, Name:"policy_one", Type:"xray_policy", RawCount:(*config.RawConfig)(0xc0003f2850), RawConfig:(*config.RawConfig)(0xc0003f27e0), Provisioners:[]*config.Provisioner(nil), Provider:"", DependsOn:[]string(nil), Lifecycle:config.ResourceLifecycle{CreateBeforeDestroy:false, PreventDestroy:false, IgnoreChanges:[]string(nil)}}
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.AttachResourceConfigTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResource
+2019/09/15 19:38:18 [DEBUG] Resource state not found for "xray_policy.policy_one": xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.AttachStateTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.RootVariableTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResource
+2019/09/15 19:38:18 [TRACE] ProviderConfigTransformer: Starting for path: []
+2019/09/15 19:38:18 [TRACE] Attach provider request: []string{} xray
+2019/09/15 19:38:18 [TRACE] Attaching provider config: *config.ProviderConfig{Name:"xray", Alias:"", Version:"", RawConfig:(*config.RawConfig)(0xc0003f2770)}
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ProviderConfigTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodePlannableResource
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.MissingProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodePlannableResource
+2019/09/15 19:38:18 [DEBUG] resource xray_policy.policy_one using provider provider.xray
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodePlannableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.PruneProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodePlannableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ParentProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodePlannableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.graphTransformerMulti:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodePlannableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ModuleVariableTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodePlannableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.RemovedModuleTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodePlannableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [DEBUG] ReferenceTransformer: "xray_policy.policy_one" references: []
+2019/09/15 19:38:18 [DEBUG] ReferenceTransformer: "provider.xray" references: []
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ReferenceTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodePlannableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.CountBoundaryTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodePlannableResource
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodePlannableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.TargetsTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodePlannableResource
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodePlannableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.CloseProviderTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodePlannableResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodePlannableResource
+xray_policy.policy_one - *terraform.NodePlannableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.CloseProvisionerTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodePlannableResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodePlannableResource
+xray_policy.policy_one - *terraform.NodePlannableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.RootTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodePlannableResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodePlannableResource
+root - terraform.graphNodeRoot
+  meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray (close) - *terraform.graphNodeCloseProvider
+xray_policy.policy_one - *terraform.NodePlannableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.TransitiveReductionTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  xray_policy.policy_one - *terraform.NodePlannableResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  xray_policy.policy_one - *terraform.NodePlannableResource
+root - terraform.graphNodeRoot
+  meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray (close) - *terraform.graphNodeCloseProvider
+xray_policy.policy_one - *terraform.NodePlannableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:18 [DEBUG] Starting graph walk: walkPlan
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "provider.xray (close)"
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "root"
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "provider.xray"
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "meta.count-boundary (count boundary fixup)"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "root" waiting on "meta.count-boundary (count boundary fixup)"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "root" waiting on "provider.xray (close)"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "xray_policy.policy_one" waiting on "provider.xray"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "meta.count-boundary (count boundary fixup)" waiting on "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] dag/walk: added edge: "provider.xray (close)" waiting on "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] dag/walk: dependencies changed for "xray_policy.policy_one", sending new deps
+2019/09/15 19:38:18 [TRACE] dag/walk: dependencies changed for "meta.count-boundary (count boundary fixup)", sending new deps
+2019/09/15 19:38:18 [TRACE] dag/walk: dependencies changed for "provider.xray (close)", sending new deps
+2019/09/15 19:38:18 [TRACE] dag/walk: dependencies changed for "root", sending new deps
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "provider.xray"
+2019/09/15 19:38:18 [TRACE] vertex 'root.provider.xray': walking
+2019/09/15 19:38:18 [TRACE] vertex 'root.provider.xray': evaluating
+2019/09/15 19:38:18 [TRACE] [walkPlan] Entering eval tree: provider.xray
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalInitProvider
+2019-09-15T19:38:18.708+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 2019/09/15 19:38:18 Invoking provider
+2019/09/15 19:38:18 [TRACE] root: eval: terraform.EvalNoop
+2019/09/15 19:38:18 [TRACE] root: eval: terraform.EvalNoop
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalOpFilter
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalGetProvider
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalInterpolateProvider
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalBuildProviderConfig
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalOpFilter
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalConfigProvider
+2019-09-15T19:38:18.709+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 2019/09/15 19:38:18 Invoking providerConfigure
+2019/09/15 19:38:18 [TRACE] [walkPlan] Exiting eval tree: provider.xray
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] vertex 'root.xray_policy.policy_one': walking
+2019/09/15 19:38:18 [TRACE] vertex 'root.xray_policy.policy_one': evaluating
+2019/09/15 19:38:18 [TRACE] [walkPlan] Entering eval tree: xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalInterpolate
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalCountCheckComputed
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalIf
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalCountFixZeroOneBoundary
+2019/09/15 19:38:18 [TRACE] [walkPlan] Exiting eval tree: xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] vertex 'root.xray_policy.policy_one': expanding/walking dynamic subgraph
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ResourceCountTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResourceInstance
+2019/09/15 19:38:18 [TRACE] OrphanResourceCount: Starting...
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.OrphanResourceCountTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResourceInstance
+2019/09/15 19:38:18 [DEBUG] Resource state not found for "xray_policy.policy_one": xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.AttachStateTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResourceInstance
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.TargetsTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResourceInstance
+2019/09/15 19:38:18 [DEBUG] ReferenceTransformer: "xray_policy.policy_one" references: []
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.ReferenceTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResourceInstance
+2019/09/15 19:38:18 [TRACE] Graph after step *terraform.RootTransformer:
+
+xray_policy.policy_one - *terraform.NodePlannableResourceInstance
+2019/09/15 19:38:18 [TRACE] dag/walk: added new vertex: "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "xray_policy.policy_one"
+2019/09/15 19:38:18 [TRACE] vertex 'root.xray_policy.policy_one': walking
+2019/09/15 19:38:18 [TRACE] vertex 'root.xray_policy.policy_one': evaluating
+2019/09/15 19:38:18 [TRACE] [walkPlan] Entering eval tree: xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalInterpolate
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalGetProvider
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalValidateResource
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalReadState
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalDiff
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalCheckPreventDestroy
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalWriteState
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalWriteDiff
+2019/09/15 19:38:18 [TRACE] [walkPlan] Exiting eval tree: xray_policy.policy_one
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "meta.count-boundary (count boundary fixup)"
+2019/09/15 19:38:18 [TRACE] vertex 'root.meta.count-boundary (count boundary fixup)': walking
+2019/09/15 19:38:18 [TRACE] vertex 'root.meta.count-boundary (count boundary fixup)': evaluating
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "provider.xray (close)"
+2019/09/15 19:38:18 [TRACE] [walkPlan] Entering eval tree: meta.count-boundary (count boundary fixup)
+2019/09/15 19:38:18 [TRACE] vertex 'root.provider.xray (close)': walking
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalCountFixZeroOneBoundaryGlobal
+2019/09/15 19:38:18 [TRACE] vertex 'root.provider.xray (close)': evaluating
+2019/09/15 19:38:18 [TRACE] [walkPlan] Exiting eval tree: meta.count-boundary (count boundary fixup)
+2019/09/15 19:38:18 [TRACE] [walkPlan] Entering eval tree: provider.xray (close)
+2019/09/15 19:38:18 [TRACE] root: eval: *terraform.EvalCloseProvider
+2019/09/15 19:38:18 [TRACE] [walkPlan] Exiting eval tree: provider.xray (close)
+2019/09/15 19:38:18 [TRACE] dag/walk: walking "root"
+2019/09/15 19:38:18 [TRACE] vertex 'root.root': walking
+2019/09/15 19:38:18 [DEBUG] command: asking for input: "Do you want to perform these actions?"
+2019/09/15 19:38:20 [INFO] terraform: building graph: GraphTypeApply
+2019/09/15 19:38:20 [TRACE] DiffTransformer: starting
+2019/09/15 19:38:20 [TRACE] DiffTransformer: Module: CREATE: xray_policy.policy_one
+  description: "" => "Yet another security policy"
+  name:        "" => "securityPolicy" (forces new resource)
+  type:        "" => "security"
+2019/09/15 19:38:20 [TRACE] DiffTransformer: Resource "xray_policy.policy_one": *terraform.InstanceDiff{mu:sync.Mutex{state:0, sema:0x0}, Attributes:map[string]*terraform.ResourceAttrDiff{"name":*terraform.ResourceAttrDiff{Old:"", New:"securityPolicy", NewComputed:false, NewRemoved:false, NewExtra:interface {}(nil), RequiresNew:true, Sensitive:false, Type:0x0}, "type":*terraform.ResourceAttrDiff{Old:"", New:"security", NewComputed:false, NewRemoved:false, NewExtra:interface {}(nil), RequiresNew:false, Sensitive:false, Type:0x0}, "description":*terraform.ResourceAttrDiff{Old:"", New:"Yet another security policy", NewComputed:false, NewRemoved:false, NewExtra:interface {}(nil), RequiresNew:false, Sensitive:false, Type:0x0}, "id":*terraform.ResourceAttrDiff{Old:"", New:"", NewComputed:true, NewRemoved:false, NewExtra:interface {}(nil), RequiresNew:true, Sensitive:false, Type:0x2}}, Destroy:false, DestroyDeposed:false, DestroyTainted:false, Meta:map[string]interface {}(nil)}
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.DiffTransformer:
+
+xray_policy.policy_one - *terraform.NodeApplyableResource
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.OrphanOutputTransformer:
+
+xray_policy.policy_one - *terraform.NodeApplyableResource
+2019/09/15 19:38:20 [TRACE] AttachResourceConfigTransformer: Beginning...
+2019/09/15 19:38:20 [TRACE] AttachResourceConfigTransformer: Attach resource config request: xray_policy.policy_one
+2019/09/15 19:38:20 [TRACE] Attaching resource config: &config.Resource{Mode:0, Name:"policy_one", Type:"xray_policy", RawCount:(*config.RawConfig)(0xc0003f2850), RawConfig:(*config.RawConfig)(0xc0003f27e0), Provisioners:[]*config.Provisioner(nil), Provider:"", DependsOn:[]string(nil), Lifecycle:config.ResourceLifecycle{CreateBeforeDestroy:false, PreventDestroy:false, IgnoreChanges:[]string(nil)}}
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.AttachResourceConfigTransformer:
+
+xray_policy.policy_one - *terraform.NodeApplyableResource
+2019/09/15 19:38:20 [DEBUG] Resource state not found for "xray_policy.policy_one": xray_policy.policy_one
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.AttachStateTransformer:
+
+xray_policy.policy_one - *terraform.NodeApplyableResource
+2019/09/15 19:38:20 [TRACE] ProviderConfigTransformer: Starting for path: []
+2019/09/15 19:38:20 [TRACE] Attach provider request: []string{} xray
+2019/09/15 19:38:20 [TRACE] Attaching provider config: *config.ProviderConfig{Name:"xray", Alias:"", Version:"", RawConfig:(*config.RawConfig)(0xc0003f2770)}
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.ProviderConfigTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.MissingProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+2019/09/15 19:38:20 [DEBUG] resource xray_policy.policy_one using provider provider.xray
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.ProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.PruneProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.ParentProviderTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.graphTransformerMulti:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] DestroyEdgeTransformer: Beginning destroy edge transformation...
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.DestroyEdgeTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] CBDEdgeTransformer: Beginning CBD transformation...
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.CBDEdgeTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.MissingProvisionerTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.ProvisionerTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.RootVariableTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.LocalTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.OutputTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.ModuleVariableTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.RemovedModuleTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [DEBUG] ReferenceTransformer: "xray_policy.policy_one" references: []
+2019/09/15 19:38:20 [DEBUG] ReferenceTransformer: "provider.xray" references: []
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.ReferenceTransformer:
+
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.CountBoundaryTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeApplyableResource
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.TargetsTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeApplyableResource
+provider.xray - *terraform.NodeApplyableProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.CloseProviderTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeApplyableResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeApplyableResource
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.CloseProvisionerTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeApplyableResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeApplyableResource
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.RootTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeApplyableResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  provider.xray - *terraform.NodeApplyableProvider
+  xray_policy.policy_one - *terraform.NodeApplyableResource
+root - terraform.graphNodeRoot
+  meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray (close) - *terraform.graphNodeCloseProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [TRACE] Graph after step *terraform.TransitiveReductionTransformer:
+
+meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  xray_policy.policy_one - *terraform.NodeApplyableResource
+provider.xray - *terraform.NodeApplyableProvider
+provider.xray (close) - *terraform.graphNodeCloseProvider
+  xray_policy.policy_one - *terraform.NodeApplyableResource
+root - terraform.graphNodeRoot
+  meta.count-boundary (count boundary fixup) - *terraform.NodeCountBoundary
+  provider.xray (close) - *terraform.graphNodeCloseProvider
+xray_policy.policy_one - *terraform.NodeApplyableResource
+  provider.xray - *terraform.NodeApplyableProvider
+2019/09/15 19:38:20 [DEBUG] Starting graph walk: walkApply
+2019/09/15 19:38:20 [TRACE] dag/walk: added new vertex: "provider.xray"
+2019/09/15 19:38:20 [TRACE] dag/walk: added new vertex: "meta.count-boundary (count boundary fixup)"
+2019/09/15 19:38:20 [TRACE] dag/walk: added new vertex: "provider.xray (close)"
+2019/09/15 19:38:20 [TRACE] dag/walk: added new vertex: "root"
+2019/09/15 19:38:20 [TRACE] dag/walk: added new vertex: "xray_policy.policy_one"
+2019/09/15 19:38:20 [TRACE] dag/walk: added edge: "root" waiting on "meta.count-boundary (count boundary fixup)"
+2019/09/15 19:38:20 [TRACE] dag/walk: added edge: "xray_policy.policy_one" waiting on "provider.xray"
+2019/09/15 19:38:20 [TRACE] dag/walk: added edge: "meta.count-boundary (count boundary fixup)" waiting on "xray_policy.policy_one"
+2019/09/15 19:38:20 [TRACE] dag/walk: added edge: "provider.xray (close)" waiting on "xray_policy.policy_one"
+2019/09/15 19:38:20 [TRACE] dag/walk: added edge: "root" waiting on "provider.xray (close)"
+2019/09/15 19:38:20 [TRACE] dag/walk: dependencies changed for "root", sending new deps
+2019/09/15 19:38:20 [TRACE] dag/walk: dependencies changed for "xray_policy.policy_one", sending new deps
+2019/09/15 19:38:20 [TRACE] dag/walk: dependencies changed for "meta.count-boundary (count boundary fixup)", sending new deps
+2019/09/15 19:38:20 [TRACE] dag/walk: dependencies changed for "provider.xray (close)", sending new deps
+2019/09/15 19:38:20 [TRACE] dag/walk: walking "provider.xray"
+2019/09/15 19:38:20 [TRACE] vertex 'root.provider.xray': walking
+2019/09/15 19:38:20 [TRACE] vertex 'root.provider.xray': evaluating
+2019/09/15 19:38:20 [TRACE] [walkApply] Entering eval tree: provider.xray
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalInitProvider
+2019-09-15T19:38:20.487+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 2019/09/15 19:38:20 Invoking provider
+2019/09/15 19:38:20 [TRACE] root: eval: terraform.EvalNoop
+2019/09/15 19:38:20 [TRACE] root: eval: terraform.EvalNoop
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalOpFilter
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalGetProvider
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalInterpolateProvider
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalBuildProviderConfig
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalOpFilter
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalConfigProvider
+2019-09-15T19:38:20.488+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 2019/09/15 19:38:20 Invoking providerConfigure
+2019/09/15 19:38:20 [TRACE] [walkApply] Exiting eval tree: provider.xray
+2019/09/15 19:38:20 [TRACE] dag/walk: walking "xray_policy.policy_one"
+2019/09/15 19:38:20 [TRACE] vertex 'root.xray_policy.policy_one': walking
+2019/09/15 19:38:20 [TRACE] vertex 'root.xray_policy.policy_one': evaluating
+2019/09/15 19:38:20 [TRACE] [walkApply] Entering eval tree: xray_policy.policy_one
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalSequence
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalInstanceInfo
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalReadDiff
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalIf
+2019/09/15 19:38:20 [TRACE] root: eval: terraform.EvalNoop
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalIf
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalInterpolate
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalInterpolate
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalGetProvider
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalReadState
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalValidateResource
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalDiff
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalReadDiff
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalCompareDiff
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalGetProvider
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalReadState
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalApplyPre
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalApply
+2019/09/15 19:38:20 [DEBUG] apply: xray_policy.policy_one: executing Apply
+2019-09-15T19:38:20.490+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 2019/09/15 19:38:20 Calling resourceCreateItem
+2019-09-15T19:38:20.490+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 2019/09/15 19:38:20 name: securityPolicy
+2019-09-15T19:38:20.490+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 2019/09/15 19:38:20 type security
+2019-09-15T19:38:20.490+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 2019/09/15 19:38:20 description Yet another security policy
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: panic: interface conversion: interface {} is string, not bool
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: goroutine 71 [running]:
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: _/Users/rajnigam/workspace/tf_jfrog/provisioner/xresource.resourceCreateItem(0xc000356690, 0x1ba2d20, 0xc0002b4280, 0xc000356690, 0x0)
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 	/Users/rajnigam/workspace/tf_jfrog/provisioner/xresource/policy.go:61 +0x473
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: github.com/hashicorp/terraform/helper/schema.(*Resource).Apply(0xc00016ae00, 0xc0005bc7d0, 0xc0004dd000, 0x1ba2d20, 0xc0002b4280, 0xc00007db01, 0x14807e5, 0xc000189000)
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 	/Users/rajnigam/go/src/github.com/hashicorp/terraform/helper/schema/resource.go:305 +0x3b4
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: github.com/hashicorp/terraform/helper/schema.(*Provider).Apply(0xc00016ae80, 0xc0005bc780, 0xc0005bc7d0, 0xc0004dd000, 0xc0001b6900, 0xc0004db500, 0x18)
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 	/Users/rajnigam/go/src/github.com/hashicorp/terraform/helper/schema/provider.go:289 +0x18f
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: github.com/hashicorp/terraform/plugin.(*ResourceProviderServer).Apply(0xc000169840, 0xc0004dcbe0, 0xc0001645d0, 0x0, 0x0)
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 	/Users/rajnigam/go/src/github.com/hashicorp/terraform/plugin/resource_provider.go:530 +0x57
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: reflect.Value.call(0xc0005c03c0, 0xc000010628, 0x13, 0x1c49f59, 0x4, 0xc00007df18, 0x3, 0x3, 0xc0005b04c0, 0xc00022a028, ...)
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 	/usr/local/go/src/reflect/value.go:447 +0x461
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: reflect.Value.Call(0xc0005c03c0, 0xc000010628, 0x13, 0xc0000fc718, 0x3, 0x3, 0xc00022a000, 0xc0000fc710, 0xc0000fc7b8)
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 	/usr/local/go/src/reflect/value.go:308 +0xa4
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: net/rpc.(*service).call(0xc000160740, 0xc0000d6230, 0xc0001342d8, 0xc0001342f0, 0xc00031c200, 0xc000156640, 0x1a63de0, 0xc0004dcbe0, 0x16, 0x1a63e20, ...)
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 	/usr/local/go/src/net/rpc/server.go:384 +0x14e
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: created by net/rpc.(*Server).ServeCodec
+2019-09-15T19:38:20.493+0530 [DEBUG] plugin.terraform-provider-xray_v0.1.0: 	/usr/local/go/src/net/rpc/server.go:481 +0x42b
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalWriteState
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalApplyProvisioners
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalIf
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalWriteState
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalWriteDiff
+2019/09/15 19:38:20 [TRACE] root: eval: *terraform.EvalApplyPost
+2019/09/15 19:38:20 [ERROR] root: eval: *terraform.EvalApplyPost, err: 1 error(s) occurred:
+
+* xray_policy.policy_one: unexpected EOF
+2019/09/15 19:38:20 [ERROR] root: eval: *terraform.EvalSequence, err: 1 error(s) occurred:
+
+* xray_policy.policy_one: unexpected EOF
+2019/09/15 19:38:20 [TRACE] [walkApply] Exiting eval tree: xray_policy.policy_one
+2019/09/15 19:38:20 [TRACE] dag/walk: upstream errored, not walking "provider.xray (close)"
+2019/09/15 19:38:20 [TRACE] dag/walk: upstream errored, not walking "meta.count-boundary (count boundary fixup)"
+2019/09/15 19:38:20 [TRACE] dag/walk: upstream errored, not walking "root"
+2019-09-15T19:38:20.495+0530 [DEBUG] plugin: plugin process exited: path=/Users/rajnigam/workspace/tf_jfrog/provisioner/terraform-provider-xray_v0.1.0
+2019/09/15 19:38:20 [TRACE] Preserving existing state lineage "a53c663e-d755-874a-0856-7a6c49c2e7ef"
+2019/09/15 19:38:20 [DEBUG] plugin: waiting for all plugin processes to complete...
+2019-09-15T19:38:20.497+0530 [WARN ] plugin: error closing client during Kill: err="connection is shut down"

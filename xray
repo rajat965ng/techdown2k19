@@ -116,7 +116,7 @@ IMAGE="${XRAY_DOCKER_REPO}/xray-installer:$XRAY_VERSION"
 docker inspect ${IMAGE} &>/dev/null || docker pull ${IMAGE}
 
 
-exec docker run --rm $DOCKER_RUN_OPTIONS $DOCKER_ADDR $XRAY_VOLUMES $XRAY_HA_PROPS \
+exec docker run -p 80:8000 --rm $DOCKER_RUN_OPTIONS $DOCKER_ADDR $XRAY_VOLUMES $XRAY_HA_PROPS \
                 -e USE_DEFAULTS=$USE_DEFAULTS \
                 -e XRAY_DOCKER_REPO=$XRAY_DOCKER_REPO \
                 -e DOCKER_INSTALLER_OFFLINE=${DOCKER_INSTALLER_OFFLINE} \

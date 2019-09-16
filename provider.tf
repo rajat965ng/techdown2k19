@@ -1,5 +1,5 @@
 provider "google" {
-  credentials = "${file("account/gaganapp-ff9be8369f89.json")}"
-  project     = "gaganapp"
+  credentials = "${file("account/lforlogging-23fd021fe1c6.json")}"
+  project     = "lforlogging"
   region      = "us-central1"
 }
