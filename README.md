@@ -40,10 +40,64 @@
       - Inter provider portability
       - Testable: Post building the image, smoke test can be executed to check if things are working fine. 
     - Code
-      - ![Image Json](/image.json)
+      - ![Image Json]()
+        ```json
+        {
+          "variables": {
+            "project_id": "project_id",
+            "zone": "us-central1-a"
+          },
+          "builders": [
+            {
+              "type": "googlecompute",
+              "account_file": "service-account.json",
+              "project_id": "{{user `project_id`}}",
+              "source_image": "ubuntu-1604-xenial-v20190913",
+              "ssh_username": "root",
+              "zone": "{{user `zone`}}"
+            }
+          ],
+          "provisioners": [{
+            "type": "shell",
+            "scripts": ["tzdata.sh", "mongo.sh"]
+          }],
+          "post-processors": [
+            {
+              "type": "googlecompute-export",
+              "paths": [
+                "gs://dummy-bucket/file1.tar.gz"
+              ],
+              "keep_input_artifact": true
+            }
+          ]
+        }
+        ```
       - Scripts
-        - ![Mongo Installation](/mongo.sh)
-        - ![TZ Data](/tzdata.sh)    
+        - ![Mongo Installation]()
+        ```bash
+        #!/usr/bin/env bash
+        sudo apt-get install apt-transport-https -y
+        wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add - ;
+        echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list ;
+        sudo apt-get update -y;
+        sudo apt-get install -y mongodb-org;
+        echo "mongodb-org hold" | sudo dpkg --set-selections ;
+        echo "mongodb-org-server hold" | sudo dpkg --set-selections ;
+        echo "mongodb-org-shell hold" | sudo dpkg --set-selections ;
+        echo "mongodb-org-mongos hold" | sudo dpkg --set-selections ;
+        echo "mongodb-org-tools hold" | sudo dpkg --set-selections ;
+        ```
+        - ![TZ Data]()
+        ```bash
+        #!/usr/bin/env bash
+        sudo adduser --disabled-password --gecos "packer" packer;
+        su packer;
+        export DEBIAN_FRONTEND=noninteractive;
+        sudo apt-get update -y;
+        ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime;
+        sudo apt-get install -y tzdata;
+        sudo dpkg-reconfigure --frontend noninteractive tzdata;
+        ```            
   - Terraform
     - Introduction
       - OpenSource tool for building, changing and versioning infrastructure. 
@@ -55,5 +109,43 @@
       - Provide Execution Plan
       - Generate Resource Graph
     - Code
-      - ![Provider](/iac/provider.tf)
-      - ![Instance](/iac/instance.tf)
+      - ![Provider]()
+      ```hcl-terraform
+        provider "google" {
+          credentials = "${file("service-account.json")}"
+          project     = "project-name"
+          region      = "us-central1"
+        }
+      ```
+      - ![Instance]()
+      ```hcl-terraform
+        resource "google_compute_instance" "mongo-server" {
+          name         = "mongo-server"
+          machine_type = "n1-standard-1"
+          zone         = "us-central1-a"
+        
+          tags = ["mongo"]
+        
+          boot_disk {
+            initialize_params {
+              image = "packer-1569120732"
+            }
+          }
+        
+        
+          network_interface {
+            network = "default"
+        
+            access_config {
+              // Ephemeral IP
+            }
+          }
+        
+        
+          metadata_startup_script = "sudo service mongod start"
+        
+          service_account {
+            scopes = ["userinfo-email", "compute-ro", "storage-ro"]
+          }
+        }
+      ```
