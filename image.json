@@ -1,0 +1,29 @@
+{
+  "variables": {
+    "project_id": "project_id",
+    "zone": "us-central1-a"
+  },
+  "builders": [
+    {
+      "type": "googlecompute",
+      "account_file": "service-account.json",
+      "project_id": "{{user `project_id`}}",
+      "source_image": "ubuntu-1604-xenial-v20190913",
+      "ssh_username": "root",
+      "zone": "{{user `zone`}}"
+    }
+  ],
+  "provisioners": [{
+    "type": "shell",
+    "scripts": ["tzdata.sh", "mongo.sh"]
+  }],
+  "post-processors": [
+    {
+      "type": "googlecompute-export",
+      "paths": [
+        "gs://dummy-bucket/file1.tar.gz"
+      ],
+      "keep_input_artifact": true
+    }
+  ]
+}
