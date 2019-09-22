@@ -40,7 +40,7 @@
       - Inter provider portability
       - Testable: Post building the image, smoke test can be executed to check if things are working fine. 
     - Code
-      - ![Image Json]()
+      - [image.json]
         ```json
         {
           "variables": {
@@ -73,7 +73,7 @@
         }
         ```
       - Scripts
-        - ![Mongo Installation]()
+        - [mongo.sh]
         ```bash
         #!/usr/bin/env bash
         sudo apt-get install apt-transport-https -y
@@ -87,7 +87,7 @@
         echo "mongodb-org-mongos hold" | sudo dpkg --set-selections ;
         echo "mongodb-org-tools hold" | sudo dpkg --set-selections ;
         ```
-        - ![TZ Data]()
+        - [tzdata.sh]
         ```bash
         #!/usr/bin/env bash
         sudo adduser --disabled-password --gecos "packer" packer;
@@ -109,7 +109,7 @@
       - Provide Execution Plan
       - Generate Resource Graph
     - Code
-      - ![Provider]()
+      - [provider.tf]
       ```hcl-terraform
         provider "google" {
           credentials = "${file("service-account.json")}"
@@ -117,7 +117,7 @@
           region      = "us-central1"
         }
       ```
-      - ![Instance]()
+      - [instance.tf]
       ```hcl-terraform
         resource "google_compute_instance" "mongo-server" {
           name         = "mongo-server"
