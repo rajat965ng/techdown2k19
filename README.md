@@ -1,14 +1,14 @@
 <h2>Terraforming Google Cloud Platform with Mongo using Packer</h2> 
 
-- <h4>Use Case</h4>
+- <h3>Use Case</h3>
   - Importing a Guest operating system (Ubuntu 16.04) and install Mongo DB on top of it.
   - Provisioning Mongo on VM using infrastructure as code. 
     
-- <h4>Benefits</h4> 
+- <h3>Benefits</h3> 
   - Maintenance and Recovery were easy in case of failure conditions.
   - The total cost of ownership was also less due to the reduced need for infrastructure.
   
-- <h4>Concept</h4>
+- <h3>Concept</h3>
   - <b>Baking Vs Frying</b>
     - <b><i>Baked images</i></b> are previously prepared with software and configuration. They are usually bigger as it is bundled with installations and it's dependencies.
       Baked images empowers "Immutable Architecture" because most of the time they don't need extra intervention after instantiation. In case of failure, it's better
@@ -17,18 +17,18 @@
       after instantiation. Concern about fried provisioning, is "How to avoid breaking it ?" when executed repeatedly. The package manager like <i>apt</i> usually install
       latest copy of packages unless the version is not specified. Unexpected behaviour can happen with untested latest version of packages.   
 
-- <h4>Platform (GCP)</h4>
-  - <h4>Compute Engine</h4>
+- <h3>Platform (GCP)</h3>
+  - <h3>Compute Engine</h3>
     - To configure your Google Cloud Platform infrastructure
-  - <h4>Cloud storage</h4>
+  - <h3>Cloud storage</h3>
     - The list of GCS paths, e.g. 'gs://mybucket/path/to/file.tar.gz', where the image will be exported. 
   
-- <h4>Tools</h4>
-  - <h4>Machine Image</h4>
+- <h3>Tools</h3>
+  - <h3>Machine Image</h3>
     - It is a static unit that has pre-configured operating system and installed software that can quickly create new running machines. Different platforms has their own machine
       formats like, AMI for EC2, VMDK/VMX files for VMware or Compute Engine Images for GCP etc.
     - In this example we are using base image of Ubuntu 16.06. On base image we'll install MongoDB server and bake the bundle to form a new image.   
-  - <h4>Packer</h4>
+  - <h3>Packer</h3>
     - <b>Introduction</b>
       - HashiCorp Packer made it easy to automate and use any type of machine image. It promotes configuration management using automated scripts to install and configure
         software in packer made images.
@@ -98,7 +98,7 @@
         sudo apt-get install -y tzdata;
         sudo dpkg-reconfigure --frontend noninteractive tzdata;
         ```            
-  - <h4>Terraform</h4>
+  - <h3>Terraform</h3>
     - <b>Introduction</b>
       - OpenSource tool for building, changing and versioning infrastructure. 
     - <b>Why to use Terraform ?</b>
