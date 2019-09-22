@@ -1,5 +1,5 @@
 <h2>Terraforming Google Cloud Platform with Mongo using Packer</h2> 
-
+<p>
 - Use Case
   - Importing a Guest operating system (Ubuntu 16.04) and install Mongo DB on top of it.
   - Provisioning Mongo on VM using infrastructure as code. 
@@ -149,3 +149,4 @@
           }
         }
       ```
+<p>
