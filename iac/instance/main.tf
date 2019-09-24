@@ -1,13 +1,13 @@
 resource "google_compute_instance" "mongo-server" {
-  name         = "mongo-server"
-  machine_type = "n1-standard-1"
+  name         = "mongo-${var.environment}-server"
+  machine_type = "${var.machine_type}"
   zone         = "us-central1-a"
 
-  tags = ["mongo"]
+  tags = "${var.instance_tags}"
 
   boot_disk {
     initialize_params {
-      image = "packer-1569120732"
+      image = "${var.image}"
     }
   }
 
