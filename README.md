@@ -21,3 +21,7 @@ Exploration of new tools, frameworks or programming languages in 2019. Eliminate
 <br>
 #10 jfrog/xray: Terraform setup for Jfrog Server in GCP on one instance and X-Ray on another instance.
 <br>
+#11 packer/terraform: Bake VM images on GCP using Packer and spin instances of same image using terraform.
+<br>
+#12 Medium: Technical write-ups
+<br>
