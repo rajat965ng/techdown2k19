@@ -13,7 +13,7 @@
 *The intent of this write up is to have a high-level product backlog to create sprint stories and kick-start development.*
 
 ---
-#####Identify cloud platform: eg. AWS, GCP, Azure, etc.
+####Identify cloud platform: eg. AWS, GCP, Azure, etc.
   ##### 8 criteria to choose a cloud provider 
      1. Certifications & Standards
      2. Technologies & Service Roadmap
@@ -25,7 +25,7 @@
      8. Business health & Company profile
 
 
-#####Identify tools
+####Identify tools
   ##### Container orchestration 
      Eg. AKS, GKE, Openshift, etc.
   ##### Solution for securing the network
@@ -52,14 +52,14 @@
      Eg. RedLock Cloud, Google Apigee Sense, Amazon VPC PrivateLink, Duo Security, etc.
   
   
-##### Strategy formulation across all tools
-  ###### High Availability 
-  ###### Disaster Recovery 
-  ###### Backups 
-  ###### On-boarding process 
-  ###### RBAC (Role Back Access Control)
+#### Strategy formulation across all tools
+     1. High Availability 
+     Disaster Recovery 
+     Backups 
+     On-boarding process 
+     RBAC (Role Back Access Control)
      
-#####Primary tasks**
+####Primary tasks
   #####Identify the "start the world" solution. 
      How to plant the first seed of your platform in a cloud provider? 
       It can be done through a local machine or by some external build pipeline eg. Google cloud build, Azure DevOps, AWS Code pipeline, etc.
