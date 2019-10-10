@@ -85,4 +85,5 @@
 *Subject to maturity of team and project requirements these tasks can be modified.
  Many times developers face 'Where to start from ?' situation when brainstorming together in their formative discussions.
  Hopefully, this high-level open backlog can help them to kick-start the discussion and transform it into achievable user stories.*
+
 ---
