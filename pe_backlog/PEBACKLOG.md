@@ -1,5 +1,5 @@
 # CLOUDIFICATION
-## Open backlog for future cloud platform engineering teams.
+## Open backlog for cloud based platform engineering teams.
 
 ![Dynasty Warriors - Landscape, Army, Horse, Spear](image.jpg)
 
