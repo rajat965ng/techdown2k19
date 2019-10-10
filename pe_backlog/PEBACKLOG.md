@@ -7,7 +7,7 @@
   Despite the organizational designation, I performed in the equal capacity of Senior Dev, Tech lead and Architect at the same time in almost every other assignment. 
   I got a chance to interact with people having designations like Engineering Managers, Solution Architect, Principal Consultants, and Evangelists. 
   Some of them came from the background of core infrastructure and platform provisioning, while others have prior experience of application development and later on they worked in platform engineering as well. I'm penning down, my thoughts on creating an open backlog for cloudification of any existing architecture 
-  based on my experience and knowledge exchange with people who came across.
+  based on my experience and knowledge exchange with such people.
 
 ---
 *The intent of this write up is to have a high-level product backlog to create sprint stories and kick-start development.*
