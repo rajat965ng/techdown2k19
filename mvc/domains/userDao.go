@@ -12,7 +12,7 @@ var (
 	}
 )
 
-func UserDao(userId int64) (*User,error) {
+func GetUser(userId int64) (*User,error) {
 	if user := users[userId]; user!=nil  {
 		return user,nil
 	}
