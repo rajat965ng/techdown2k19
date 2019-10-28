@@ -4,7 +4,8 @@
 
 ### Tools
 > stretchr/testify : For unit testing \
-> gin-gonic/gin : Gin is a HTTP web framework written in Go for writing controller layer.
+> gin-gonic/gin : Gin is a HTTP web framework written in Go for writing controller layer. \
+> h2non/gock : HTTP traffic mocking for writing integration tests
 
 ### Steps to create build
 > cd mvc/ \
