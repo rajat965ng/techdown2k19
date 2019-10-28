@@ -21,7 +21,7 @@ func GetUsers(resp http.ResponseWriter, req *http.Request)  {
 
 	log.Println("The user id is: ", userId)
 
-	user, err := services.GetUser(userId)
+	user, err := services.UserService.GetUser(userId)
 	if err!=nil {
 		fmt.Println("Error: ",err)
 		resp.WriteHeader(http.StatusNotFound)

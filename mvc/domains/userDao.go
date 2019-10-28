@@ -3,6 +3,7 @@ package domains
 import (
 	"errors"
 	"fmt"
+	"log"
 )
 
 var (
@@ -10,9 +11,26 @@ var (
 
 		1234: { Id:1234, FistName:"George", LastName:"Pool", Email:"myemail@gmail.com" },
 	}
+
+	UserDao userDaoInterface
 )
 
-func GetUser(userId int64) (*User,error) {
+type userDaoInterface interface {
+	GetUser(userId int64) (*User,error)
+}
+
+
+func init()  {
+	UserDao = &userDao{}
+}
+
+
+type userDao struct {}
+
+func (u *userDao) GetUser(userId int64) (*User,error) {
+
+	log.Println("We are accessing the DB.")
+
 	if user := users[userId]; user!=nil  {
 		return user,nil
 	}
