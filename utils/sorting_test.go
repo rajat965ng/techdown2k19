@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/stretchr/testify/assert"
+	"sort"
 	"testing"
 )
 
@@ -15,9 +16,26 @@ func TestBubbleSort(t *testing.T) {
 
 }
 
+//for Fewer elements this bubble sort is good.
 func BenchmarkBubbleSort1000(b *testing.B) {
 	elems:=[]int{6,5,4,3,2,1}
 	for i:=0;i<b.N;i++{
 		BubbleSort(elems)
+	}
+}
+
+func CreateData(n int) []int {
+	elem:=make([]int,n)
+	for i:=n;i>0;i--{
+		elem[n-i]=i
+	}
+	return elem
+}
+
+//for very large set of elements the native sort function is better.
+func BenchmarkBubbleSortForNativeSort10000(b *testing.B) {
+	elems := CreateData(10000)
+	for i:=0;i<b.N;i++  {
+		sort.Ints(elems)
 	}
 }
