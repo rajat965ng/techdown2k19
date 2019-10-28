@@ -1,16 +1,22 @@
 package app
 
 import (
-	uc "../controllers"
-	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 
+var (
+	router *gin.Engine
+)
+
+func init()  {
+	router = gin.Default()
+}
+
 func StartApp(){
+	mapUrls()
 
-	http.HandleFunc("/users",uc.GetUsers)
-
-	if err := http.ListenAndServe(":9000",nil); err != nil {
+	if err := router.Run(":9000"); err != nil {
 		panic(err)
 	}
 }

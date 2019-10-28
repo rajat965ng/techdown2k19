@@ -3,7 +3,8 @@
 ## REST  apis for common CRUD operations
 
 ### Tools
-> stretchr/testify : For unit testing 
+> stretchr/testify : For unit testing \
+> gin-gonic/gin : Gin is a HTTP web framework written in Go for writing controller layer.
 
 ### Steps to create build
 > cd mvc/ \

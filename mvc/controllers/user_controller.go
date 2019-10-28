@@ -2,19 +2,20 @@ package controllers
 
 import (
 	"../services"
-	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
+	"../utils"
 )
 
-func GetUsers(resp http.ResponseWriter, req *http.Request)  {
+func GetUsers(c *gin.Context)  {
 
-	userId, err := strconv.ParseInt(req.URL.Query().Get("user_id"),10,64)
+	userId, err := strconv.ParseInt(c.Param("user_id"),10,64)
 	if err!=nil {
-		resp.WriteHeader(http.StatusNotFound)
-		resp.Write([]byte(err.Error()))
+		utils.Respond(c,http.StatusBadRequest,errors.New("user_id must be a number").Error())
 		return
 	}
 
@@ -24,10 +25,8 @@ func GetUsers(resp http.ResponseWriter, req *http.Request)  {
 	user, err := services.UserService.GetUser(userId)
 	if err!=nil {
 		fmt.Println("Error: ",err)
-		resp.WriteHeader(http.StatusNotFound)
-		resp.Write([]byte(err.Error()))
+		utils.Respond(c,http.StatusNotFound,err.Error())
 		return
 	}
-	buff,err := json.Marshal(user)
-	resp.Write(buff)
+	utils.Respond(c,http.StatusOK,user)
 }
