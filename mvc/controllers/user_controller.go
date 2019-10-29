@@ -1,32 +1,51 @@
 package controllers
 
 import (
+	"../domains"
 	"../services"
-	"errors"
+	"../utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
-	"../utils"
+	"strings"
 )
 
-func GetUsers(c *gin.Context)  {
-
-	userId, err := strconv.ParseInt(c.Param("user_id"),10,64)
-	if err!=nil {
-		utils.Respond(c,http.StatusBadRequest,errors.New("user_id must be a number").Error())
-		return
+//Access data source concurrently
+func stackUsers(c *gin.Context, userBuff chan *domains.User, reqs []string) {
+	for _, uid := range reqs {
+		userId, err := strconv.ParseInt(uid, 10, 64)
+		log.Println("UserId: ", userId)
+		user, err := services.UserService.GetUser(userId)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			utils.Respond(c, http.StatusNotFound, err.Error())
+			return
+		}
+		userBuff <- user
 	}
+	close(userBuff)
+}
 
+func GetUsers(c *gin.Context) {
 
-	log.Println("The user id is: ", userId)
+	pathVariable := c.Param("user_id")
+	log.Println("Path Variable: ", pathVariable)
+	reqs := strings.Split(pathVariable, ",")
+	log.Println("reqs: ", reqs)
+	userBuff := make(chan *domains.User)
+	users := make([]*domains.User, len(reqs))
 
-	user, err := services.UserService.GetUser(userId)
-	if err!=nil {
-		fmt.Println("Error: ",err)
-		utils.Respond(c,http.StatusNotFound,err.Error())
-		return
+	go stackUsers(c, userBuff, reqs) //Only sender can close the channel.
+
+	x := 0
+	for i := range userBuff {
+		log.Println("User: ", i)
+		users[x] = i
+		x++
 	}
-	utils.Respond(c,http.StatusOK,user)
+	log.Println("users: ", users)
+	utils.Respond(c, http.StatusOK, users)
+
 }
