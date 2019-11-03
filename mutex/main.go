@@ -2,13 +2,9 @@ package main
 
 import (
 	"fmt"
-	"sync"
 	"time"
 )
 
-var (
-	lock sync.Mutex
-)
 
 
 func getOneToHundred(buff chan []int) {
