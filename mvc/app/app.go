@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/gin-gonic/gin"
-	"../log"
+	log "../log/logrus"
 )
 
 

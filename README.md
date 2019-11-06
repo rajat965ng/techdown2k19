@@ -6,7 +6,8 @@
 > stretchr/testify : For unit testing \
 > gin-gonic/gin : Gin is a HTTP web framework written in Go for writing controller layer. \
 > h2non/gock : HTTP traffic mocking for writing integration tests \
-> logrus: Logging for Go
+> logrus: Logging for Go \
+> uber-go/zap: Blazing fast, structured, leveled logging in Go.
 
 ### Steps to create build
 > cd mvc/ \
