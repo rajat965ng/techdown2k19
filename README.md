@@ -25,3 +25,8 @@ Run: ./mvc
 ### Curl to execute GET api
 > curl -v localhost:9000/users/1234 \
 > curl -v localhost:9000/users/1234 -H "Accept:application/xml"
+
+### Curl to Create and GET OAuth Tokens
+> curl localhost:8080/oauth/access_token/ABCD1I \
+> curl -X POST "localhost:8080/oauth/access_token" -d '{"username":"fede", "password":"testing"}' \
+> curl localhost:8080/oauth/access_token/USR_123
