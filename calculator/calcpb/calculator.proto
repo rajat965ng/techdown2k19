@@ -16,7 +16,25 @@ message Response {
     int64 result = 1;
 }
 
+message MeteoricNumber {
+    int64 value = 1;
+}
+
+message PrimeFactor {
+    int64 value = 1;
+}
+
+message NumSeries {
+    int64 num = 1;
+}
+
+message SeriesSum {
+    int64 num = 1;
+}
 
 service CalculatorService {
     rpc Sum(Request) returns (Response) {};
+    rpc PrimeNumberDecomposition(MeteoricNumber) returns (stream PrimeFactor) {};
+    rpc SumSeries(stream NumSeries) returns (SeriesSum) {};
+
 }
