@@ -1,0 +1,17 @@
+syntax = "proto3";
+package calculator;
+option go_package = "calcpb";
+
+
+message Input {
+    int64 firstNum = 1;
+    int64 secondNum = 2;
+}
+
+message Request {
+    Input input = 1;
+}
+
+message Response {
+    int64 result = 1;
+}
