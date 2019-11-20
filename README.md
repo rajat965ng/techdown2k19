@@ -27,3 +27,5 @@ Exploration of new tools, frameworks or programming languages in 2019. Eliminate
 <br>
 #13 Go Microservice: Creating Microservice using Go programming language.
 <br>
+#14 Go gRPC: Build a fast scalable HTTP/2 API for a Golang micro service with gRPC, Protocol Buffers (protobuf)
+<br>
