@@ -15,3 +15,8 @@ message Request {
 message Response {
     int64 result = 1;
 }
+
+
+service CalculatorService {
+    rpc Sum(Request) returns (Response) {};
+}
