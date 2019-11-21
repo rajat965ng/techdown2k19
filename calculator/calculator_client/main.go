@@ -7,6 +7,7 @@ import (
 	"google.golang.org/grpc"
 	"io"
 	"log"
+	"time"
 )
 
 func main() {
@@ -22,6 +23,7 @@ func main() {
 	doUnary(cc)
 	doServerStream(cc)
 	doClientStreaming(cc)
+	doBiDirectionalStreaming(cc)
 }
 
 func doUnary(cc calcpb.CalculatorServiceClient) {
@@ -41,7 +43,7 @@ func doUnary(cc calcpb.CalculatorServiceClient) {
 
 func doServerStream(cc calcpb.CalculatorServiceClient) {
 	req := &calcpb.MeteoricNumber{
-		Value: 120,
+		Value: 12,
 	}
 	resp, err := cc.PrimeNumberDecomposition(context.Background(), req)
 	if err != nil {
@@ -87,5 +89,50 @@ func doClientStreaming(cc calcpb.CalculatorServiceClient) {
 		log.Fatalf("Error while closing stream: %v", err)
 	}
 	log.Printf("The sum of num series is %v", sum.Num)
+
+}
+
+func doBiDirectionalStreaming(cc calcpb.CalculatorServiceClient) {
+	arr := [3]calcpb.Account{
+		{Principal: 2000,
+			Rate:        8,
+			TimeInYears: 3},
+		{Principal: 3000,
+			Rate:        7,
+			TimeInYears: 4},
+		{Principal: 5000,
+			Rate:        6,
+			TimeInYears: 5},
+	}
+	stream, _ := cc.CalculateInterest(context.Background())
+
+	buff := make(chan struct{})
+	go func(chan struct{}) {
+		for _, v := range arr {
+			log.Printf("Sending the Account record: %v",&v)
+			err := stream.Send(&v)
+			time.Sleep(1*time.Second)
+			if err != nil {
+				log.Printf("Error while sending account over stream: %v", err)
+			}
+		}
+		stream.CloseSend()
+	}(buff)
+
+	go func(chan struct{}) {
+		for {
+			interest, err := stream.Recv()
+			if err == io.EOF {
+				close(buff)
+				break
+			}
+			if err != nil {
+				log.Printf("Error while recieving simple interest: %v", err)
+			}
+			log.Printf("The simple interest is: %v", interest.GetInterest())
+		}
+	}(buff)
+
+	<-buff
 
 }

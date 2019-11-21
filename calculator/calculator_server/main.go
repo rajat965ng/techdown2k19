@@ -12,16 +12,37 @@ import (
 
 type Server struct{}
 
-func (*Server) SumSeries(stream calcpb.CalculatorService_SumSeriesServer) error  {
-	sum:=int64(0)
-	for  {
-		list,err:=stream.Recv()
+func (*Server) CalculateInterest(stream calcpb.CalculatorService_CalculateInterestServer) error {
+	for {
+		acc, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			log.Fatalf("Error in receiving Account stream: %v", err)
+			return err
+		}
+
+		log.Printf("The input for CalculateInterest recieved is :%v", acc)
+		interest := acc.GetPrincipal() * acc.GetRate() * acc.GetTimeInYears() / 100
+		stream.Send(&calcpb.SimpleInterest{Interest: interest})
+	}
+	return nil
+}
+
+func (*Server) SumSeries(stream calcpb.CalculatorService_SumSeriesServer) error {
+
+	sum := int64(0)
+	for {
+		list, err := stream.Recv()
 		if err == io.EOF {
 			break
 		}
 		if err != nil {
 			log.Fatalf("Error is receiving request stream: %v", err)
 		}
+
+		log.Printf("The input for SumSeries recieved is :%v", list)
 		sum += list.Num
 	}
 	stream.SendAndClose(&calcpb.SeriesSum{
@@ -32,7 +53,7 @@ func (*Server) SumSeries(stream calcpb.CalculatorService_SumSeriesServer) error 
 
 func (*Server) PrimeNumberDecomposition(req *calcpb.MeteoricNumber, stream calcpb.CalculatorService_PrimeNumberDecompositionServer) error {
 
-	log.Printf("The number recieved is :%v", req)
+	log.Printf("The input for PrimeNumberDecomposition recieved is :%v", req)
 	for input, div := req.GetValue(), int64(2); input > 1; {
 		if input%div == 0 {
 			input = input / div
@@ -48,6 +69,7 @@ func (*Server) PrimeNumberDecomposition(req *calcpb.MeteoricNumber, stream calcp
 }
 
 func (*Server) Sum(ctx context.Context, req *calcpb.Request) (*calcpb.Response, error) {
+	log.Printf("The input for sum recieved is :%v", req)
 	res := &calcpb.Response{
 		Result: req.GetInput().GetFirstNum() + req.GetInput().GetSecondNum(),
 	}

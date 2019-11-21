@@ -32,9 +32,19 @@ message SeriesSum {
     int64 num = 1;
 }
 
+message Account {
+    int64 principal = 1;
+    int64 rate = 2;
+    int64 timeInYears =3;
+}
+
+message SimpleInterest {
+    int64 interest = 1;
+}
+
 service CalculatorService {
     rpc Sum(Request) returns (Response) {};
     rpc PrimeNumberDecomposition(MeteoricNumber) returns (stream PrimeFactor) {};
     rpc SumSeries(stream NumSeries) returns (SeriesSum) {};
-
+    rpc CalculateInterest(stream Account) returns (stream SimpleInterest) {};
 }
