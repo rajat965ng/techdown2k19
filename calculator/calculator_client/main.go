@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/rajat965ng/grpc-go-course/calculator/calcpb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"io"
 	"log"
 	"time"
@@ -12,10 +13,19 @@ import (
 
 func main() {
 	fmt.Println("Starting client ...")
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+
+	certFile := "ssl/ca.crt"
+	creds, sslErr := credentials.NewClientTLSFromFile(certFile,"")
+	if sslErr!=nil {
+		log.Fatalf("Unable to load certs %v", sslErr)
+	}
+
+	opts := grpc.WithTransportCredentials(creds)
+	conn, err := grpc.Dial("localhost:50051", opts)
 
 	if err != nil {
 		log.Fatalf("Error while dialing to server: %v", err)
+		return
 	}
 	defer conn.Close()
 

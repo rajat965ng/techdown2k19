@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/rajat965ng/grpc-go-course/calculator/calcpb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"io"
 	"log"
 	"net"
@@ -82,7 +83,18 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to start server: %v", err)
 	}
-	s := grpc.NewServer()
+
+	certFile := "ssl/server.crt"
+	keyFile := "ssl/server.pem"
+
+	creds, sslErr := credentials.NewServerTLSFromFile(certFile,keyFile)
+
+	if sslErr!=nil {
+		log.Fatalf("Failed to load certificates: %v",sslErr)
+		return
+	}
+	opts := grpc.Creds(creds)
+	s := grpc.NewServer(opts)
 	calcpb.RegisterCalculatorServiceServer(s, &Server{})
 	if err = s.Serve(lis); err != nil {
 		log.Fatalf("Server is unable to serve: %v", err)
