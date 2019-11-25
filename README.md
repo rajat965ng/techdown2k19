@@ -19,14 +19,15 @@
         "department":"IT",
         "email":"sapient@abc.com",
         "username":"sapient",
-        "password":"12345"
+        "password":"1234"
     }
 
-## Execute Mongo Docker Container
-    docker run -p 27017:27017  mongo
+## Installation
+### MongoDB (Docker Container)
+     docker run -p 27017:27017  mongo
     
-## Start Node Middleware
-    cd usr-exp-middleware/ && yarn start
+### Middleware (NodeJS)
+     cd usr-exp-middleware/ && yarn start
     
-## Start React App
-    cd usr-exp/ && yarn start
+### Frontend (React)
+     cd usr-exp/ && yarn start
