@@ -1,6 +1,6 @@
 # User Exp Bootstrap Service
 
-![FlowChart](docs/gypsa.jpg)
+![FlowChart](docs/gypsa.png)
 
 ## Tools
     1. React@16.12.0
