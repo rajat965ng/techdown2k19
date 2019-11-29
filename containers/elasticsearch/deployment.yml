@@ -31,7 +31,7 @@ spec:
   selector:
     app: elasticsearch
   ports:
-    - port: 80
+    - port: 9200
       targetPort: 9200
       name: http
     - port: 9300
@@ -49,4 +49,4 @@ spec:
       - path: /elastic
         backend:
           serviceName: elasticsearch-svc
-          servicePort: 80
+          servicePort: 9200
