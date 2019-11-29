@@ -1,0 +1,36 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: elasticsearch
+spec:
+  selector:
+    matchLabels:
+        app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch
+          image: elasticsearch:7.4.2
+          ports:
+            - containerPort: 9200
+              name: http
+            - containerPort: 9300
+              name: discovery
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: elasticsearch-svc
+spec:
+  selector:
+    app: elasticsearch
+  ports:
+    - port: 80
+      targetPort: 9200
+      name: http
+    - port: 9300
+      targetPort: 9300
+      name: discovery
