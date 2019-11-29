@@ -2,7 +2,7 @@
 
 ### Execute "kubectl get ingress" and note "Address"
 ### Create '.conf' file like:
-    location /dev {
+    location / {
         proxy_pass http://$Address/;
     }
 ### Move '.conf' file to /etc/nginx/default.d/

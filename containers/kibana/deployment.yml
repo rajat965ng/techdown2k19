@@ -1,0 +1,36 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: kibana
+spec:
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+        - name: kibana
+          image: kibana:7.4.2
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: http://elasticsearch-svc
+          ports:
+            - containerPort: 5601
+              name: http
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: kibana-svc
+spec:
+  selector:
+    app: kibana
+  ports:
+    - port: 80
+      targetPort: 5601
+      name: http
+
