@@ -46,7 +46,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /*
+      - path: /elastic/*
         backend:
           serviceName: elasticsearch-svc
           servicePort: 80
