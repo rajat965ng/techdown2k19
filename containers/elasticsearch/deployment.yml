@@ -46,7 +46,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /elastic
+      - path: /
         backend:
           serviceName: elasticsearch-svc
           servicePort: 9200
