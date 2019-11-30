@@ -7,12 +7,10 @@ data:
   input {
     http {
       host => "0.0.0.0"
-      port => "8080"}
-  } :
-  output {
-    elasticsearch {hosts => ["localhost:9200"]}
-    stdout {codec => rubydebug}
+      port => "8080"
+    }
   }
+
 ---
 kind: Deployment
 apiVersion: apps/v1
@@ -33,7 +31,7 @@ spec:
             name: logstash
             items:
               - key: http-logstash.conf
-                path: /usr/share/logstash/config/
+                path: /usr/share/logstash/config
       containers:
         - name: logstash
           image: logstash:7.4.2
