@@ -4,12 +4,16 @@ metadata:
   name: logstash
 data:
   http-logstash.conf: |
-      input {
-        http {
-          host => "0.0.0.0"
-          port => "8080"
-        }
+    input {
+      http {
+        id => "jenkins"
       }
+    }
+    output {
+      stdout {
+        codec => rubydebug
+      }
+    }
 
 ---
 kind: Deployment
@@ -31,10 +35,13 @@ spec:
             name: logstash
             items:
               - key: http-logstash.conf
-                path: config
+                path: http-logstash.conf
       containers:
         - name: logstash
           image: logstash:7.4.2
+          volumeMounts:
+            - mountPath: /usr/share/logstash/pipeline
+              name: logstash
           ports:
             - containerPort: 8080
 ---
