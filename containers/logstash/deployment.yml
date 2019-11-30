@@ -40,7 +40,7 @@ spec:
         - name: logstash
           image: logstash:7.4.2
           volumeMounts:
-            - mountPath: /usr/share/logstash/pipeline
+            - mountPath: /usr/share/logstash/pipeline/
               name: logstash
           ports:
             - containerPort: 8080
