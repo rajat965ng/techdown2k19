@@ -10,9 +10,11 @@ data:
       }
     }
     output {
-      stdout {
-        codec => rubydebug
+      elasticsearch {
+        hosts => ["http://elasticsearch:9200"]
+        index => "jenkins"
       }
+      stdout { codec => rubydebug }
     }
 
 ---
@@ -71,3 +73,6 @@ spec:
         backend:
           serviceName: logstash
           servicePort: 80
+
+
+#curl -X POST  http://10.244.1.39:8080 -d "hi jenkins"
