@@ -12,14 +12,18 @@ spec:
         app: kibana
     spec:
       containers:
-        - name: kibana
-          image: kibana:7.4.2
-          env:
-            - name: ELASTICSEARCH_HOSTS
-              value: http://elasticsearch-svc:9200
-          ports:
-            - containerPort: 5601
-              name: http
+      - name: kibana
+        image: kibana:7.4.2
+        env:
+        - name: SERVER_BASEPATH
+          value: "/analytics"
+        - name: SERVER_REWRITEBASEPATH
+          value: "true"
+        - name: ELASTICSEARCH_HOSTS
+          value: http://elasticsearch-svc:9200
+        ports:
+        - containerPort: 5601
+          name: http
 
 ---
 kind: Service
@@ -30,9 +34,9 @@ spec:
   selector:
     app: kibana
   ports:
-    - port: 80
-      targetPort: 5601
-      name: http
+  - port: 80
+    targetPort: 5601
+    name: http
 
 ---
 kind: Ingress
@@ -43,7 +47,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /service/*
+      - path: /analytics
         backend:
           serviceName: kibana-svc
           servicePort: 80
