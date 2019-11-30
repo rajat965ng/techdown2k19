@@ -15,7 +15,7 @@ spec:
         - name: logstash
           image: logstash:7.4.2
           ports:
-            - containerPort: 8080
+            - containerPort: 5044
 ---
 kind: Service
 apiVersion: v1
@@ -26,7 +26,7 @@ spec:
     app: logstash
   ports:
   - port: 80
-    targetPort: 8080
+    targetPort: 5044
     name: http
 
 ---
