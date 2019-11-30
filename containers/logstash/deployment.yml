@@ -31,7 +31,7 @@ spec:
             name: logstash
             items:
               - key: http-logstash.conf
-                path: /usr/share/logstash/config
+                path: config
       containers:
         - name: logstash
           image: logstash:7.4.2
