@@ -26,7 +26,7 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: elasticsearch-svc
+  name: elasticsearch
 spec:
   clusterIP: None
   selector:

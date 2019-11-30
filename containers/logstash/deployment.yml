@@ -1,0 +1,44 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: logstash
+spec:
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+        - name: logstash
+          image: logstash:7.4.2
+          ports:
+            - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: logstash
+spec:
+  selector:
+    app: logstash
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: http
+
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: logstash-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /logstash
+        backend:
+          serviceName: logstash
+          servicePort: 80

@@ -20,7 +20,7 @@ spec:
         - name: SERVER_REWRITEBASEPATH
           value: "true"
         - name: ELASTICSEARCH_HOSTS
-          value: http://elasticsearch-svc:9200
+          value: http://elasticsearch:9200
         ports:
         - containerPort: 5601
           name: http
