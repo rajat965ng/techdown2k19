@@ -16,7 +16,7 @@ spec:
           image: kibana:7.4.2
           env:
             - name: ELASTICSEARCH_HOSTS
-              value: http://elasticsearch-svc
+              value: http://elasticsearch-svc:9200
           ports:
             - containerPort: 5601
               name: http
