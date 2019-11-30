@@ -10,10 +10,13 @@ data:
       port => "8080"
     }
   }
-
   output {
-    elasticsearch { hosts => ["localhost:9200"] }
-    stdout { codec => rubydebug }
+    elasticsearch {
+      hosts => ["localhost:9200"]
+    }
+    stdout {
+      codec => rubydebug
+    }
   }
 ---
 kind: Deployment
