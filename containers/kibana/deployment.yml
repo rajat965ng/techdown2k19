@@ -34,3 +34,16 @@ spec:
       targetPort: 5601
       name: http
 
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: kibana-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /service/*
+        backend:
+          serviceName: kibana-svc
+          servicePort: 80
