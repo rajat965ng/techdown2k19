@@ -4,12 +4,12 @@ metadata:
   name: logstash
 data:
   http-logstash.conf: |
-  input {
-    http {
-      host => "0.0.0.0"
-      port => "8080"
-    }
-  }
+      input {
+        http {
+          host => "0.0.0.0"
+          port => "8080"
+        }
+      }
 
 ---
 kind: Deployment
