@@ -1,3 +1,21 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: logstash
+data:
+  http.conf: |
+  input {
+    http {
+      host => "0.0.0.0"
+      port => "8080"
+    }
+  }
+
+  output {
+    elasticsearch { hosts => ["localhost:9200"] }
+    stdout { codec => rubydebug }
+  }
+---
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -11,11 +29,18 @@ spec:
       labels:
         app: logstash
     spec:
+      volumes:
+        - name: http-config
+          configMap:
+            name: logstash
+            items:
+              - key: http.conf
+                path: /usr/share/logstash/config
       containers:
         - name: logstash
           image: logstash:7.4.2
           ports:
-            - containerPort: 5044
+            - containerPort: 8080
 ---
 kind: Service
 apiVersion: v1
@@ -26,7 +51,7 @@ spec:
     app: logstash
   ports:
   - port: 80
-    targetPort: 5044
+    targetPort: 8080
     name: http
 
 ---
