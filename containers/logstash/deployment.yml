@@ -8,7 +8,7 @@ data:
     http {
       host => "0.0.0.0"
       port => "8080"}
-  } |
+  } :
   output {
     elasticsearch {hosts => ["localhost:9200"]}
     stdout {codec => rubydebug}
