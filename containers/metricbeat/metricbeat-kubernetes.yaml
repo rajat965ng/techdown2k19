@@ -8,6 +8,7 @@ metadata:
     k8s-app: metricbeat
 data:
   metricbeat.yml: |
+   -
     - metricbeat.config.modules:
        # Mounted `metricbeat-daemonset-modules` configmap:
        path: ${path.config}/modules.d/*.yml
