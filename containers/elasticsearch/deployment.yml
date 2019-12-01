@@ -50,4 +50,4 @@ spec:
       - path: /
         backend:
           serviceName: elasticsearch
-          servicePort: 80
+          servicePort: 9200
