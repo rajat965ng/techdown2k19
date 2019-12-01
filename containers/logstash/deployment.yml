@@ -76,3 +76,4 @@ spec:
 
 
 #curl -X POST  http://10.244.1.39:8080 -d "hi jenkins"
+#curl -X DELETE "elasticsearch:9200/jenkins?pretty"
