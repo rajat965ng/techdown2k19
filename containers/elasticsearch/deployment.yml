@@ -38,3 +38,16 @@ spec:
     - port: 9300
       targetPort: 9300
       name: discovery
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: elasticsearch-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: elasticsearch
+          servicePort: 80
