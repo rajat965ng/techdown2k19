@@ -8,7 +8,6 @@ metadata:
     k8s-app: metricbeat
 data:
   metricbeat.yml: |
-   -
     - metricbeat.config.modules:
        # Mounted `metricbeat-daemonset-modules` configmap:
        path: ${path.config}/modules.d/*.yml
@@ -22,14 +21,14 @@ data:
      #      host: ${NODE_NAME}
      #      hints.enabled: true
 
-     processors:
-       - add_cloud_metadata:
+      processors:
+        - add_cloud_metadata:
 
      #cloud.id: ${ELASTIC_CLOUD_ID}
      #cloud.auth: ${ELASTIC_CLOUD_AUTH}
 
-     output.elasticsearch:
-       hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
+      output.elasticsearch:
+        hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
        #username: ${ELASTICSEARCH_USERNAME}
        #password: ${ELASTICSEARCH_PASSWORD}
 ---
