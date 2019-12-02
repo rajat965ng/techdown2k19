@@ -3,6 +3,8 @@ apiVersion: v1
 metadata:
   name: logstash
 data:
+  es-template.json: |
+    {"order":0,"version":50001,"template":"gypssa-logstash","settings":{"index":{"refresh_interval":"5s"}},"mappings":{"_default_":{"dynamic_templates":[{"message_field":{"path_match":"message","mapping":{"norms":false,"type":"text"},"match_mapping_type":"string"}},{"string_fields":{"mapping":{"norms":false,"type":"text","fields":{"keyword":{"type":"keyword"}}},"match_mapping_type":"string","match":"*"}}],"_all":{"norms":false,"enabled":true},"properties":{"@timestamp":{"include_in_all":false,"type":"date"},"geoip":{"dynamic":true,"properties":{"ip":{"type":"ip"},"latitude":{"type":"half_float"},"location":{"type":"geo_point"},"longitude":{"type":"half_float"}}},"@version":{"include_in_all":false,"type":"keyword"}}}},"aliases":{}}
   http-logstash.conf: |
     input {
       http {
@@ -12,7 +14,12 @@ data:
     output {
       elasticsearch {
         hosts => ["http://elasticsearch:9200"]
-        index => "gpssa"
+        index => "gpssa-%{+YYYY.MM.dd}"
+        document_id => "%{[@metadata][fingerprint]}"
+        manage_template => true
+        template => "/usr/share/logstash/template/es-template.json"
+        template_name => "gypssa-logstash"
+        template_overwrite => true
       }
     }
 
@@ -31,6 +38,12 @@ spec:
         app: logstash
     spec:
       volumes:
+        - name: es-template
+          configMap:
+            name: logstash
+            items:
+              - key: es-template.json
+                path: es-template.json
         - name: http-config
           configMap:
             name: logstash
@@ -43,6 +56,9 @@ spec:
           volumeMounts:
             - mountPath: /usr/share/logstash/pipeline/
               name: http-config
+              readOnly: true
+            - mountPath: /usr/share/logstash/template/
+              name: es-template
               readOnly: true
           ports:
             - containerPort: 8080
@@ -74,5 +90,5 @@ spec:
           servicePort: 80
 
 
-#curl -X POST  http://10.244.1.41:8080 -d "{hi gpssa}"
+#curl -X POST  http://10.244.1.45:8080 -d '{"text":"hi gpssa"}'
 #curl -X DELETE "elasticsearch:9200/jenkins?pretty"
