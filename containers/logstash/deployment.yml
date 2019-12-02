@@ -77,3 +77,5 @@ spec:
 
 #curl -X POST  http://10.244.1.47:8080 -d "one more log to debug"
 #curl -X DELETE "elasticsearch:9200/jenkins?pretty"
+
+#curl -X POST http://logstash:80 -d "log from container"
