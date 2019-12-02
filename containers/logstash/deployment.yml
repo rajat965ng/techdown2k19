@@ -6,15 +6,14 @@ data:
   http-logstash.conf: |
     input {
       http {
-        id => "jenkins"
+        id => "gpssa"
       }
     }
     output {
       elasticsearch {
         hosts => ["http://elasticsearch:9200"]
-        index => "jenkins"
+        index => "gpssa"
       }
-      stdout { codec => rubydebug }
     }
 
 ---
@@ -75,5 +74,5 @@ spec:
           servicePort: 80
 
 
-#curl -X POST  http://10.244.1.39:8080 -d "hi jenkins"
+#curl -X POST  http://10.244.1.41:8080 -d "{hi gpssa}"
 #curl -X DELETE "elasticsearch:9200/jenkins?pretty"
