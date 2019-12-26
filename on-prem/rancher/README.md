@@ -74,3 +74,13 @@
     iptables -t filter -F
     iptables -t filter -X
     systemctl restart docker    
+
+### Disable firewall
+    yum install iptables-services
+    systemctl start iptables
+    systemctl enable iptables
+    systemctl status iptables
+    iptables -nvL
+    systemctl stop iptables
+    systemctl status iptables
+            
