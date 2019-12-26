@@ -1,0 +1,32 @@
+nodes:
+- address: 10.150.16.171
+  user: gpssa
+  role: [controlplane, worker, etcd]
+  labels:
+    app: ingress
+- address: 10.150.16.172
+  user: gpssa
+  role: [controlplane, worker, etcd]
+- address: 10.150.16.173
+  user: gpssa
+  role: [controlplane, worker, etcd]
+
+services:
+  etcd:
+    snapshot: true
+    creation: 6h
+    retention: 24h
+cluster_name: gpssacluster
+
+network:
+  plugin: canal
+  options:
+    canal_iface: ens192
+    canal_flannel_backend_type: vxlan
+
+ingress:
+  provider: nginx
+  options:
+    use-forwarded-headers: true
+  node_selector:
+    app: ingress
