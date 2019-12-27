@@ -1,0 +1,71 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: jenkins-master
+spec:
+  serviceName: "jenkins-master"
+  selector:
+    matchLabels:
+      app: jenkins-master
+  template:
+    metadata:
+      labels:
+        app: jenkins-master
+    spec:
+      volumes:
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+        - name: pvc
+          nfs:
+            path: /mnt/disk/vol
+            server: 10.150.16.171
+      containers:
+        - name:  jenkins
+          image: rajat965ng/jenkins
+          env:
+            - name: JENKINS_OPTS
+              value: "--prefix=/jenkins"
+          securityContext:
+            privileged: true
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 50000
+              name: tcp
+          volumeMounts:
+            - mountPath: /var/run/docker.sock
+              name: docker-socket
+            - mountPath: /var/jenkins_home
+              name: pvc
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jenkins-master
+spec:
+  selector:
+    app: jenkins-master
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http
+    - port: 50000
+      targetPort: 50000
+      name: tcp
+      protocol: TCP
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: jenkins-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /jenkins
+        backend:
+          serviceName: jenkins-master
+          servicePort: 8080
