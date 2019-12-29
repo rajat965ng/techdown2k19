@@ -1,3 +1,21 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jenkins
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: jenkins
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: jenkins
+  namespace: default
+---
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
@@ -12,6 +30,7 @@ spec:
       labels:
         app: jenkins-master
     spec:
+      serviceAccountName: jenkins
       volumes:
         - name: docker-socket
           hostPath:
@@ -22,7 +41,7 @@ spec:
             server: 10.150.16.171
       containers:
         - name:  jenkins
-          image: rajat965ng/jenkins
+          image: rajat965ng/jenkins-master
           env:
             - name: JENKINS_OPTS
               value: "--prefix=/jenkins"
