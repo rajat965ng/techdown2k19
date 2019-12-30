@@ -1,0 +1,179 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: sonar-pg
+spec:
+  serviceName: "sonar-pg"
+  selector:
+    matchLabels:
+      app: sonar-pg
+  template:
+    metadata:
+     labels:
+       app: sonar-pg
+    spec:
+      volumes:
+        - name: pgdata
+          nfs:
+            path: /mnt/disk/gpssa/sonarqube/pgdata
+            server: 10.150.16.171
+      containers:
+        - name: sonar-pg
+          image: postgres
+          env:
+            - name: POSTGRES_DB
+              value: sonarqube
+            - name: POSTGRES_USER
+              value: gpssa
+            - name: POSTGRES_PASSWORD
+              value: gpssapassword
+            - name: POSTGRES_INITDB_ARGS
+              value: --data-checksums
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: pgdata
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 5432
+              name: dataport
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: sonar-pg
+spec:
+  selector:
+    app: sonar-pg
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+    - port: 5432
+      targetPort: 5432
+      name: dataport
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: sonarqube
+spec:
+  selector:
+    matchLabels:
+      app: sonarqube
+  template:
+    metadata:
+      labels:
+        app: sonarqube
+    spec:
+      volumes:
+      - name: conf
+        nfs:
+          path: /mnt/disk/gpssa/sonarqube/conf
+          server: 10.150.16.171
+      - name: extensions
+        nfs:
+          path: /mnt/disk/gpssa/sonarqube/extensions
+          server: 10.150.16.171
+      - name: logs
+        emptyDir: {}
+      - name: data
+        nfs:
+          path: /mnt/disk/gpssa/sonarqube/data
+          server: 10.150.16.171
+      initContainers:
+        - name: fix-the-volume-permission
+          image: busybox
+          command:
+          - sh
+          - -c
+          - chmod 777 /opt/sonarqube/*
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /opt/sonarqube/logs
+              name: logs
+        - name: increase-the-vm-max-map-count
+          image: busybox
+          command:
+          - sysctl
+          - -w
+          - vm.max_map_count=262144
+          securityContext:
+            privileged: true
+        - name: increase-the-fs-file-max-count
+          image: busybox
+          command:
+          - sysctl
+          - -w
+          - fs.file-max=65536
+          securityContext:
+            privileged: true
+        - name: increase-the-ulimit-n
+          image: busybox
+          command:
+          - sh
+          - -c
+          - ulimit -n 65536
+          securityContext:
+            privileged: true
+        - name: increase-the-ulimit-u
+          image: busybox
+          command:
+          - sh
+          - -c
+          - ulimit -u 4096
+          securityContext:
+            privileged: true
+      containers:
+        - name: sonarqube
+          image: sonarqube
+          securityContext:
+            privileged: true
+          env:
+            - name: sonar.jdbc.url
+              value: jdbc:postgresql://sonar-pg:5432/sonarqube
+            - name: sonar.jdbc.username
+              value: gpssa
+            - name: sonar.jdbc.password
+              value: gpssapassword
+            - name: sonar.web.context
+              value: /sonar
+          volumeMounts:
+            - mountPath: /opt/sonarqube/conf
+              name: conf
+            - mountPath: /opt/sonarqube/extensions
+              name: extensions
+            - mountPath: /opt/sonarqube/logs
+              name: logs
+            - mountPath: /opt/sonarqube/data
+              name: data
+          ports:
+            - containerPort: 9000
+              name: http
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: sonarqube
+spec:
+  type: NodePort
+  selector:
+    app: sonarqube
+  ports:
+    - port: 80
+      targetPort: 9000
+      name: http
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: sonar-ingress
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /sonar
+          backend:
+            serviceName: sonarqube
+            servicePort: 80
