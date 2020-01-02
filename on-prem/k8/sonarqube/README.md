@@ -10,7 +10,7 @@
     curl http://10.43.23.215/sonar/api/server/version
 
 ## Commands
-### To access postgress
+### To access sonarqube database on postgress
     export PGPASSWORD='gpssapassword'; psql -h 'localhost' -U 'gpssa' -d 'sonarqube' ;
 ### To list users
     \du
