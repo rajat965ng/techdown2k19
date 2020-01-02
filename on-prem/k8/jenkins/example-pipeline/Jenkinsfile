@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    stages {
+        stage('Back-end') {
+            steps {
+                withDockerContainer('maven:3-alpine') {
+                sh 'mvn --version'
+                }
+            }
+        }
+        stage('sonar') {
+            steps {
+                withDockerContainer('rajat965ng/node') {
+                sh 'curl http://10.43.23.215/sonar/api/server/version'
+                }
+            }
+        }
+        stage('Front-end') {
+            steps {
+                withDockerContainer('node:7-alpine') {
+                sh 'node --version'
+                }
+            }
+        }
+    }
+}
