@@ -1,17 +1,35 @@
 # Gitea
 
+## Pre-Requisite
+    Up and running 3 node Kubernetes cluster.
+    Configured kubectl with cluster. Verify by executing 'kubectl get nodes'.
+    NFS for writing state.
 
-gpssa
-8\Pd{H\Wt'w*R!Z=
+## Configure 'deployment.yml'
+### Configure nfs section in volumes
+    volumes:
+      - name: git-data
+        nfs:
+          path: /mnt/disk/gitea/data/app
+          server: 10.150.16.171                
 
-git config --global http.sslVerify false
-git config --global user.email "gpssa@inblrsclMaster.global.publicisgroupe.net"
-git config --global user.name "gpssa master"
+    volumes:
+      - name: pgdata
+        nfs:
+          path: /mnt/disk/gitea/data/db
+          server: 10.150.16.171                
 
-rajat.nigam
-Admin#1234
+## Installation
+    cd on-prem/k8/git/
+    kubectl apply -f deployment.yml
 
-docker run -p 3000:3000 -p 2222:22 -e GITEA_CUSTOM=gitea.com -v $PWD/data:/data gitea/gitea
- 
-gitea admin change-password --username gpssa --password 12345
-su git bash -c "gitea admin change-password --username gpssa --password Gpssa#12345"
+## Configure Giteas instance
+### Setup admin username/password
+    Username: abc
+    Password: 8\Pd{H\Wt'w*R!Z=
+
+## Configure Git Client
+    git config --global http.sslVerify false
+    git config --global user.email "abc@example.com"
+    git config --global user.name "abc master"
+
