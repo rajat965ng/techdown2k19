@@ -12,10 +12,13 @@ RUN /usr/local/bin/install-plugins.sh slack
 RUN /usr/local/bin/install-plugins.sh htmlpublisher
 RUN /usr/local/bin/install-plugins.sh image-tag-parameter
 
+# SCM
+RUN /usr/local/bin/install-plugins.sh gitlab-plugin generic-webhook-trigger
+
 # UI
 RUN /usr/local/bin/install-plugins.sh greenballs
 RUN /usr/local/bin/install-plugins.sh simple-theme-plugin
-RUN /usr/local/bin/install-plugins.sh blueocean blueocean-dashboard workflow-aggregator ant nodejs sonar
+RUN /usr/local/bin/install-plugins.sh blueocean blueocean-dashboard workflow-aggregator ant nodejs sonar jira
 
 # Scaling
 RUN /usr/local/bin/install-plugins.sh kubernetes

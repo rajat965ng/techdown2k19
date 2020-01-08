@@ -45,6 +45,8 @@ spec:
           env:
             - name: JENKINS_OPTS
               value: "--prefix=/jenkins"
+            - name: DOCKER_OPTS
+              value: "--insecure-registry 10.43.200.36:80"
           securityContext:
             privileged: true
           ports:
@@ -52,6 +54,22 @@ spec:
               name: http
             - containerPort: 50000
               name: tcp
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /jenkins/login
+            initialDelaySeconds: 150
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /jenkins/login
+            initialDelaySeconds: 150
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
           volumeMounts:
             - mountPath: /var/run/docker.sock
               name: docker-socket

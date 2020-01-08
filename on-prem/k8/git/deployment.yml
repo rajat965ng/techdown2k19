@@ -1,0 +1,159 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: gitea-pg
+spec:
+  serviceName: "gitea-pg"
+  selector:
+    matchLabels:
+      app: gitea-pg
+  template:
+    metadata:
+      labels:
+        app: gitea-pg
+    spec:
+      volumes:
+      - name: pgdata
+        nfs:
+          path: /mnt/disk/gitea/data/db
+          server: 10.150.16.171
+      containers:
+      - name: gitea-pg
+        image: postgres
+        env:
+        - name: POSTGRES_DB
+          value: gitea
+        - name: POSTGRES_USER
+          value: gitea
+        - name: POSTGRES_PASSWORD
+          value: giteapassword
+        - name: POSTGRES_INITDB_ARGS
+          value: --data-checksums
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: pgdata
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 5432
+          name: dataport
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: gitea-pg
+spec:
+  selector:
+    app: gitea-pg
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http
+  - port: 5432
+    targetPort: 5432
+    name: dataport
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: gitea
+data:
+  DB_TYPE: postgres
+  DB_HOST: gitea-pg:5432
+  DB_NAME: gitea
+  DB_USER: gitea
+  DB_PASSWD: giteapassword
+  RUN_MODE: prod
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: gitea
+spec:
+  selector:
+    matchLabels:
+      app: gitea
+  serviceName: "gitea"
+  template:
+    metadata:
+      labels:
+        app: "gitea"
+    spec:
+      volumes:
+        - name: git-data
+          nfs:
+            path: /mnt/disk/gitea/data/app
+            server: 10.150.16.171
+      containers:
+        - name: gitea
+          image: gitea/gitea
+          envFrom:
+            - configMapRef:
+                name: gitea
+          ports:
+            - containerPort: 3000
+              name: gitea-http
+            - containerPort: 22
+              name: gitea-ssh
+          env:
+            - name: DB_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_TYPE
+                  name: gitea
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_HOST
+                  name: gitea
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_NAME
+                  name: gitea
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_USER
+                  name: gitea
+            - name: DB_PASSWD
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_PASSWD
+                  name: gitea
+            - name: RUN_MODE
+              valueFrom:
+                configMapKeyRef:
+                  key: RUN_MODE
+                  name: gitea
+          volumeMounts:
+            - mountPath: /data
+              name: git-data
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: gitea
+spec:
+  selector:
+    app: gitea
+  ports:
+    - port: 2222
+      targetPort: 22
+      name: gitea-ssh
+    - port: 80
+      targetPort: 3000
+      name: gitea-http
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: gitea-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: gitea
+          servicePort: 80
