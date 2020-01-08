@@ -45,8 +45,6 @@ spec:
           env:
             - name: JENKINS_OPTS
               value: "--prefix=/jenkins"
-            - name: DOCKER_OPTS
-              value: "--insecure-registry 10.43.200.36:80"
           securityContext:
             privileged: true
           ports:
