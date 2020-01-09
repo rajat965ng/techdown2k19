@@ -1,0 +1,53 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: jfrog-artifactory
+spec:
+  selector:
+    matchLabels:
+      app: jfrog-artifactory
+  serviceName: "jfrog-artifactory"
+  template:
+    metadata:
+      labels:
+        app: jfrog-artifactory
+    spec:
+      volumes:
+        - name: artifactory
+          nfs:
+            path: /mnt/disk/artifactory
+            server: 10.150.16.171
+      containers:
+        - name: artifactory
+          image: docker.bintray.io/jfrog/artifactory-jcr
+          ports:
+            - containerPort: 8081
+              name: http
+          volumeMounts:
+            - mountPath: /var/opt/jfrog/artifactory
+              name: artifactory
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jfrog-artifactory
+spec:
+  selector:
+    app: jfrog-artifactory
+  ports:
+    - port: 8081
+      targetPort: 8081
+      name: http
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: jfrog-artifactory
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /artifactory
+            backend:
+              serviceName: jfrog-artifactory
+              servicePort: 8081

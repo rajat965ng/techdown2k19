@@ -30,3 +30,569 @@ ingress:
     use-forwarded-headers: true
   node_selector:
     app: ingress
+  extra_args:
+    default-ssl-certificate: "ingress-nginx/ingress-default-cert"
+
+addons: |-
+  ---
+  apiVersion: v1
+  data:
+    tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURPVENDQWlHZ0F3SUJBZ0lKQUpnSFVJMEt3Y1dMTUEwR0NTcUdTSWIzRFFFQkJRVUFNRE14TVRBdkJnTlYKQkFNTUtHbHVZbXh5YzJOc2JXRnpkR1Z5TG1kc2IySmhiQzV3ZFdKc2FXTnBjMmR5YjNWd1pTNXVaWFF3SGhjTgpNakF3TVRBNU1UYzBNalF5V2hjTk16QXdNVEEyTVRjME1qUXlXakF6TVRFd0x3WURWUVFERENocGJtSnNjbk5qCmJHMWhjM1JsY2k1bmJHOWlZV3d1Y0hWaWJHbGphWE5uY205MWNHVXVibVYwTUlJQklqQU5CZ2txaGtpRzl3MEIKQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBNm5sZkp6THFOQWk0WTY0eC9WbzdsWFdvNDBPaFJxWEpGQ3UrbUJKcgp4Z1d3RzZXMTIxeWkvbXdCNEN4cDA0ZXpzVmI3bW1WQWhVekVTZFcyWHpHR1pzYUxEcmI1QkhpaXZPYW0xWEFSCm04MUpPTHJLZC9DMWNib09CbS85d0pSc2QvN1JDdjhpM09TanpPRGJhdmFTZTJkOGJwOC9KeFZSVUlEQkRndFMKREovTVEyNzVRdzNtK0lOdGNJelQrUlRuZ1YySFNveU94d2l4M2diYkhUMVgzZWN3ZTArM24vR2JxdkNlOXlPeQozMWUyRlJTQUplbzRKM3JHR3ZKUS8reXdZclpEQmFFQVRmZC9saVk2OVZwendMNklkeTlLNkx2U2Q4bi9zOFFLCmNFV09ZbklZUkVUdTgrdzFmeTRWSHF5WVRlQS9SSlNUL0hvUTFJdThXUGJ2NlFJREFRQUJvMUF3VGpBZEJnTlYKSFE0RUZnUVVyNTQzUFF3U2NFNFZ4Uy84Wi9oV1VuaUppM1F3SHdZRFZSMGpCQmd3Rm9BVXI1NDNQUXdTY0U0Vgp4Uy84Wi9oV1VuaUppM1F3REFZRFZSMFRCQVV3QXdFQi96QU5CZ2txaGtpRzl3MEJBUVVGQUFPQ0FRRUEwSXRnClFmL3lGSFJvakNoTmtMSzdOK1Q3SHNZaXBhUUkvcFBDWWw5ZDFpRVlBaE1uT3hlcmFTdjhDNm4vbHowZDNiL1EKRTdKbkNJb2hwb1hoR2YzVTlTQW1idzZuTG5iQmFnK05WQWYyODRHem5pb2RlYkRZLys3SGYvUkNzVGdmaUp5SwozQkJqTEJTYjNGb3lOZGxTNzJVd3YzeHlaaTV4d2doRUh3OU9UTFRyd1FTOEpHV05OYTAxaGgrc1FEM0daN3BLCnkxUGttRjBIcUplKy8xOVY4c0JGRmltWjBNaUNHRVVVMEhQMWEzKzhvNWJQb0hkWHpwMDU1NUdReWJweHhEckYKVHRSUUV4cytCL1JMZ1haTHJZQlppbW1pZC96R0V0QmtyWFpVTENPb001NjJFcU9IYlNWTktjR0xtZ1JjTGRHVwpjVlR3V0NRNkRBRnE3c3E1Wnc9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    tls.key: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBNm5sZkp6THFOQWk0WTY0eC9WbzdsWFdvNDBPaFJxWEpGQ3UrbUJKcnhnV3dHNlcxCjIxeWkvbXdCNEN4cDA0ZXpzVmI3bW1WQWhVekVTZFcyWHpHR1pzYUxEcmI1QkhpaXZPYW0xWEFSbTgxSk9McksKZC9DMWNib09CbS85d0pSc2QvN1JDdjhpM09TanpPRGJhdmFTZTJkOGJwOC9KeFZSVUlEQkRndFNESi9NUTI3NQpRdzNtK0lOdGNJelQrUlRuZ1YySFNveU94d2l4M2diYkhUMVgzZWN3ZTArM24vR2JxdkNlOXlPeTMxZTJGUlNBCkplbzRKM3JHR3ZKUS8reXdZclpEQmFFQVRmZC9saVk2OVZwendMNklkeTlLNkx2U2Q4bi9zOFFLY0VXT1luSVkKUkVUdTgrdzFmeTRWSHF5WVRlQS9SSlNUL0hvUTFJdThXUGJ2NlFJREFRQUJBb0lCQVFEU2xlZHI0VUtQTVRYSgo4TzFjeWVteHRsYlVwaXoyc25jQjhyZmZCTXhlc1VVVno2S2hQWFgyWXpMY0Q0ZU1QOWlYY2JQUFd4aXpuOXE3CkpZSUJ4UTBjeVR5akhwcFA5YmpUUjZTWEZXdjdMa2lROXRKWkhvc1hkUzZiZ1lHNXNKUXF3V1VtSnpjOGhPekkKV1RzM3VmU2RlTGc4OGpGWi9MOW5PZndwak9sSUE1VGJiVEx3a3YvVXFKLy81Z01mK2N6MGFROGtQTUxUSzNlNApQVEpFOEZUK05vRjBRRHVFbWtROFU4Sis2Z2s3MWp0bmtmYTM2OGFVVEdkd0ttSGR2NHpiVXhGQjNES2tKTkFFCng1VDRyTWYyNXNUOHU2SFlVSFdMdEhSVVF0OEZzbm9qMy9sZ3pHMllNVmh6TS9KNC92UnlQY2NWdWRoZjZRa08KL09QNTRNbXhBb0dCQVBtYm1uaktKaExqZ3RNU3dKM2g1cXphNXdmYnBQSkEwVFJJMDc3ZDRIcS9ueGFlVVBxNApuUmNnUjRmb2pMQ3FkZnp1VmJXYU9wUWFqZTVjZXdacmN3OEhRdmFYMGR1bkRFUnIybjh0dFpycVVCdWNsMzVJCjkrZWpIVUlVUjlqajJlcjdJbFp5dEw0RE14U000Q1AzUFZqKzZadnlQbzRvbm1RWFozZ2tHemdyQW9HQkFQQjYKamJnOWMyd0RiZDg5WEV5Y2ZjekcrRElxbzNRR0hIRldJWG5ldWpEL0lCczFVRG82d21tTUdzQk5oOXJoZHVQbgo1bzBnRXMrOERNa0JqeUpTZjZ4Vytza1g1VGZTZ0ZNVVY2QW01MGpCV2ZkeE55RVNCU3FKNUpGM08wQzcyeXdyCmsrV0Rxd1pRZjlxeHRQWUZhck5LWEdOMVo1NmVva2J5bUVhTEJmbzdBb0dCQVBIZVh4dm12bWdWUDhMcWErMVIKWmlaZlkvbVFVOUJQRUtsNlhIeWFJWml3TUNkSnQ2eUwwZVVENld4LzRqeWFvUVE3cXAvejJBbUZoYnpRcm9HMQpBdVF3SkNveFNUQndPWW5mZlBVNXhMMWRpY3lIdTZDcWNsWnFEOExsUmcyY0ZLRUhRdW5EOHZJZ3haR0hSUFowCjhHUlpkdU1mSkpDNk9XbEI2SWhaYkdyTEFvR0FNYy9BNFVQaFQ2TmFNOTZhNnNlVGkwSS9rT3lpRk50Yk11SzcKWm1vTE9URHZicE5aZmVaRDlPYnZkNXZYb3pBR2wyaW1xZDdWNXErMkdrQzNiRTJZWXBOVnVTZTQ5Qm9uT0k1RApKRXBLcUJoYzBWTmpMdmR6bUg4ZG1FQVJSdlJpanNDc0R1TjZIb0c0S2cyYlJVYVQ5blZWczhoUzRWbE1sZE9VClZUQmcyWmNDZ1lBMUpHdTF2V0h0OThIczFoaFlualdvSHV1Vlk2OUFBMmFpS0dYbFpQM3VaWVRiWW8xSmM0VmYKVG1FWDZDLys0QjBOcDUvemR0M0xmbC83Zm14dTZvNGQrZHdGcVdHV1h1ZFB1TThSNk1qYnYvR28ycHZjc1ZURgpuaXZKN0hVdDlLNGVmRHpES2VJUFRrV1grK0RJRWFDcDc5cEtGdEE0Ri9hZ0ZjZHBiOFdiclE9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: ingress-default-cert
+    namespace: ingress-nginx
+  type: kubernetes.io/tls
+  ---
+  # Jenkins Installation #
+  ---
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    namespace: default
+    name: jenkins
+  ---
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRoleBinding
+  metadata:
+    namespace: default
+    name: jenkins
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: cluster-admin
+  subjects:
+  - kind: ServiceAccount
+    name: jenkins
+    namespace: default
+  ---
+  kind: StatefulSet
+  apiVersion: apps/v1
+  metadata:
+    namespace: default
+    name: jenkins-master
+  spec:
+    serviceName: "jenkins-master"
+    selector:
+      matchLabels:
+        app: jenkins-master
+    template:
+      metadata:
+        labels:
+          app: jenkins-master
+      spec:
+        serviceAccountName: jenkins
+        volumes:
+          - name: docker-socket
+            hostPath:
+              path: /var/run/docker.sock
+          - name: pvc
+            nfs:
+              path: /mnt/disk/vol
+              server: 10.150.16.171
+        containers:
+          - name:  jenkins
+            image: rajat965ng/jenkins-master
+            env:
+              - name: JENKINS_OPTS
+                value: "--prefix=/jenkins"
+            securityContext:
+              privileged: true
+            ports:
+              - containerPort: 8080
+                name: http
+              - containerPort: 50000
+                name: tcp
+            livenessProbe:
+              httpGet:
+                port: http
+                path: /jenkins/login
+              initialDelaySeconds: 150
+              timeoutSeconds: 3
+              periodSeconds: 10
+              failureThreshold: 3
+            readinessProbe:
+              httpGet:
+                port: http
+                path: /jenkins/login
+              initialDelaySeconds: 150
+              timeoutSeconds: 3
+              periodSeconds: 10
+              failureThreshold: 3
+            volumeMounts:
+              - mountPath: /var/run/docker.sock
+                name: docker-socket
+              - mountPath: /var/jenkins_home
+                name: pvc
+  ---
+  kind: Service
+  apiVersion: v1
+  metadata:
+    namespace: default
+    name: jenkins-master
+  spec:
+    selector:
+      app: jenkins-master
+    ports:
+      - port: 8080
+        targetPort: 8080
+        protocol: TCP
+        name: http
+      - port: 50000
+        targetPort: 50000
+        name: tcp
+        protocol: TCP
+  ---
+  kind: Ingress
+  apiVersion: extensions/v1beta1
+  metadata:
+    namespace: default
+    name: jenkins-ingress
+  spec:
+    rules:
+    - http:
+        paths:
+        - path: /jenkins
+          backend:
+            serviceName: jenkins-master
+            servicePort: 8080
+  ---
+  # SonarQube Installation #
+  ---
+  kind: StatefulSet
+  apiVersion: apps/v1
+  metadata:
+    namespace: default
+    name: sonar-pg
+  spec:
+    serviceName: "sonar-pg"
+    selector:
+      matchLabels:
+        app: sonar-pg
+    template:
+      metadata:
+       labels:
+         app: sonar-pg
+      spec:
+        volumes:
+          - name: pgdata
+            nfs:
+              path: /mnt/disk/gpssa/sonarqube/pgdata
+              server: 10.150.16.171
+        containers:
+          - name: sonar-pg
+            image: postgres
+            env:
+              - name: POSTGRES_DB
+                value: sonarqube
+              - name: POSTGRES_USER
+                value: gpssa
+              - name: POSTGRES_PASSWORD
+                value: gpssapassword
+              - name: POSTGRES_INITDB_ARGS
+                value: --data-checksums
+            volumeMounts:
+              - mountPath: /var/lib/postgresql/data
+                name: pgdata
+            ports:
+              - containerPort: 8080
+                name: http
+              - containerPort: 5432
+                name: dataport
+  ---
+  kind: Service
+  apiVersion: v1
+  metadata:
+    namespace: default
+    name: sonar-pg
+  spec:
+    selector:
+      app: sonar-pg
+    ports:
+      - port: 8080
+        targetPort: 8080
+        name: http
+      - port: 5432
+        targetPort: 5432
+        name: dataport
+  ---
+  kind: Deployment
+  apiVersion: apps/v1
+  metadata:
+    namespace: default
+    name: sonarqube
+  spec:
+    selector:
+      matchLabels:
+        app: sonarqube
+    template:
+      metadata:
+        labels:
+          app: sonarqube
+      spec:
+        volumes:
+        - name: conf
+          nfs:
+            path: /mnt/disk/gpssa/sonarqube/conf
+            server: 10.150.16.171
+        - name: extensions
+          nfs:
+            path: /mnt/disk/gpssa/sonarqube/extensions
+            server: 10.150.16.171
+        - name: logs
+          emptyDir: {}
+        - name: data
+          nfs:
+            path: /mnt/disk/gpssa/sonarqube/data
+            server: 10.150.16.171
+        initContainers:
+          - name: fix-the-volume-permission
+            image: busybox
+            command:
+            - sh
+            - -c
+            - chmod 777 /opt/sonarqube/*
+            securityContext:
+              privileged: true
+            volumeMounts:
+              - mountPath: /opt/sonarqube/logs
+                name: logs
+          - name: increase-the-vm-max-map-count
+            image: busybox
+            command:
+            - sysctl
+            - -w
+            - vm.max_map_count=262144
+            securityContext:
+              privileged: true
+          - name: increase-the-fs-file-max-count
+            image: busybox
+            command:
+            - sysctl
+            - -w
+            - fs.file-max=65536
+            securityContext:
+              privileged: true
+          - name: increase-the-ulimit-n
+            image: busybox
+            command:
+            - sh
+            - -c
+            - ulimit -n 65536
+            securityContext:
+              privileged: true
+          - name: increase-the-ulimit-u
+            image: busybox
+            command:
+            - sh
+            - -c
+            - ulimit -u 4096
+            securityContext:
+              privileged: true
+        containers:
+          - name: sonarqube
+            image: sonarqube
+            securityContext:
+              privileged: true
+            env:
+              - name: sonar.jdbc.url
+                value: jdbc:postgresql://sonar-pg:5432/sonarqube
+              - name: sonar.jdbc.username
+                value: gpssa
+              - name: sonar.jdbc.password
+                value: gpssapassword
+              - name: sonar.web.context
+                value: /sonar
+            volumeMounts:
+              - mountPath: /opt/sonarqube/conf
+                name: conf
+              - mountPath: /opt/sonarqube/extensions
+                name: extensions
+              - mountPath: /opt/sonarqube/logs
+                name: logs
+              - mountPath: /opt/sonarqube/data
+                name: data
+            ports:
+              - containerPort: 9000
+                name: http
+  ---
+  kind: Service
+  apiVersion: v1
+  metadata:
+    namespace: default
+    name: sonarqube
+  spec:
+    type: NodePort
+    selector:
+      app: sonarqube
+    ports:
+      - port: 80
+        targetPort: 9000
+        name: http
+  ---
+  kind: Ingress
+  apiVersion: extensions/v1beta1
+  metadata:
+    namespace: default
+    name: sonar-ingress
+  spec:
+    rules:
+      - http:
+          paths:
+          - path: /sonar
+            backend:
+              serviceName: sonarqube
+              servicePort: 80
+  ---
+  # Nexus Installation #
+  ---
+  kind: StatefulSet
+  apiVersion: apps/v1
+  metadata:
+    namespace: default
+    name: nexus
+  spec:
+    selector:
+      matchLabels:
+        app: nexus
+    serviceName: "nexus"
+    template:
+      metadata:
+        labels:
+          app: nexus
+      spec:
+        volumes:
+          - name: nexus-data
+            nfs:
+              path: /mnt/disk/nexus/data
+              server: 10.150.16.171
+        containers:
+          - name: nexus
+            image: sonatype/nexus3
+            env:
+              - name: NEXUS_CONTEXT
+                value: nexus
+            ports:
+              - containerPort: 8081
+                name: http-main
+              - containerPort: 8123
+                name: http-docker
+              - containerPort: 8124
+                name: https-docker
+            volumeMounts:
+              - mountPath: /nexus-data
+                name: nexus-data
+  ---
+  kind: Service
+  apiVersion: v1
+  metadata:
+    namespace: default
+    name: nexus
+  spec:
+    selector:
+      app: nexus
+    ports:
+      - port: 8081
+        targetPort: 8081
+        name: http-main
+      - port: 8123
+        targetPort: 8123
+        name: http-docker
+      - port: 8124
+        targetPort: 8124
+        name: https-docker
+  ---
+  kind: Ingress
+  apiVersion: extensions/v1beta1
+  metadata:
+    namespace: default
+    name: nexus
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+  spec:
+    rules:
+      - http:
+          paths:
+            - path: /nexus
+              backend:
+                serviceName: nexus
+                servicePort: 8081
+            - path: /nexus
+              backend:
+                serviceName: nexus
+                servicePort: 8123
+            - path: /nexus
+              backend:
+                serviceName: nexus
+                servicePort: 8124
+  ---
+  # Gitea Installation #
+  ---
+  kind: StatefulSet
+  apiVersion: apps/v1
+  metadata:
+    namespace: default
+    name: gitea-pg
+  spec:
+    serviceName: "gitea-pg"
+    selector:
+      matchLabels:
+        app: gitea-pg
+    template:
+      metadata:
+        labels:
+          app: gitea-pg
+      spec:
+        volumes:
+        - name: pgdata
+          nfs:
+            path: /mnt/disk/gitea/data/db
+            server: 10.150.16.171
+        containers:
+        - name: gitea-pg
+          image: postgres
+          env:
+          - name: POSTGRES_DB
+            value: gitea
+          - name: POSTGRES_USER
+            value: gitea
+          - name: POSTGRES_PASSWORD
+            value: giteapassword
+          - name: POSTGRES_INITDB_ARGS
+            value: --data-checksums
+          volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: pgdata
+          ports:
+          - containerPort: 8080
+            name: http
+          - containerPort: 5432
+            name: dataport
+  ---
+  kind: Service
+  apiVersion: v1
+  metadata:
+    namespace: default
+    name: gitea-pg
+  spec:
+    selector:
+      app: gitea-pg
+    ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+    - port: 5432
+      targetPort: 5432
+      name: dataport
+  ---
+  kind: ConfigMap
+  apiVersion: v1
+  metadata:
+    namespace: default
+    name: gitea
+  data:
+    DB_TYPE: postgres
+    DB_HOST: gitea-pg:5432
+    DB_NAME: gitea
+    DB_USER: gitea
+    DB_PASSWD: giteapassword
+    RUN_MODE: prod
+  ---
+  kind: StatefulSet
+  apiVersion: apps/v1
+  metadata:
+    namespace: default
+    name: gitea
+  spec:
+    selector:
+      matchLabels:
+        app: gitea
+    serviceName: "gitea"
+    template:
+      metadata:
+        labels:
+          app: "gitea"
+      spec:
+        volumes:
+          - name: git-data
+            nfs:
+              path: /mnt/disk/gitea/data/app
+              server: 10.150.16.171
+        containers:
+          - name: gitea
+            image: gitea/gitea
+            envFrom:
+              - configMapRef:
+                  name: gitea
+            ports:
+              - containerPort: 3000
+                name: gitea-http
+              - containerPort: 22
+                name: gitea-ssh
+            env:
+              - name: DB_TYPE
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_TYPE
+                    name: gitea
+              - name: DB_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_HOST
+                    name: gitea
+              - name: DB_NAME
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_NAME
+                    name: gitea
+              - name: DB_USER
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_USER
+                    name: gitea
+              - name: DB_PASSWD
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_PASSWD
+                    name: gitea
+              - name: RUN_MODE
+                valueFrom:
+                  configMapKeyRef:
+                    key: RUN_MODE
+                    name: gitea
+            volumeMounts:
+              - mountPath: /data
+                name: git-data
+  ---
+  kind: Service
+  apiVersion: v1
+  metadata:
+    namespace: default
+    name: gitea
+  spec:
+    selector:
+      app: gitea
+    ports:
+      - port: 2222
+        targetPort: 22
+        name: gitea-ssh
+      - port: 80
+        targetPort: 3000
+        name: gitea-http
+  ---
+  kind: Ingress
+  apiVersion: extensions/v1beta1
+  metadata:
+    namespace: default
+    name: gitea-ingress
+  spec:
+    rules:
+    - http:
+        paths:
+        - path: /
+          backend:
+            serviceName: gitea
+            servicePort: 80

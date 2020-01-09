@@ -1,0 +1,72 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: nexus
+spec:
+  selector:
+    matchLabels:
+      app: nexus
+  serviceName: "nexus"
+  template:
+    metadata:
+      labels:
+        app: nexus
+    spec:
+      volumes:
+        - name: nexus-data
+          nfs:
+            path: /mnt/disk/nexus/data
+            server: 10.150.16.171
+      containers:
+        - name: nexus
+          image: sonatype/nexus3
+          env:
+            - name: NEXUS_CONTEXT
+              value: nexus
+          ports:
+            - containerPort: 8081
+              name: http-main
+            - containerPort: 8124
+              name: http-docker
+          volumeMounts:
+            - mountPath: /nexus-data
+              name: nexus-data
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: default
+  name: nexus
+spec:
+  clusterIP: None
+  selector:
+    app: nexus
+  ports:
+    - port: 80
+      targetPort: 8081
+      name: http-main
+    - port: 8124
+      targetPort: 8124
+      name: http-docker
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  namespace: default
+  name: nexus
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /nexus
+            backend:
+              serviceName: nexus
+              servicePort: 80
+          - path: /nexus
+            backend:
+              serviceName: nexus
+              servicePort: 8124

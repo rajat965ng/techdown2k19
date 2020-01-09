@@ -1,6 +1,7 @@
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
+  namespace: default
   name: gitea-pg
 spec:
   serviceName: "gitea-pg"
@@ -41,6 +42,7 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
+  namespace: default
   name: gitea-pg
 spec:
   selector:
@@ -56,6 +58,7 @@ spec:
 kind: ConfigMap
 apiVersion: v1
 metadata:
+  namespace: default
   name: gitea
 data:
   DB_TYPE: postgres
@@ -68,6 +71,7 @@ data:
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
+  namespace: default
   name: gitea
 spec:
   selector:
@@ -133,6 +137,7 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
+  namespace: default
   name: gitea
 spec:
   selector:
@@ -148,6 +153,7 @@ spec:
 kind: Ingress
 apiVersion: extensions/v1beta1
 metadata:
+  namespace: default
   name: gitea-ingress
 spec:
   rules:
