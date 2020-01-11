@@ -59,7 +59,7 @@ spec:
             httpGet:
               port: http
               path: /jenkins/login
-            initialDelaySeconds: 150
+            initialDelaySeconds: 180
             timeoutSeconds: 3
             periodSeconds: 10
             failureThreshold: 3
@@ -67,7 +67,7 @@ spec:
             httpGet:
               port: http
               path: /jenkins/login
-            initialDelaySeconds: 150
+            initialDelaySeconds: 180
             timeoutSeconds: 3
             periodSeconds: 10
             failureThreshold: 3
