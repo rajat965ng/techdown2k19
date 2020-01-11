@@ -29,6 +29,8 @@ spec:
               name: http-main
             - containerPort: 8124
               name: http-docker
+            - containerPort: 8123
+              name: https-docker
           volumeMounts:
             - mountPath: /nexus-data
               name: nexus-data
@@ -37,18 +39,33 @@ kind: Service
 apiVersion: v1
 metadata:
   namespace: default
-  name: nexus
+  name: nexus-http
 spec:
-  clusterIP: None
   selector:
     app: nexus
   ports:
     - port: 80
       targetPort: 8081
       name: http-main
-    - port: 8124
-      targetPort: 8124
-      name: http-docker
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: default
+  name: nexus-docker
+spec:
+  type: NodePort
+  selector:
+    app: nexus
+  ports:
+  - port: 8124
+    targetPort: 8124
+    name: http-docker
+    nodePort: 32000
+  - port: 8123
+    targetPort: 8123
+    name: https-docker
+    nodePort: 32022
 ---
 kind: Ingress
 apiVersion: extensions/v1beta1
@@ -64,9 +81,5 @@ spec:
         paths:
           - path: /nexus
             backend:
-              serviceName: nexus
+              serviceName: nexus-http
               servicePort: 80
-          - path: /nexus
-            backend:
-              serviceName: nexus
-              servicePort: 8124

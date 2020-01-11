@@ -21,7 +21,7 @@ RUN /usr/local/bin/install-plugins.sh simple-theme-plugin
 RUN /usr/local/bin/install-plugins.sh blueocean blueocean-dashboard workflow-aggregator ant nodejs sonar jira
 
 # Scaling
-RUN /usr/local/bin/install-plugins.sh kubernetes
+RUN /usr/local/bin/install-plugins.sh kubernetes nexus-jenkins-plugin
 RUN /usr/local/bin/install-plugins.sh kubernetes-cli
 RUN /usr/local/bin/install-plugins.sh qualys-cs
 RUN /usr/local/bin/install-plugins.sh docker-slaves
