@@ -67,7 +67,7 @@
 ### Example:                             
     stage('List Pods'){
         steps {
-            withKubeConfig(credentialsId: 'abc-dev',serverUrl: 'https://10.150.16.171:6443',clusterName: 'gpssacluster',contextName: 'gpssacluster') {
+            withKubeConfig(credentialsId: 'abc-dev',serverUrl: 'https://10.150.16.171:6443',clusterName: 'abccluster',contextName: 'abccluster') {
             sh 'kubectl get pods'
             }
         }
