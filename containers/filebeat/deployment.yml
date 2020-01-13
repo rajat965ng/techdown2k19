@@ -78,5 +78,5 @@ spec:
           servicePort: 80
 
 
-#curl -X POST  http://10.244.1.41:8080 -d "{hi gpssa}"
+#curl -X POST  http://10.244.1.41:8080 -d "{hi abc}"
 #curl -X DELETE "elasticsearch:9200/jenkins?pretty"

@@ -1,14 +1,14 @@
 nodes:
 - address: 10.150.16.171
-  user: gpssa
+  user: abc
   role: [controlplane, worker, etcd]
   labels:
     app: ingress
 - address: 10.150.16.172
-  user: gpssa
+  user: abc
   role: [controlplane, worker, etcd]
 - address: 10.150.16.173
-  user: gpssa
+  user: abc
   role: [controlplane, worker, etcd]
 
 services:
@@ -16,7 +16,7 @@ services:
     snapshot: true
     creation: 6h
     retention: 24h
-cluster_name: gpssacluster
+cluster_name: abccluster
 
 network:
   plugin: canal
@@ -179,7 +179,7 @@ addons: |-
         volumes:
           - name: pgdata
             nfs:
-              path: /mnt/disk/gpssa/sonarqube/pgdata
+              path: /mnt/disk/abc/sonarqube/pgdata
               server: 10.150.16.171
         containers:
           - name: sonar-pg
@@ -188,9 +188,9 @@ addons: |-
               - name: POSTGRES_DB
                 value: sonarqube
               - name: POSTGRES_USER
-                value: gpssa
+                value: abc
               - name: POSTGRES_PASSWORD
-                value: gpssapassword
+                value: abcpassword
               - name: POSTGRES_INITDB_ARGS
                 value: --data-checksums
             volumeMounts:
@@ -235,17 +235,17 @@ addons: |-
         volumes:
         - name: conf
           nfs:
-            path: /mnt/disk/gpssa/sonarqube/conf
+            path: /mnt/disk/abc/sonarqube/conf
             server: 10.150.16.171
         - name: extensions
           nfs:
-            path: /mnt/disk/gpssa/sonarqube/extensions
+            path: /mnt/disk/abc/sonarqube/extensions
             server: 10.150.16.171
         - name: logs
           emptyDir: {}
         - name: data
           nfs:
-            path: /mnt/disk/gpssa/sonarqube/data
+            path: /mnt/disk/abc/sonarqube/data
             server: 10.150.16.171
         initContainers:
           - name: fix-the-volume-permission
@@ -300,9 +300,9 @@ addons: |-
               - name: sonar.jdbc.url
                 value: jdbc:postgresql://sonar-pg:5432/sonarqube
               - name: sonar.jdbc.username
-                value: gpssa
+                value: abc
               - name: sonar.jdbc.password
-                value: gpssapassword
+                value: abcpassword
               - name: sonar.web.context
                 value: /sonar
             volumeMounts:

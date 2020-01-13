@@ -6,13 +6,13 @@ data:
   http-logstash.conf: |
     input {
       http {
-        id => "gpssa"
+        id => "abc"
       }
     }
     output {
       elasticsearch {
         hosts => ["http://elasticsearch:9200"]
-        index => "gpssa-%{+YYYY.MM.dd}"
+        index => "abc-%{+YYYY.MM.dd}"
       }
       stdout { codec => rubydebug }
     }

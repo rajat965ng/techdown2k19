@@ -16,7 +16,7 @@ spec:
       volumes:
         - name: pgdata
           nfs:
-            path: /mnt/disk/gpssa/sonarqube/pgdata
+            path: /mnt/disk/abc/sonarqube/pgdata
             server: 10.150.16.171
       containers:
         - name: sonar-pg
@@ -25,9 +25,9 @@ spec:
             - name: POSTGRES_DB
               value: sonarqube
             - name: POSTGRES_USER
-              value: gpssa
+              value: abc
             - name: POSTGRES_PASSWORD
-              value: gpssapassword
+              value: abcpassword
             - name: POSTGRES_INITDB_ARGS
               value: --data-checksums
           volumeMounts:
@@ -72,17 +72,17 @@ spec:
       volumes:
       - name: conf
         nfs:
-          path: /mnt/disk/gpssa/sonarqube/conf
+          path: /mnt/disk/abc/sonarqube/conf
           server: 10.150.16.171
       - name: extensions
         nfs:
-          path: /mnt/disk/gpssa/sonarqube/extensions
+          path: /mnt/disk/abc/sonarqube/extensions
           server: 10.150.16.171
       - name: logs
         emptyDir: {}
       - name: data
         nfs:
-          path: /mnt/disk/gpssa/sonarqube/data
+          path: /mnt/disk/abc/sonarqube/data
           server: 10.150.16.171
       initContainers:
         - name: fix-the-volume-permission
@@ -137,9 +137,9 @@ spec:
             - name: sonar.jdbc.url
               value: jdbc:postgresql://sonar-pg:5432/sonarqube
             - name: sonar.jdbc.username
-              value: gpssa
+              value: abc
             - name: sonar.jdbc.password
-              value: gpssapassword
+              value: abcpassword
             - name: sonar.web.context
               value: /sonar
           volumeMounts:

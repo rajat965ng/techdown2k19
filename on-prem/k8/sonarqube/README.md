@@ -11,7 +11,7 @@
 
 ## Commands
 ### To access sonarqube database on postgress
-    export PGPASSWORD='gpssapassword'; psql -h 'localhost' -U 'gpssa' -d 'sonarqube' ;
+    export PGPASSWORD='abcpassword'; psql -h 'localhost' -U 'abc' -d 'sonarqube' ;
 ### To list users
     \du
 ### To list databases    

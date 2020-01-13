@@ -14,18 +14,18 @@
     sh -x on-prem/rancher/docker/install.sh
     
 ### Create user and add password
-    adduser gpssa
-    passwd gpssa
+    adduser abc
+    passwd abc
     
         IP          user    pass
-    10.150.16.171   gpssa   12345
-    10.150.16.172   gpssa   12345
-    10.150.16.173   gpssa   12345
+    10.150.16.171   abc   12345
+    10.150.16.172   abc   12345
+    10.150.16.173   abc   12345
 
 ### Make user to access docker without sudo
     groupadd docker
-    chown gpssa:docker /var/run/docker.sock
-    usermod -aG docker gpssa
+    chown abc:docker /var/run/docker.sock
+    usermod -aG docker abc
 
 ### Enable password less login
     source machine: 10.150.16.171
@@ -37,19 +37,19 @@
         ssh-keygen -t rsa
     
     Push ssh tokens on target machine:
-        ssh gpssa@10.150.16.171 mkdir -p .ssh
-        cat .ssh/id_rsa.pub | ssh gpssa@10.150.16.171 'cat >> .ssh/authorized_keys'
-        ssh gpssa@10.150.16.171 "chmod 700 .ssh; chmod 640 .ssh/authorized_keys"
+        ssh abc@10.150.16.171 mkdir -p .ssh
+        cat .ssh/id_rsa.pub | ssh abc@10.150.16.171 'cat >> .ssh/authorized_keys'
+        ssh abc@10.150.16.171 "chmod 700 .ssh; chmod 640 .ssh/authorized_keys"
         
         
-        ssh gpssa@10.150.16.172 mkdir -p .ssh
-        cat .ssh/id_rsa.pub | ssh gpssa@10.150.16.172 'cat >> .ssh/authorized_keys'
-        ssh gpssa@10.150.16.172 "chmod 700 .ssh; chmod 640 .ssh/authorized_keys"
+        ssh abc@10.150.16.172 mkdir -p .ssh
+        cat .ssh/id_rsa.pub | ssh abc@10.150.16.172 'cat >> .ssh/authorized_keys'
+        ssh abc@10.150.16.172 "chmod 700 .ssh; chmod 640 .ssh/authorized_keys"
         
         
-        ssh gpssa@10.150.16.173 mkdir -p .ssh
-        cat .ssh/id_rsa.pub | ssh gpssa@10.150.16.173 'cat >> .ssh/authorized_keys'
-        ssh gpssa@10.150.16.173 "chmod 700 .ssh; chmod 640 .ssh/authorized_keys"
+        ssh abc@10.150.16.173 mkdir -p .ssh
+        cat .ssh/id_rsa.pub | ssh abc@10.150.16.173 'cat >> .ssh/authorized_keys'
+        ssh abc@10.150.16.173 "chmod 700 .ssh; chmod 640 .ssh/authorized_keys"
         
 ## RKE Installation
     1. yum install wget -y
