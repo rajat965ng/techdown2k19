@@ -72,3 +72,25 @@
             }
         }
     }  
+    stage('docker with registry') {
+        steps{
+           script {
+               withDockerRegistry(credentialsId: 'localnexus', url: 'http://10.150.16.171:32000') {
+                      docker.image('10.150.16.171:32000/docker-curl/node').inside {
+                           sh 'node -v'
+                      }
+               }                        
+           }
+        }
+    }
+    stage('docker with registry but without script tag') {
+        steps{
+               withDockerRegistry(credentialsId: 'localnexus', url: 'http://10.150.16.171:32000') {
+                      sh '''
+                            docker pull 10.150.16.171:32000/docker-local/tutum/curl
+                            docker tag  10.150.16.171:32000/docker-local/tutum/curl 10.150.16.171:32000/docker-curl/curl
+                            docker push 10.150.16.171:32000/docker-curl/curl
+                         '''
+               }                        
+        }
+    }

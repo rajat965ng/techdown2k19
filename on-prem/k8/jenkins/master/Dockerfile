@@ -24,7 +24,8 @@ RUN /usr/local/bin/install-plugins.sh blueocean blueocean-dashboard workflow-agg
 RUN /usr/local/bin/install-plugins.sh kubernetes nexus-jenkins-plugin
 RUN /usr/local/bin/install-plugins.sh kubernetes-cli
 RUN /usr/local/bin/install-plugins.sh qualys-cs
-RUN /usr/local/bin/install-plugins.sh docker-slaves
+RUN /usr/local/bin/install-plugins.sh docker-slaves docker-build-step
+
 
 USER root
 RUN apt-get update -qq \
