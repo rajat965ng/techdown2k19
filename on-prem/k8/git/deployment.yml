@@ -100,6 +100,8 @@ spec:
             - containerPort: 22
               name: gitea-ssh
           env:
+            - name: ROOT_URL
+              value: https://HOSTNAME-IP/git/
             - name: DB_TYPE
               valueFrom:
                 configMapKeyRef:
@@ -154,12 +156,15 @@ kind: Ingress
 apiVersion: extensions/v1beta1
 metadata:
   namespace: default
-  name: gitea-ingress
+  name: gitea
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
   - http:
       paths:
-      - path: /
+      - path: /git(/|$)(.*)
         backend:
           serviceName: gitea
           servicePort: 80

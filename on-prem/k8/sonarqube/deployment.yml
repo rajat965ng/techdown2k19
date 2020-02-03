@@ -131,6 +131,7 @@ spec:
       containers:
         - name: sonarqube
           image: sonarqube
+          imagePullPolicy: Always
           securityContext:
             privileged: true
           env:
@@ -173,7 +174,7 @@ kind: Ingress
 apiVersion: extensions/v1beta1
 metadata:
   namespace: default
-  name: sonar-ingress
+  name: sonar
 spec:
   rules:
     - http:
