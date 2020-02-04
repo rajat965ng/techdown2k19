@@ -25,7 +25,7 @@ spec:
             - name: RABBITMQ_DEFAULT_PASS
               value: admin@2K20
             - name: RABBITMQ_DEFAULT_USER
-              value: admin_gpssa
+              value: admin
             - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
               value: '-rabbitmq_management path_prefix "/broker"'
           ports:
