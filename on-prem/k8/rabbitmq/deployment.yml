@@ -1,0 +1,80 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: rabbitmq
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+  serviceName: "rabbitmq"
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      volumes:
+        - name: broker-data
+          nfs:
+            path: /mnt/disk/rabbitmq
+            server: 10.150.16.171
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:management
+          env:
+            - name: RABBITMQ_DEFAULT_PASS
+              value: admin@2K20
+            - name: RABBITMQ_DEFAULT_USER
+              value: admin_gpssa
+            - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
+              value: '-rabbitmq_management path_prefix "/broker"'
+          ports:
+            - containerPort: 15672
+              name: http
+            - containerPort: 5672
+              name: tcp
+          volumeMounts:
+            - mountPath: /var/lib/rabbitmq
+              name: broker-data
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: default
+  name: rabbitmq-http
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+    - port: 80
+      targetPort: 15672
+      name: http
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: default
+  name: rabbitmq-tcp
+spec:
+  type: NodePort
+  selector:
+    app: rabbitmq
+  ports:
+    - port: 5672
+      targetPort: 5672
+      nodePort: 32003
+      name: tcp
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  namespace: default
+  name: rabbitmq
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /broker
+        backend:
+          serviceName: rabbitmq-http
+          servicePort: 80
