@@ -1,0 +1,123 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: drupal-db
+spec:
+  selector:
+    matchLabels:
+      app: drupal-db
+  serviceName: "drupal-db"
+  template:
+    metadata:
+      labels:
+        app: drupal-db
+    spec:
+      volumes:
+        - name: db
+          nfs:
+            path: /mnt/disk/drupal/db
+            server: 10.150.16.171
+      containers:
+        - name: drupal-db
+          image: mariadb
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "bn_drupal"
+            - name: MYSQL_DATABASE
+              value: "bitnami_drupal"
+            - name: MYSQL_USER
+              value: "bn_drupal"
+            - name: MYSQL_PASSWORD
+              value: "bn_drupal"
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: db
+          ports:
+            - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: drupal-db
+  namespace: default
+spec:
+  clusterIP: None
+  selector:
+    app: drupal-db
+  ports:
+    - port: 3306
+      targetPort: 8080
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: drupal
+spec:
+  selector:
+    matchLabels:
+      app: drupal
+  serviceName: "drupal"
+  template:
+    metadata:
+      labels:
+        app: "drupal"
+    spec:
+      volumes:
+        - name: config
+          emptyDir: {}
+        - name: drupal
+          nfs:
+            path: /mnt/disk/drupal
+            server: 10.150.16.171
+      containers:
+        - name: drupal
+          image: bitnami/drupal-nginx:8.8.2-debian-10-r21
+          env:
+            - name: MARIADB_HOST
+              value: "drupal-db"
+            - name: MARIADB_PORT_NUMBER
+              value: "3306"
+            - name: DRUPAL_DATABASE_NAME
+              value: "bitnami_drupal"
+            - name: DRUPAL_DATABASE_USER
+              value: "bn_drupal"
+            - name: DRUPAL_DATABASE_PASSWORD
+              value: "bn_drupal"
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: default
+  name: drupal
+spec:
+  selector:
+    app: drupal
+  ports:
+    - port: 80
+      targetPort: 80
+      name: http
+    - port: 443
+      targetPort: 443
+      name: https
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  namespace: default
+  name: drupal
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: drupal
+          servicePort: 80

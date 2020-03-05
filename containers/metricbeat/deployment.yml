@@ -1,29 +1,5 @@
 ---
 apiVersion: v1
-kind: ServiceAccount
-metadata:
-  namespace: kube-system
-  name: metricbeat
-  labels:
-    k8s-app: metricbeat
----
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRoleBinding
-metadata:
-  namespace: kube-system
-  name: metricbeat
-  labels:
-    k8s-app: metricbeat
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-- kind: ServiceAccount
-  name: metricbeat
-  namespace: kube-system
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: metricbeat-daemonset-config
@@ -63,11 +39,22 @@ data:
         - network
         - process
         - process_summary
+        - core
+        - diskio
+        - socket
       processes: ['.*']
       process.include_top_n:
         by_cpu: 5
         by_memory: 5
 
+    - module: system
+      period: 1m
+      metricsets:
+        - filesystem
+        - fsstat
+      processors:
+      - drop_event.when.regexp:
+          system.filesystem.mount_point: '^/(sys|cgroup|proc|dev|etc|host|lib)($|/)'
   kubernetes.yml: |-
     - module: kubernetes
       metricsets:
@@ -77,10 +64,15 @@ data:
         - container
         - volume
       period: 10s
-      enabled: true
       host: ${NODE_NAME}
-      hosts: ["10.150.16.171:6443"]
+      hosts: ["localhost:10255"]
 
+    - module: kubernetes
+      metricsets:
+        - proxy
+      period: 10s
+      host: ${NODE_NAME}
+      hosts: ["localhost:10249"]
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -104,7 +96,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: metricbeat
-        image: docker.elastic.co/beats/metricbeat:7.4.2
+        image: docker.elastic.co/beats/metricbeat:7.6.0
         args: [
           "-c", "/etc/metricbeat.yml",
           "-e",
@@ -200,10 +192,13 @@ data:
         - state_replicaset
         - state_pod
         - state_container
+        - state_cronjob
+        - state_resourcequota
         - event
       period: 10s
       host: ${NODE_NAME}
-      hosts: ["kube-state-metrics:8080"]
+      hosts: ["https://10.150.16.171:6443"]
+      ssl.verification_mode: "none"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -226,7 +221,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: metricbeat
-        image: docker.elastic.co/beats/metricbeat:7.4.2
+        image: docker.elastic.co/beats/metricbeat:7.6.0
         args: [
           "-c", "/etc/metricbeat.yml",
           "-e",
@@ -262,7 +257,28 @@ spec:
           defaultMode: 0600
           name: metricbeat-deployment-modules
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: metricbeat
+subjects:
+- kind: ServiceAccount
+  name: metricbeat
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: metricbeat
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: metricbeat
+  namespace: kube-system
+  labels:
+    k8s-app: metricbeat
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: metricbeat
@@ -284,6 +300,7 @@ rules:
   resources:
   - statefulsets
   - deployments
+  - replicasets
   verbs: ["get", "list", "watch"]
 - apiGroups:
   - ""

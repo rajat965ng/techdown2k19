@@ -1,0 +1,121 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: keycloak-pg
+spec:
+  serviceName: "keycloak-pg"
+  selector:
+    matchLabels:
+      app: keycloak-pg
+  template:
+    metadata:
+      labels:
+        app: keycloak-pg
+    spec:
+      volumes:
+      - name: pgdata
+        nfs:
+          path: /mnt/disk/keycloak/data/db
+          server: 10.150.16.171
+      containers:
+      - name: keycloak-pg
+        image: postgres
+        env:
+        - name: POSTGRES_DB
+          value: keycloak
+        - name: POSTGRES_USER
+          value: keycloak
+        - name: POSTGRES_PASSWORD
+          value: keycloakpassword
+        - name: POSTGRES_INITDB_ARGS
+          value: --data-checksums
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: pgdata
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 5432
+          name: dataport
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: default
+  name: keycloak-pg
+spec:
+  selector:
+    app: keycloak-pg
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http
+  - port: 5432
+    targetPort: 5432
+    name: dataport
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: keycloak
+spec:
+  selector:
+    matchLabels:
+      app: keycloak
+  serviceName: "keycloak"
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: jboss/keycloak
+          env:
+            - name: PROXY_ADDRESS_FORWARDING
+              value: "true"
+            - name: DB_VENDOR
+              value: "postgres"
+            - name: DB_ADDR
+              value: "keycloak-pg:5432"
+            - name: DB_USER
+              value: "keycloak"
+            - name: DB_PASSWORD
+              value: "keycloakpassword"
+            - name: KEYCLOAK_USER
+              value: "admin"
+            - name: KEYCLOAK_PASSWORD
+              value: "admin123"
+          ports:
+            - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: default
+  name: keycloak
+spec:
+  selector:
+    app: keycloak
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  namespace: default
+  name: keycloak
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /auth
+        backend:
+          serviceName: keycloak
+          servicePort: 80
+
+
+

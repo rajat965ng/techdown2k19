@@ -1,0 +1,58 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: drupal-docker
+spec:
+  selector:
+    matchLabels:
+      app: drupal-docker
+  template:
+    metadata:
+      labels:
+        app: drupal-docker
+    spec:
+      volumes:
+        - name: docker
+          hostPath:
+            path: /var/run/docker.sock
+      containers:
+        - name: drupal-docker
+          image: docker
+          securityContext:
+            privileged: true
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: /var/run/docker.sock
+              name: docker
+
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: default
+  name: drupal-docker
+spec:
+  selector:
+    app: drupal-docker
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  namespace: default
+  name: drupal-docker
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: drupal-docker
+          servicePort: 80
+
+

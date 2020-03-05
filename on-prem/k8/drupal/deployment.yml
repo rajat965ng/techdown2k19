@@ -1,0 +1,130 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: drupal-pg
+spec:
+  serviceName: "drupal-pg"
+  selector:
+    matchLabels:
+      app: drupal-pg
+  template:
+    metadata:
+      labels:
+        app: drupal-pg
+    spec:
+      volumes:
+      - name: pgdata
+        nfs:
+          path: /mnt/disk/drupal/db
+          server: 10.150.16.171
+      containers:
+      - name: drupal-pg
+        image: postgres
+        env:
+        - name: POSTGRES_DB
+          value: drupal
+        - name: POSTGRES_USER
+          value: drupal
+        - name: POSTGRES_PASSWORD
+          value: drupalpassword
+        - name: POSTGRES_INITDB_ARGS
+          value: --data-checksums
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: pgdata
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 5432
+          name: dataport
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: default
+  name: drupal-pg
+spec:
+  clusterIP: None
+  selector:
+    app: drupal-pg
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http
+  - port: 5432
+    targetPort: 5432
+    name: dataport
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: drupal
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: drupal
+  template:
+    metadata:
+      labels:
+        app: drupal
+    spec:
+      volumes:
+      - name: drupal
+        nfs:
+          path: /mnt/disk/drupal
+          server: 10.150.16.171
+      initContainers:
+        - name: init-site-volume
+          image: drupal:8
+          command: ['/bin/bash','-c']
+          args: ['cp -r /var/www/html/sites/ /data/; chown www-data:www-data /data/ -R']
+          volumeMounts:
+            - mountPath: /data
+              subPath: data
+              name: drupal
+      containers:
+        - name: drupal
+          image: drupal:8
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /var/www/html/modules
+              subPath: modules
+              name: drupal
+            - mountPath: /var/www/html/profiles
+              subPath: profiles
+              name: drupal
+            - mountPath: /var/www/html/themes
+              subPath: themes
+              name: drupal
+            - mountPath: /var/www/html/sites
+              subPath: sites
+              name: drupal
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: drupal
+  namespace: default
+spec:
+  selector:
+    app: drupal
+  ports:
+    - port: 8080
+      targetPort: 80
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  namespace: default
+  name: drupal
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: drupal
+          servicePort: 8080

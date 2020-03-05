@@ -3,16 +3,25 @@ apiVersion: v1
 metadata:
   name: logstash
 data:
-  http-logstash.conf: |
+  beat.conf: |
     input {
-      http {
-        id => "abc"
+      beats {
+        port => "5044"
       }
+    }
+    filter {
+       grok {
+          match => { "message" => "%{COMBINEDAPACHELOG}"}
+       }
+       geoip {
+          source => "clientip"
+       }
     }
     output {
       elasticsearch {
         hosts => ["http://elasticsearch:9200"]
-        index => "abc-%{+YYYY.MM.dd}"
+        index => "%{[fields][appcode]}-%{[fields][env]}-%{+YYYY.MM.dd}"
+        manage_template => false
       }
       stdout { codec => rubydebug }
     }
@@ -32,21 +41,21 @@ spec:
         app: logstash
     spec:
       volumes:
-        - name: http-config
+        - name: beat-config
           configMap:
             name: logstash
             items:
-              - key: http-logstash.conf
-                path: http-logstash.conf
+              - key: beat.conf
+                path: beat.conf
       containers:
         - name: logstash
           image: logstash:7.4.2
           volumeMounts:
             - mountPath: /usr/share/logstash/pipeline/
-              name: http-config
+              name: beat-config
               readOnly: true
           ports:
-            - containerPort: 8080
+            - containerPort: 5044
 ---
 kind: Service
 apiVersion: v1
@@ -56,9 +65,8 @@ spec:
   selector:
     app: logstash
   ports:
-  - port: 80
-    targetPort: 8080
-    name: http
+  - port: 5044
+    targetPort: 5044
 
 ---
 kind: Ingress

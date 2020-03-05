@@ -1,0 +1,153 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: default
+  name: jenkins
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  namespace: default
+  name: jenkins
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: jenkins
+  namespace: default
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  namespace: default
+  name: jenkins-beats
+data:
+  filebeat.yml: |
+    filebeat.inputs:
+    - type: log
+      enabled: true
+      paths:
+        - /var/log/app/slaves/*/*.log
+
+    processors:
+    - add_fields:
+        fields:
+          appcode: jenkins
+          env: shd
+
+    output.logstash:
+      hosts: ["logstash:5044"]
+
+    setup.template:
+      name: 'jenkins'
+      pattern: 'jenkins-*'
+      enabled: false
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: jenkins-master
+spec:
+  serviceName: "jenkins-master"
+  selector:
+    matchLabels:
+      app: jenkins-master
+  template:
+    metadata:
+      labels:
+        app: jenkins-master
+    spec:
+      serviceAccountName: jenkins
+      volumes:
+        - name: log-data
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: jenkins-beats
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+        - name: pvc
+          nfs:
+            path: /mnt/disk/vol
+            server: 10.150.16.171
+      containers:
+        - name: filebeat
+          image: docker.elastic.co/beats/filebeat:7.4.2
+          volumeMounts:
+          - mountPath: /var/log/app/
+            name: log-data
+          - mountPath: /usr/share/filebeat/filebeat.yml
+            name: config
+            subPath: filebeat.yml
+            readOnly: true
+        - name:  jenkins
+          image: rajat965ng/jenkins-master
+          env:
+            - name: JENKINS_OPTS
+              value: "--prefix=/jenkins"
+          securityContext:
+            privileged: true
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 50000
+              name: tcp
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /jenkins/login
+            initialDelaySeconds: 180
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /jenkins/login
+            initialDelaySeconds: 180
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+          volumeMounts:
+            - mountPath: /var/run/docker.sock
+              name: docker-socket
+            - mountPath: /var/jenkins_home
+              name: pvc
+            - mountPath: /var/jenkins_home/logs
+              name: log-data
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: default
+  name: jenkins-master
+spec:
+  selector:
+    app: jenkins-master
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http
+    - port: 50000
+      targetPort: 50000
+      name: tcp
+      protocol: TCP
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  namespace: default
+  name: jenkins-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /jenkins
+        backend:
+          serviceName: jenkins-master
+          servicePort: 8080

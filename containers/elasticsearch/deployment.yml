@@ -11,6 +11,11 @@ spec:
       labels:
         app: elasticsearch
     spec:
+      volumes:
+        - name: data
+          nfs:
+            path: /mnt/disk/elasticsearch
+            server: 10.150.16.171
       containers:
         - name: elasticsearch
           image: elasticsearch:7.4.2
@@ -22,6 +27,9 @@ spec:
               name: http
             - containerPort: 9300
               name: discovery
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: data
 ---
 kind: Service
 apiVersion: v1
