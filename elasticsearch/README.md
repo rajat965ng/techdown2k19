@@ -6,6 +6,14 @@
 - Allow you to store, search and analyze data.
 - It is an indexation of data on top of Apache Lucene, provide full-text search engine written in Java.
 
+## Which side of CAP theorem ?
+### Write Operations
+- At the time of sufficiently bad network partition, ElasticSearch's compare and set operation will take over consistency over availability.
+- Try to preserve the logic that acknowledged writes should not fail, but unacknowledged writes may fail.
+### Read Operations
+- Read operations offer stronger availability than consistency.
+- A search may sometime return older results than failing.
+
 ## Scaling
 - Vertical: By increasing the resources of node. eg RAM, Disk space etc.
 - Horizontal: Adding the node on the fly will increase High Availability and Resiliency.
@@ -89,3 +97,8 @@
 - ElasticSearch has ability to index entire object.
 - ElasticSearch has ability to perform simple to complex search queries through search API.
 - As per best practices the data should be stored in document database instead of data store       
+
+
+## References
+- Scalabe Big Data Architecture by Bahaaldine Azarmi.
+- https://discuss.elastic.co/t/which-side-of-cap-theorem-elasticsearch-satisfy/177810
