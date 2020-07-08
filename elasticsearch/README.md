@@ -1,7 +1,7 @@
 # ElasticSearch: Using NoSQL as cache
 
 ## Introduction
-- Another NoSQL technology.
+- Elasticsearch is an another NoSQL technology.
 - It is a distributed datastore.
 - Allow you to store, search and analyze data.
 - It is an indexation of data on top of Apache Lucene, provide full-text search engine written in Java.
