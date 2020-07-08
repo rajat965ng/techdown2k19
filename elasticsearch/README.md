@@ -17,7 +17,7 @@
 - Documents are stored in JSON format.
 - Partitioning is done in the form of Shards.
 - A Shard is a Lucene index and the smallest unit of scale.
-- <i>ElasticSearch index</> is a logical namespaces that regroup the collection of shard.
+- <i>ElasticSearch index</i> is a logical namespaces that regroup the collection of shard.
 - Whenever request comes to ElasticSearch it gets routed to appropriate shard.
 
 ![](.README_images/6139fdad.png)
